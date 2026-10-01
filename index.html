@@ -57,11 +57,6 @@ h1 {
   margin: 0 0 8px;
   font-size: 19px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.15;
 }
-.card h2::after {
-  content: "→";
-  font-weight: 400; color: var(--muted);
-  transition: transform 0.15s ease, color 0.15s ease;
-}
 .card:hover h2::after, .card:focus-visible h2::after { color: var(--ink); transform: translateX(3px); }
 .card p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--about); }
 @media (prefers-reduced-motion: reduce) {
@@ -71,8 +66,7 @@ h1 {
 </head>
 <body>
 <div class="wrap">
-  <h1>Cheat sheets</h1>
-  <!-- Change each href to wherever that cheat sheet lives. -->
+  <h1>Cheat Sheets</h1>
   <main class="grid">
     <a class="card" href="css.html">
       <h2>CSS</h2>

@@ -61,6 +61,13 @@ header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; ma
   line-height: var(--bar-h);    /* same height as the filter box */
   color: var(--ink);
 }
+.back-link {
+  display: inline-flex; flex: 0 0 var(--bar-h); align-items: center; justify-content: center;
+  width: var(--bar-h); height: var(--bar-h); border: 2px solid var(--border); border-radius: 8px;
+  background: var(--card); color: var(--note); font-size: 24px; line-height: 1; text-decoration: none;
+}
+.back-link:hover { border-color: var(--note); color: var(--ink); }
+.back-link:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
 .tools { display: flex; align-items: center; gap: 12px; flex: 0 1 380px; }
 .field { position: relative; flex: 1 1 auto; }
 .field input {
@@ -166,6 +173,7 @@ tbody tr > :last-child { padding-right: 0; }
 <body>
 <div class="wrap">
   <header>
+    <a class="back-link" href="index.html" aria-label="Back to cheat sheets">&lsaquo;</a>
     <h1 class="sheet-title">JavaScript</h1>
     <div class="tools">
       <div class="field">
