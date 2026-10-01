@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Git cheat sheet (compact)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --page: #1C1C1C;
+  --card: #262626;
+  --ink: #E3E3E3;
+  --border: #3C3C3C;
+  --note: #9A9A9A;
+  --rule: #353535;
+  --chip: #313131;
+  --code-fg: #E6EDF3;   /* GitHub Dark Default */
+  --comment: #8B949E;
+  --about: #B4B4B4;
+  --kw: #FF7B72;
+  --str: #A5D6FF;
+  --const: #79C0FF;
+  --fn: #D2A8FF;
+  --cls: #FFA657;
+  --tag: #7EE787;
+  --hit: #3A3A3A;
+  --gap: 16px;
+  --bar-h: 42px;
+  --min: 420px;
+  --sans: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--page);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { padding: 20px clamp(14px, 2.4vw, 32px) 40px; }
+
+/* Header */
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 16px; }
+.sheet-title {
+  margin: 0; flex: none;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.02em;
+  line-height: var(--bar-h);    /* same height as the filter box */
+  color: var(--ink);
+}
+.tools { display: flex; align-items: center; gap: 12px; flex: 0 1 380px; }
+.field { position: relative; flex: 1 1 auto; }
+.field input {
+  width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  height: var(--bar-h); padding: 0 38px 0 12px;
+}
+.field input::placeholder { color: var(--note); }
+.field kbd {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--note);
+  border: 1.5px solid var(--rule); border-radius: 4px; padding: 3px 6px; pointer-events: none;
+}
+.field input:focus + kbd { visibility: hidden; }
+.count { font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.field input:focus-visible { outline-offset: 1px; }
+
+/* Masonry */
+.grid { display: flex; align-items: flex-start; gap: var(--gap); }
+.col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--gap); }
+.card {
+  background: var(--card);
+  padding: 16px 18px 18px;
+}
+.card[hidden] { display: none; }
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 19px; font-weight: 800;
+  line-height: 1.15; letter-spacing: -0.01em;
+}
+.card p { margin: 12px 0 8px; font-size: 14px; }
+.card .about { margin: -2px 0 12px; font-size: 13.5px; line-height: 1.5; color: var(--about); }
+.card .about code.i { font-size: 12px; }
+
+/* Code lines: code on the left, explanation on the right (wraps below when the card is narrow) */
+.code { font-family: var(--mono); font-size: 12.5px; line-height: 1.6; color: var(--code-fg); }
+.ln { display: flex; flex-wrap: wrap; align-items: baseline; border-radius: 3px; }
+.ln > code {
+  font: inherit; white-space: pre-wrap; overflow-wrap: anywhere;
+  flex: 0 0 auto; width: min(calc((var(--cw, 0) + 1) * 1ch), 100%);
+}
+.ln.long > code, .ln.bare > code { width: auto; max-width: 100%; }
+.ln .note {
+  flex: 1 1 18ch; min-width: 0; padding-left: 2ch;
+  font-family: var(--sans); font-size: 13px; line-height: 1.45; color: var(--comment);
+}
+.ln.long .note { flex-basis: 100%; padding-left: 2ch; }
+.probe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
+.ln.gap { height: 0.75em; }
+.code + .code { margin-top: 14px; }
+.ln.file { margin: 2px 0 1px; }
+.ln.file span {
+  font-weight: 600; font-size: 11.5px; line-height: 1.7;
+  background: var(--chip); border-radius: 4px; padding: 0 6px;
+}
+.t-kw { color: var(--kw); }
+.t-str { color: var(--str); }
+.t-c { color: var(--const); }
+.t-fn { color: var(--fn); }
+.t-cls { color: var(--cls); }
+.t-tag { color: var(--tag); }
+.t-cm { color: var(--comment); }
+code.i {
+  font-family: var(--mono); font-size: 12.5px; white-space: pre; color: var(--code-fg);
+  background: var(--chip); border-radius: 4px; padding: 1px 5px;
+  display: inline-block; margin: 1px 0; line-height: 1.5;
+}
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead th {
+  text-align: left; font-weight: 650; font-size: 12.5px; color: var(--note);
+  padding: 0 10px 5px 0;
+}
+tbody th, tbody td { text-align: left; vertical-align: top; padding: 6px 10px 6px 0; border-top: 1px solid var(--rule); }
+tbody tr > :last-child { padding-right: 0; }
+.types tbody th { font-weight: 650; white-space: nowrap; width: 1%; padding-top: 8px; }
+.aside { color: var(--note); font-size: 13px; }
+.ops td.op { width: 36%; }
+.ops td.op code { font-family: var(--mono); font-size: 13px; word-spacing: 0.2em; color: var(--code-fg); }
+.kind { display: block; font-weight: 650; }
+.desc { display: block; color: var(--note); font-size: 13px; }
+
+/* Filter matches */
+.ln.hit, tbody tr.hit > * { background: var(--hit); }
+.ln.hit { box-shadow: 0 0 0 3px var(--hit); }
+
+.empty { margin: 8px 0 0; font-size: 16px; }
+.empty button {
+  font: inherit; font-size: 15px; font-weight: 650; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  padding: 6px 12px; margin-left: 8px; cursor: pointer;
+}
+
+@media (hover: none) { .field kbd { display: none; } .field input { padding-right: 12px; } }
+@media (max-width: 640px) {
+  .tools { flex-basis: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="sheet-title">Git</h1>
+    <div class="tools">
+      <div class="field">
+        <label class="sr" for="filter">Filter cards</label>
+        <input id="filter" type="search" placeholder="Filter: rebase, stash, undo…" autocomplete="off" spellcheck="false" aria-keyshortcuts="/">
+        <kbd aria-hidden="true">/</kbd>
+      </div>
+      <span class="count" id="count" aria-live="polite">13 cards</span>
+    </div>
+  </header>
+
+  <main class="grid" id="grid">
+<section class="card" id="setup" aria-labelledby="setup-h"><h2 id="setup-h">Setup</h2><p class="about">Configure Git once per computer; <code class="i">--global</code> settings apply to every repository. Then start a new repository or copy an existing one.</p><div class="code"><div class="ln" data-l="40"><code><span class="t-fn">git</span> config <span class="t-c">--global</span> user.name <span class="t-str">"Ana Diaz"</span></code><span class="note">The name on your commits</span></div><div class="ln bare"><code><span class="t-fn">git</span> config <span class="t-c">--global</span> user.email <span class="t-str">"ana@example.com"</span></code></div><div class="ln" data-l="43"><code><span class="t-fn">git</span> config <span class="t-c">--global</span> init.defaultBranch main</code><span class="note">Name the first branch of new repos main</span></div><div class="ln" data-l="36"><code><span class="t-fn">git</span> config <span class="t-c">--global</span> pull.rebase true</code><span class="note">Pull rebases your work instead of merging</span></div><div class="ln" data-l="45"><code><span class="t-fn">git</span> config <span class="t-c">--global</span> core.editor <span class="t-str">"code --wait"</span></code><span class="note">Editor for commit messages (VS Code here)</span></div><div class="ln" data-l="58"><code><span class="t-fn">git</span> config <span class="t-c">--global</span> alias.lg <span class="t-str">"log --oneline --graph --all"</span></code><span class="note">Then git lg runs that</span></div><div class="ln" data-l="31"><code><span class="t-fn">git</span> config <span class="t-c">--list</span> <span class="t-c">--show-origin</span></code><span class="note">Every setting, and the file it comes from</span></div><div class="ln" data-l="8"><code><span class="t-fn">git</span> init</code><span class="note">Start a repository in the current folder</span></div><div class="ln" data-l="26"><code><span class="t-fn">git</span> clone <span class="t-cls">&lt;url&gt;</span> <span class="t-cls">[&lt;folder&gt;]</span></code><span class="note">Copy a repository and its history</span></div></div></section>
+<section class="card" id="everyday" aria-labelledby="everyday-h"><h2 id="everyday-h">Everyday workflow</h2><p class="about">Changes move from your files to the staging area to a commit. Staging lets you choose exactly what goes into each commit.</p><div class="code"><div class="ln" data-l="10"><code><span class="t-fn">git</span> status</code><span class="note">What changed, and what's staged</span></div><div class="ln" data-l="14"><code><span class="t-fn">git</span> add <span class="t-cls">&lt;file&gt;</span></code><span class="note">Stage a file for the next commit</span></div><div class="ln" data-l="9"><code><span class="t-fn">git</span> add .</code><span class="note">Stage everything in this folder and below</span></div><div class="ln" data-l="10"><code><span class="t-fn">git</span> add <span class="t-c">-p</span></code><span class="note">Choose changes hunk by hunk</span></div><div class="ln" data-l="30"><code><span class="t-fn">git</span> commit <span class="t-c">-m</span> <span class="t-str">"Add size chart"</span></code><span class="note">Commit what's staged</span></div><div class="ln" data-l="25"><code><span class="t-fn">git</span> commit <span class="t-c">-am</span> <span class="t-str">"Fix typo"</span></code><span class="note">Stage changed tracked files and commit (skips new files)</span></div><div class="ln" data-l="8"><code><span class="t-fn">git</span> diff</code><span class="note">Changes you haven't staged</span></div><div class="ln" data-l="17"><code><span class="t-fn">git</span> diff <span class="t-c">--staged</span></code><span class="note">Staged changes: what the commit will contain</span></div><div class="ln" data-l="25"><code><span class="t-fn">git</span> log <span class="t-c">--oneline</span> <span class="t-c">--graph</span></code><span class="note">Compact history with branch lines</span></div></div></section>
+<section class="card" id="branches" aria-labelledby="branches-h"><h2 id="branches-h">Branches</h2><p class="about">A branch is a movable pointer to a commit, so creating one is instant. Work on a branch, then merge it back when it's ready.</p><div class="code"><div class="ln" data-l="10"><code><span class="t-fn">git</span> branch</code><span class="note">Local branches; * marks the current one</span></div><div class="ln" data-l="13"><code><span class="t-fn">git</span> branch <span class="t-c">-a</span></code><span class="note">Include remote-tracking branches</span></div><div class="ln" data-l="22"><code><span class="t-fn">git</span> switch <span class="t-c">-c</span> <span class="t-cls">&lt;branch&gt;</span></code><span class="note">Create a branch and switch to it</span></div><div class="ln" data-l="19"><code><span class="t-fn">git</span> switch <span class="t-cls">&lt;branch&gt;</span></code><span class="note">Switch to an existing branch</span></div><div class="ln" data-l="12"><code><span class="t-fn">git</span> switch <span class="t-c">-</span></code><span class="note">Back to the previous branch</span></div><div class="ln" data-l="18"><code><span class="t-fn">git</span> merge <span class="t-cls">&lt;branch&gt;</span></code><span class="note">Merge it into the current branch</span></div><div class="ln" data-l="26"><code><span class="t-fn">git</span> merge <span class="t-c">--no-ff</span> <span class="t-cls">&lt;branch&gt;</span></code><span class="note">Always record a merge commit</span></div><div class="ln" data-l="24"><code><span class="t-fn">git</span> branch <span class="t-c">-m</span> <span class="t-cls">&lt;new-name&gt;</span></code><span class="note">Rename the current branch</span></div><div class="ln" data-l="22"><code><span class="t-fn">git</span> branch <span class="t-c">-d</span> <span class="t-cls">&lt;branch&gt;</span></code><span class="note">Delete a merged branch (-D deletes it anyway)</span></div></div></section>
+<section class="card" id="remotes" aria-labelledby="remotes-h"><h2 id="remotes-h">Remotes</h2><p class="about">A remote is another copy of the repository, usually on GitHub, named origin by default. Fetch downloads new commits; pull also brings them into your branch.</p><div class="code"><div class="ln" data-l="13"><code><span class="t-fn">git</span> remote <span class="t-c">-v</span></code><span class="note">Remotes and their URLs</span></div><div class="ln" data-l="27"><code><span class="t-fn">git</span> remote add origin <span class="t-cls">&lt;url&gt;</span></code><span class="note">Connect a remote named origin</span></div><div class="ln" data-l="9"><code><span class="t-fn">git</span> fetch</code><span class="note">Download new commits without touching your files</span></div><div class="ln" data-l="8"><code><span class="t-fn">git</span> pull</code><span class="note">Fetch, then merge or rebase into the current branch</span></div><div class="ln" data-l="27"><code><span class="t-fn">git</span> push <span class="t-c">-u</span> origin <span class="t-cls">&lt;branch&gt;</span></code><span class="note">First push; -u remembers where to push next time</span></div><div class="ln" data-l="8"><code><span class="t-fn">git</span> push</code><span class="note">Push to the branch's upstream</span></div><div class="ln" data-l="27"><code><span class="t-fn">git</span> push <span class="t-c">--force-with-lease</span></code><span class="note">Force push, but refuse if the remote changed since you fetched</span></div><div class="ln" data-l="33"><code><span class="t-fn">git</span> push origin <span class="t-c">--delete</span> <span class="t-cls">&lt;branch&gt;</span></code><span class="note">Delete a branch on the remote</span></div><div class="ln" data-l="14"><code><span class="t-fn">git</span> branch <span class="t-c">-vv</span></code><span class="note">Each branch's upstream, and how far ahead or behind it is</span></div></div></section>
+<section class="card" id="undo" aria-labelledby="undo-h"><h2 id="undo-h">Undoing changes</h2><p class="about">Pick the command by how far the change has gone: still in your files, staged, committed, or already pushed. <code class="i">reset</code> and <code class="i">--amend</code> rewrite commits, so use <code class="i">revert</code> for anything others have pulled.</p><div class="code"><div class="ln" data-l="18"><code><span class="t-fn">git</span> restore <span class="t-cls">&lt;file&gt;</span></code><span class="note">Discard unstaged changes to a file</span></div><div class="ln" data-l="27"><code><span class="t-fn">git</span> restore <span class="t-c">--staged</span> <span class="t-cls">&lt;file&gt;</span></code><span class="note">Unstage it, keeping the changes</span></div><div class="ln" data-l="18"><code><span class="t-fn">git</span> commit <span class="t-c">--amend</span></code><span class="note">Redo the last commit with what's staged and a new message</span></div><div class="ln" data-l="23"><code><span class="t-fn">git</span> reset <span class="t-c">--soft</span> HEAD~1</code><span class="note">Undo the last commit; its changes stay staged</span></div><div class="ln" data-l="16"><code><span class="t-fn">git</span> reset HEAD~1</code><span class="note">Undo the last commit; its changes stay unstaged</span></div><div class="ln" data-l="23"><code><span class="t-fn">git</span> reset <span class="t-c">--hard</span> HEAD~1</code><span class="note">Undo the last commit and throw away its changes and any uncommitted work</span></div><div class="ln" data-l="19"><code><span class="t-fn">git</span> revert <span class="t-cls">&lt;commit&gt;</span></code><span class="note">A new commit that reverses an old one; safe on shared branches</span></div><div class="ln" data-l="12"><code><span class="t-fn">git</span> clean <span class="t-c">-n</span></code><span class="note">Preview deleting untracked files (-f deletes them, -d includes folders)</span></div><div class="ln" data-l="10"><code><span class="t-fn">git</span> reflog</code><span class="note">Everywhere HEAD has been; finds commits you thought were lost</span></div></div></section>
+<section class="card" id="stash" aria-labelledby="stash-h"><h2 id="stash-h">Stash</h2><p class="about">The stash shelves uncommitted changes so you can switch tasks with a clean working folder, then bring them back later.</p><div class="code"><div class="ln" data-l="9"><code><span class="t-fn">git</span> stash</code><span class="note">Shelve tracked changes</span></div><div class="ln" data-l="12"><code><span class="t-fn">git</span> stash <span class="t-c">-u</span></code><span class="note">Include untracked files</span></div><div class="ln" data-l="36"><code><span class="t-fn">git</span> stash push <span class="t-c">-m</span> <span class="t-str">"wip: cart"</span> <span class="t-cls">&lt;file&gt;</span></code><span class="note">Shelve only some files, with a message</span></div><div class="ln" data-l="14"><code><span class="t-fn">git</span> stash list</code><span class="note">Stashes, newest first as stash@{0}</span></div><div class="ln" data-l="13"><code><span class="t-fn">git</span> stash pop</code><span class="note">Reapply the latest and remove it from the list</span></div><div class="ln" data-l="25"><code><span class="t-fn">git</span> stash apply stash@{1}</code><span class="note">Reapply one and keep it in the list</span></div><div class="ln" data-l="24"><code><span class="t-fn">git</span> stash drop stash@{1}</code><span class="note">Delete one</span></div><div class="ln" data-l="25"><code><span class="t-fn">git</span> stash branch <span class="t-cls">&lt;branch&gt;</span></code><span class="note">Make a branch from the stash and apply it there</span></div></div></section>
+<section class="card" id="history" aria-labelledby="history-h"><h2 id="history-h">Viewing history</h2><p class="about">Git keeps every commit, so you can see what changed, who changed it, and when. Filters narrow a long history down to the commits you care about.</p><div class="code"><div class="ln" data-l="7"><code><span class="t-fn">git</span> log</code><span class="note">Commits, newest first</span></div><div class="ln" data-l="23"><code><span class="t-fn">git</span> log <span class="t-c">--oneline</span> <span class="t-c">-n</span> 10</code><span class="note">The last 10, one line each</span></div><div class="ln" data-l="17"><code><span class="t-fn">git</span> log <span class="t-c">-p</span> <span class="t-cls">&lt;file&gt;</span></code><span class="note">Every change to one file</span></div><div class="ln" data-l="44"><code><span class="t-fn">git</span> log <span class="t-c">--author=</span><span class="t-str">"Ana"</span> <span class="t-c">--since=</span><span class="t-str">"2 weeks ago"</span></code><span class="note">Filter by author and date</span></div><div class="ln" data-l="21"><code><span class="t-fn">git</span> log <span class="t-c">--grep=</span><span class="t-str">"cart"</span></code><span class="note">Search commit messages</span></div><div class="ln" data-l="26"><code><span class="t-fn">git</span> log <span class="t-c">-S</span> <span class="t-str">"applyDiscount"</span></code><span class="note">Commits that added or removed this text</span></div><div class="ln" data-l="17"><code><span class="t-fn">git</span> show <span class="t-cls">&lt;commit&gt;</span></code><span class="note">One commit's message and changes</span></div><div class="ln" data-l="16"><code><span class="t-fn">git</span> blame <span class="t-cls">&lt;file&gt;</span></code><span class="note">Who last changed each line</span></div><div class="ln" data-l="16"><code><span class="t-fn">git</span> shortlog <span class="t-c">-sn</span></code><span class="note">Commit counts per author</span></div></div></section>
+<section class="card" id="rewrite" aria-labelledby="rewrite-h"><h2 id="rewrite-h">Rebase &amp; rewriting history</h2><p class="about">Rebasing replays commits on a new base for a straight history, and interactive rebase lets you edit, combine or drop commits. Rewritten commits get new IDs, so only rewrite commits you haven't shared.</p><div class="code"><div class="ln" data-l="15"><code><span class="t-fn">git</span> rebase main</code><span class="note">Replay this branch's commits on top of main</span></div><div class="ln" data-l="20"><code><span class="t-fn">git</span> rebase <span class="t-c">-i</span> HEAD~3</code><span class="note">Edit the last 3: pick, reword, squash, fixup or drop each one</span></div><div class="ln" data-l="21"><code><span class="t-fn">git</span> rebase <span class="t-c">--continue</span></code><span class="note">After resolving a conflict (--abort cancels)</span></div><div class="ln" data-l="27"><code><span class="t-fn">git</span> commit <span class="t-c">--fixup</span> <span class="t-cls">&lt;commit&gt;</span></code><span class="note">A commit marked to be folded into an earlier one</span></div><div class="ln" data-l="31"><code><span class="t-fn">git</span> rebase <span class="t-c">-i</span> <span class="t-c">--autosquash</span> main</code><span class="note">Fold fixup commits into their targets</span></div><div class="ln" data-l="24"><code><span class="t-fn">git</span> cherry-pick <span class="t-cls">&lt;commit&gt;</span></code><span class="note">Copy one commit onto the current branch</span></div><div class="ln" data-l="27"><code><span class="t-fn">git</span> history reword <span class="t-cls">&lt;commit&gt;</span></code><span class="note">Change an old commit's message (experimental, Git 2.54+)</span></div><div class="ln" data-l="26"><code><span class="t-fn">git</span> history split <span class="t-cls">&lt;commit&gt;</span></code><span class="note">Split a commit in two (experimental, Git 2.54+)</span></div><div class="ln" data-l="26"><code><span class="t-fn">git</span> history fixup <span class="t-cls">&lt;commit&gt;</span></code><span class="note">Fold staged changes into an old commit (experimental, Git 2.55+)</span></div></div></section>
+<section class="card" id="conflicts" aria-labelledby="conflicts-h"><h2 id="conflicts-h">Merge conflicts</h2><p class="about">A conflict happens when both sides changed the same lines. Git marks both versions in the file; edit it to the result you want, remove the markers, and stage it. During a rebase, <code class="i">--ours</code> and <code class="i">--theirs</code> are swapped.</p><div class="code"><div class="ln" data-l="12"><code><span class="t-kw">&lt;&lt;&lt;&lt;&lt;&lt;&lt;</span> HEAD</code><span class="note">Your branch's version</span></div><div class="ln bare"><code>price: 20</code></div><div class="ln bare"><code><span class="t-kw">=======</span></code></div><div class="ln bare"><code>price: 25</code></div><div class="ln" data-l="23"><code><span class="t-kw">&gt;&gt;&gt;&gt;&gt;&gt;&gt;</span> feature/pricing</code><span class="note">The incoming version</span></div></div><div class="code"><div class="ln" data-l="10"><code><span class="t-fn">git</span> status</code><span class="note">Lists the conflicted files</span></div><div class="ln" data-l="14"><code><span class="t-fn">git</span> add <span class="t-cls">&lt;file&gt;</span></code><span class="note">Mark it resolved after editing</span></div><div class="ln" data-l="10"><code><span class="t-fn">git</span> commit</code><span class="note">Finish the merge (git rebase --continue during a rebase)</span></div><div class="ln" data-l="17"><code><span class="t-fn">git</span> merge <span class="t-c">--abort</span></code><span class="note">Give up and go back to before the merge</span></div><div class="ln" data-l="25"><code><span class="t-fn">git</span> restore <span class="t-c">--ours</span> <span class="t-cls">&lt;file&gt;</span></code><span class="note">Keep your whole version of the file (--theirs keeps theirs)</span></div></div></section>
+<section class="card" id="tags" aria-labelledby="tags-h"><h2 id="tags-h">Tags</h2><p class="about">Tags name a specific commit, usually a release. Annotated tags store who made them, when and why; lightweight tags are just a name.</p><div class="code"><div class="ln" data-l="7"><code><span class="t-fn">git</span> tag</code><span class="note">List tags</span></div><div class="ln" data-l="14"><code><span class="t-fn">git</span> tag v1.2.0</code><span class="note">A lightweight tag on the current commit</span></div><div class="ln" data-l="35"><code><span class="t-fn">git</span> tag <span class="t-c">-a</span> v1.2.0 <span class="t-c">-m</span> <span class="t-str">"Fall release"</span></code><span class="note">Annotated: author, date and message</span></div><div class="ln" data-l="22"><code><span class="t-fn">git</span> push origin v1.2.0</code><span class="note">Tags aren't pushed unless you ask</span></div><div class="ln" data-l="15"><code><span class="t-fn">git</span> push <span class="t-c">--tags</span></code><span class="note">Push every tag</span></div><div class="ln" data-l="17"><code><span class="t-fn">git</span> tag <span class="t-c">-d</span> v1.2.0</code><span class="note">Delete it locally (git push origin --delete v1.2.0 for the remote)</span></div><div class="ln" data-l="19"><code><span class="t-fn">git</span> describe <span class="t-c">--tags</span></code><span class="note">Nearest tag, like v1.2.0-3-gabc1234: 3 commits after it</span></div></div></section>
+<section class="card" id="ignore" aria-labelledby="ignore-h"><h2 id="ignore-h">.gitignore</h2><p class="about">A .gitignore file lists files Git shouldn't track, like dependencies, build output and secrets. It only affects untracked files; anything already committed stays tracked.</p><div class="code"><div class="ln" data-l="13"><code>node_modules/</code><span class="note">A folder with this name, anywhere</span></div><div class="ln" data-l="5"><code><span class="t-kw">*</span>.log</code><span class="note">Every file ending in .log</span></div><div class="ln" data-l="9"><code><span class="t-kw">!</span>keep.log</code><span class="note">Except this one</span></div><div class="ln" data-l="6"><code>/build</code><span class="note">Only build at the repository root</span></div><div class="ln" data-l="7"><code><span class="t-kw">**</span>/temp</code><span class="note">Temp at any depth</span></div><div class="ln" data-l="4"><code>.env</code><span class="note">Secrets and local settings</span></div></div><div class="code"><div class="ln" data-l="22"><code><span class="t-fn">git</span> rm <span class="t-c">--cached</span> <span class="t-cls">&lt;file&gt;</span></code><span class="note">Stop tracking a file that's now ignored; it stays on disk</span></div><div class="ln" data-l="26"><code><span class="t-fn">git</span> check-ignore <span class="t-c">-v</span> <span class="t-cls">&lt;file&gt;</span></code><span class="note">Which rule ignores it</span></div></div></section>
+<section class="card" id="refs" aria-labelledby="refs-h"><h2 id="refs-h">Refs &amp; ranges</h2><p class="about">Most commands take a commit, and there are many ways to name one. Ranges select sets of commits for log, diff and other commands.</p><table class="ops"><thead><tr><th scope="col">Write</th><th scope="col">To mean</th></tr></thead><tbody><tr><td class="op"><code>HEAD</code></td><td><span class="desc">The commit you have checked out</span></td></tr><tr><td class="op"><code>HEAD<span class="t-kw">~</span>2</code></td><td><span class="desc">Two commits before HEAD</span></td></tr><tr><td class="op"><code>HEAD<span class="t-kw">^</span>2</code></td><td><span class="desc">The second parent of a merge commit</span></td></tr><tr><td class="op"><code>abc1234</code></td><td><span class="desc">A commit by the start of its hash</span></td></tr><tr><td class="op"><code>origin/main</code></td><td><span class="desc">Where main was on the remote at your last fetch</span></td></tr><tr><td class="op"><code>@{u}</code></td><td><span class="desc">The current branch's upstream</span></td></tr><tr><td class="op"><code>main<span class="t-kw">..</span>feature</code></td><td><span class="desc">Commits on feature that aren't on main</span></td></tr><tr><td class="op"><code>main<span class="t-kw">...</span>feature</code></td><td><span class="desc">In log: commits on either side but not both. In diff: what feature changed since they split</span></td></tr></tbody></table></section>
+<section class="card" id="tools" aria-labelledby="tools-h"><h2 id="tools-h">Finding bugs &amp; multitasking</h2><p class="about"><code class="i">git bisect</code> finds the commit that introduced a bug by binary search, and worktrees let you check out a second branch in another folder without stashing.</p><div class="code"><div class="ln" data-l="16"><code><span class="t-fn">git</span> bisect start</code><span class="note">Start a binary search through history</span></div><div class="ln" data-l="14"><code><span class="t-fn">git</span> bisect bad</code><span class="note">The current commit has the bug</span></div><div class="ln" data-l="22"><code><span class="t-fn">git</span> bisect good v1.2.0</code><span class="note">This one didn't; Git checks out one halfway between</span></div><div class="ln" data-l="16"><code><span class="t-fn">git</span> bisect reset</code><span class="note">Finish and go back to where you started</span></div><div class="ln" data-l="41"><code><span class="t-fn">git</span> worktree add <span class="t-c">-b</span> hotfix ../hotfix main</code><span class="note">A second folder on a new branch from main</span></div><div class="ln bare"><code><span class="t-fn">git</span> worktree list</code></div><div class="ln bare"><code><span class="t-fn">git</span> worktree remove ../hotfix</code></div><div class="ln" data-l="24"><code><span class="t-fn">git</span> grep <span class="t-str">"applyDiscount"</span></code><span class="note">Search the tracked files</span></div></div></section>
+  </main>
+  <p class="empty" id="empty" hidden>No card mentions “<span id="empty-q"></span>”.<button type="button" id="clear">Clear filter</button></p>
+</div>
+
+<script>
+(() => {
+  const grid = document.getElementById("grid");
+  const cards = Array.from(grid.querySelectorAll(".card"));
+  const texts = cards.map(c => c.textContent.toLowerCase());
+  const input = document.getElementById("filter");
+  const count = document.getElementById("count");
+  const empty = document.getElementById("empty");
+  const emptyQ = document.getElementById("empty-q");
+  const total = cards.length;
+  let lastW = -1, raf = 0;
+
+  // Masonry: as many columns as fit at --min width; each card goes to the shortest column, in reading order.
+  function layout() {
+    const cs = getComputedStyle(grid);
+    const gap = parseFloat(cs.getPropertyValue("--gap")) || 16;
+    const min = parseFloat(cs.getPropertyValue("--min")) || 420;
+    const n = Math.max(1, Math.floor((grid.clientWidth + gap) / (min + gap)));
+    const cols = Array.from({ length: n }, () => {
+      const d = document.createElement("div");
+      d.className = "col";
+      return d;
+    });
+    grid.replaceChildren(...cols);
+    fitNotes((grid.clientWidth - (n - 1) * gap) / n);
+    const heights = new Array(n).fill(0);
+    for (const card of cards) {
+      if (card.hidden) continue;
+      let k = 0;
+      for (let i = 1; i < n; i++) if (heights[i] < heights[k] - 1) k = i;
+      cols[k].appendChild(card);
+      heights[k] += card.offsetHeight + gap;
+    }
+  }
+  // Explanations line up in one column per card when there's room; lines too long for that
+  // get their explanation on the next line instead.
+  const NOTE_MIN = 20; // characters reserved for an explanation beside the code
+  const probe = document.createElement("span");
+  probe.className = "code probe";
+  probe.setAttribute("aria-hidden", "true");
+  probe.textContent = "0".repeat(20);
+  document.body.appendChild(probe);
+  const blocks = cards.map(c => Array.from(c.querySelectorAll(".code")));
+  const cardStyle = getComputedStyle(cards[0]);
+  const chrome = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"]
+    .reduce((s, k) => s + (parseFloat(cardStyle[k]) || 0), 0) || 36;
+  function fitNotes(colWidth) {
+    const ch = probe.getBoundingClientRect().width / 20 || 7.5;
+    const avail = Math.floor((colWidth - chrome) / ch);
+    const maxCw = Math.min(avail - 1 - NOTE_MIN, 42); // keep one outlier from squeezing every note
+    for (const list of blocks) for (const block of list) {
+      let cw = 0;
+      block.querySelectorAll(".ln[data-l]").forEach(ln => {
+        const len = +ln.dataset.l;
+        const long = len > maxCw;
+        ln.classList.toggle("long", long);
+        if (!long && len > cw) cw = len;
+      });
+      block.style.setProperty("--cw", cw);
+    }
+  }
+  function schedule() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(layout);
+  }
+  new ResizeObserver(entries => {
+    const w = entries[0].contentRect.width;
+    if (Math.abs(w - lastW) > 0.5) { lastW = w; schedule(); }
+  }).observe(grid);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+
+  // Filter: hide cards that don't mention the text, highlight the lines that do.
+  function applyFilter() {
+    const raw = input.value.trim();
+    const q = raw.toLowerCase();
+    let shown = 0;
+    cards.forEach((card, i) => {
+      const match = !q || texts[i].includes(q);
+      card.hidden = !match;
+      if (match) shown++;
+      card.querySelectorAll(".ln, tbody tr").forEach(el => {
+        el.classList.toggle("hit", !!q && el.textContent.toLowerCase().includes(q));
+      });
+    });
+    count.textContent = q ? `${shown} of ${total} cards` : `${total} cards`;
+    emptyQ.textContent = raw;
+    empty.hidden = shown > 0;
+    layout();
+  }
+  input.addEventListener("input", applyFilter);
+  document.getElementById("clear").addEventListener("click", () => {
+    input.value = "";
+    applyFilter();
+    input.focus();
+  });
+  document.addEventListener("keydown", e => {
+    const typing = e.target.closest && e.target.closest("input, textarea, [contenteditable]");
+    if (e.key === "/" && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      input.focus();
+    } else if (e.key === "Escape" && e.target === input && input.value) {
+      input.value = "";
+      applyFilter();
+    }
+  });
+
+  layout();
+})();
+</script>
+</body>
+</html>
