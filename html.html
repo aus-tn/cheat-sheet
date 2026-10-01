@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>HTML cheat sheet (compact)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --page: #1C1C1C;
+  --card: #262626;
+  --ink: #E3E3E3;
+  --border: #3C3C3C;
+  --note: #9A9A9A;
+  --rule: #353535;
+  --chip: #313131;
+  --code-fg: #E6EDF3;   /* GitHub Dark Default */
+  --comment: #8B949E;
+  --about: #B4B4B4;
+  --kw: #FF7B72;
+  --str: #A5D6FF;
+  --const: #79C0FF;
+  --fn: #D2A8FF;
+  --cls: #FFA657;
+  --tag: #7EE787;
+  --hit: #3A3A3A;
+  --gap: 16px;
+  --bar-h: 42px;
+  --min: 420px;
+  --sans: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--page);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { padding: 20px clamp(14px, 2.4vw, 32px) 40px; }
+
+/* Header */
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 16px; }
+.sheet-title {
+  margin: 0; flex: none;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.02em;
+  line-height: var(--bar-h);    /* same height as the filter box */
+  color: var(--ink);
+}
+.tools { display: flex; align-items: center; gap: 12px; flex: 0 1 380px; }
+.field { position: relative; flex: 1 1 auto; }
+.field input {
+  width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  height: var(--bar-h); padding: 0 38px 0 12px;
+}
+.field input::placeholder { color: var(--note); }
+.field kbd {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--note);
+  border: 1.5px solid var(--rule); border-radius: 4px; padding: 3px 6px; pointer-events: none;
+}
+.field input:focus + kbd { visibility: hidden; }
+.count { font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.field input:focus-visible { outline-offset: 1px; }
+
+/* Masonry */
+.grid { display: flex; align-items: flex-start; gap: var(--gap); }
+.col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--gap); }
+.card {
+  background: var(--card);
+  padding: 16px 18px 18px;
+}
+.card[hidden] { display: none; }
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 19px; font-weight: 800;
+  line-height: 1.15; letter-spacing: -0.01em;
+}
+.card p { margin: 12px 0 8px; font-size: 14px; }
+.card .about { margin: -2px 0 12px; font-size: 13.5px; line-height: 1.5; color: var(--about); }
+.card .about code.i { font-size: 12px; }
+
+/* Code lines: code on the left, explanation on the right (wraps below when the card is narrow) */
+.code { font-family: var(--mono); font-size: 12.5px; line-height: 1.6; color: var(--code-fg); }
+.ln { display: flex; flex-wrap: wrap; align-items: baseline; border-radius: 3px; }
+.ln > code {
+  font: inherit; white-space: pre-wrap; overflow-wrap: anywhere;
+  flex: 0 0 auto; width: min(calc((var(--cw, 0) + 1) * 1ch), 100%);
+}
+.ln.long > code, .ln.bare > code { width: auto; max-width: 100%; }
+.ln .note {
+  flex: 1 1 18ch; min-width: 0; padding-left: 2ch;
+  font-family: var(--sans); font-size: 13px; line-height: 1.45; color: var(--comment);
+}
+.ln.long .note { flex-basis: 100%; padding-left: 2ch; }
+.probe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
+.ln.gap { height: 0.75em; }
+.code + .code { margin-top: 14px; }
+.ln.file { margin: 2px 0 1px; }
+.ln.file span {
+  font-weight: 600; font-size: 11.5px; line-height: 1.7;
+  background: var(--chip); border-radius: 4px; padding: 0 6px;
+}
+.t-kw { color: var(--kw); }
+.t-str { color: var(--str); }
+.t-c { color: var(--const); }
+.t-fn { color: var(--fn); }
+.t-cls { color: var(--cls); }
+.t-tag { color: var(--tag); }
+.t-cm { color: var(--comment); }
+code.i {
+  font-family: var(--mono); font-size: 12.5px; white-space: pre; color: var(--code-fg);
+  background: var(--chip); border-radius: 4px; padding: 1px 5px;
+  display: inline-block; margin: 1px 0; line-height: 1.5;
+}
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead th {
+  text-align: left; font-weight: 650; font-size: 12.5px; color: var(--note);
+  padding: 0 10px 5px 0;
+}
+tbody th, tbody td { text-align: left; vertical-align: top; padding: 6px 10px 6px 0; border-top: 1px solid var(--rule); }
+tbody tr > :last-child { padding-right: 0; }
+.types tbody th { font-weight: 650; white-space: nowrap; width: 1%; padding-top: 8px; }
+.aside { color: var(--note); font-size: 13px; }
+.ops td.op { width: 36%; }
+.ops td.op code { font-family: var(--mono); font-size: 13px; word-spacing: 0.2em; color: var(--code-fg); }
+.kind { display: block; font-weight: 650; }
+.desc { display: block; color: var(--note); font-size: 13px; }
+
+/* Filter matches */
+.ln.hit, tbody tr.hit > * { background: var(--hit); }
+.ln.hit { box-shadow: 0 0 0 3px var(--hit); }
+
+.empty { margin: 8px 0 0; font-size: 16px; }
+.empty button {
+  font: inherit; font-size: 15px; font-weight: 650; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  padding: 6px 12px; margin-left: 8px; cursor: pointer;
+}
+
+@media (hover: none) { .field kbd { display: none; } .field input { padding-right: 12px; } }
+@media (max-width: 640px) {
+  .tools { flex-basis: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="sheet-title">HTML</h1>
+    <div class="tools">
+      <div class="field">
+        <label class="sr" for="filter">Filter cards</label>
+        <input id="filter" type="search" placeholder="Filter: form, img, aria…" autocomplete="off" spellcheck="false" aria-keyshortcuts="/">
+        <kbd aria-hidden="true">/</kbd>
+      </div>
+      <span class="count" id="count" aria-live="polite">14 cards</span>
+    </div>
+  </header>
+
+  <main class="grid" id="grid">
+<section class="card" id="document" aria-labelledby="document-h"><h2 id="document-h">Document structure</h2><p class="about">Every page has the same skeleton. The head holds information about the page, like its title and the files it loads, and the body holds everything visible.</p><div class="code"><div class="ln" data-l="15"><code>&lt;<span class="t-tag">!DOCTYPE</span> <span class="t-c">html</span>&gt;</code><span class="note">Standards mode; always the first line</span></div><div class="ln" data-l="16"><code>&lt;<span class="t-tag">html</span> <span class="t-c">lang</span>=<span class="t-str">"en"</span>&gt;</code><span class="note">Page language, for screen readers and translation</span></div><div class="ln bare"><code>&lt;<span class="t-tag">head</span>&gt;</code></div><div class="ln" data-l="24"><code>  &lt;<span class="t-tag">meta</span> <span class="t-c">charset</span>=<span class="t-str">"utf-8"</span>&gt;</code><span class="note">Character encoding; keep it first in the head</span></div><div class="ln" data-l="70"><code>  &lt;<span class="t-tag">meta</span> <span class="t-c">name</span>=<span class="t-str">"viewport"</span> <span class="t-c">content</span>=<span class="t-str">"width=device-width, initial-scale=1"</span>&gt;</code><span class="note">Fit the screen on phones</span></div><div class="ln" data-l="27"><code>  &lt;<span class="t-tag">title</span>&gt;Page title&lt;/<span class="t-tag">title</span>&gt;</code><span class="note">Shown in the browser tab and in search results</span></div><div class="ln bare"><code>  &lt;<span class="t-tag">link</span> <span class="t-c">rel</span>=<span class="t-str">"stylesheet"</span> <span class="t-c">href</span>=<span class="t-str">"style.css"</span>&gt;</code></div><div class="ln" data-l="38"><code>  &lt;<span class="t-tag">script</span> <span class="t-c">src</span>=<span class="t-str">"app.js"</span> <span class="t-c">defer</span>&gt;&lt;/<span class="t-tag">script</span>&gt;</code><span class="note">Run after the page has been parsed</span></div><div class="ln bare"><code>&lt;/<span class="t-tag">head</span>&gt;</code></div><div class="ln bare"><code>&lt;<span class="t-tag">body</span>&gt;</code></div><div class="ln" data-l="16"><code>  &lt;<span class="t-tag">h1</span>&gt;Hello&lt;/<span class="t-tag">h1</span>&gt;</code><span class="note">Everything visible goes in the body</span></div><div class="ln bare"><code>&lt;/<span class="t-tag">body</span>&gt;</code></div><div class="ln bare"><code>&lt;/<span class="t-tag">html</span>&gt;</code></div></div></section>
+<section class="card" id="text" aria-labelledby="text-h"><h2 id="text-h">Text</h2><p class="about">Choose elements for what the text means, not how it should look; CSS handles the look. Browsers, search engines and screen readers all rely on that meaning.</p><div class="code"><div class="ln" data-l="31"><code>&lt;<span class="t-tag">h1</span>&gt;Title&lt;/<span class="t-tag">h1</span>&gt; &lt;<span class="t-tag">h2</span>&gt;Section&lt;/<span class="t-tag">h2</span>&gt;</code><span class="note">Headings h1 to h6: one h1, and don't skip levels</span></div><div class="ln bare"><code>&lt;<span class="t-tag">p</span>&gt;A paragraph.&lt;/<span class="t-tag">p</span>&gt;</code></div><div class="ln" data-l="26"><code>&lt;<span class="t-tag">strong</span>&gt;Important&lt;/<span class="t-tag">strong</span>&gt;</code><span class="note">Strong importance (bold by default)</span></div><div class="ln" data-l="17"><code>&lt;<span class="t-tag">em</span>&gt;Stressed&lt;/<span class="t-tag">em</span>&gt;</code><span class="note">Stress emphasis (italic by default)</span></div><div class="ln" data-l="24"><code>&lt;<span class="t-tag">mark</span>&gt;Highlighted&lt;/<span class="t-tag">mark</span>&gt;</code><span class="note">Marked as relevant, like search matches</span></div><div class="ln" data-l="25"><code>&lt;<span class="t-tag">small</span>&gt;Fine print&lt;/<span class="t-tag">small</span>&gt;</code><span class="note">Side comments and legal text</span></div><div class="ln" data-l="23"><code>&lt;<span class="t-tag">code</span>&gt;let x = 1;&lt;/<span class="t-tag">code</span>&gt;</code><span class="note">Inline code</span></div><div class="ln" data-l="32"><code>&lt;<span class="t-tag">pre</span>&gt;Keeps   its   spacing&lt;/<span class="t-tag">pre</span>&gt;</code><span class="note">Preformatted: whitespace stays as written</span></div><div class="ln bare"><code>&lt;<span class="t-tag">blockquote</span> <span class="t-c">cite</span>=<span class="t-str">"https://example.com"</span>&gt;A long quote.&lt;/<span class="t-tag">blockquote</span>&gt;</code></div><div class="ln" data-l="20"><code>&lt;<span class="t-tag">q</span>&gt;A short quote&lt;/<span class="t-tag">q</span>&gt;</code><span class="note">Adds quotation marks</span></div><div class="ln" data-l="51"><code>&lt;<span class="t-tag">abbr</span> <span class="t-c">title</span>=<span class="t-str">"HyperText Markup Language"</span>&gt;HTML&lt;/<span class="t-tag">abbr</span>&gt;</code><span class="note">Abbreviation, with the expansion on hover</span></div><div class="ln" data-l="44"><code>&lt;<span class="t-tag">time</span> <span class="t-c">datetime</span>=<span class="t-str">"2026-10-01"</span>&gt;October 1&lt;/<span class="t-tag">time</span>&gt;</code><span class="note">A date machines can read</span></div><div class="ln" data-l="32"><code>H&lt;<span class="t-tag">sub</span>&gt;2&lt;/<span class="t-tag">sub</span>&gt;O and x&lt;<span class="t-tag">sup</span>&gt;2&lt;/<span class="t-tag">sup</span>&gt;</code><span class="note">Subscript and superscript</span></div><div class="ln" data-l="30"><code>&lt;<span class="t-tag">kbd</span>&gt;Ctrl&lt;/<span class="t-tag">kbd</span>&gt; + &lt;<span class="t-tag">kbd</span>&gt;C&lt;/<span class="t-tag">kbd</span>&gt;</code><span class="note">Keyboard input</span></div><div class="ln" data-l="20"><code>Line one&lt;<span class="t-tag">br</span>&gt;Line two</code><span class="note">Line break, for addresses and poems</span></div><div class="ln" data-l="4"><code>&lt;<span class="t-tag">hr</span>&gt;</code><span class="note">A thematic break between topics</span></div></div></section>
+<section class="card" id="links" aria-labelledby="links-h"><h2 id="links-h">Links</h2><p class="about">The a element links to another page, a place on the same page, a file, or an email address or phone number. Link text should make sense on its own, so avoid "click here".</p><div class="code"><div class="ln" data-l="41"><code>&lt;<span class="t-tag">a</span> <span class="t-c">href</span>=<span class="t-str">"https://example.com"</span>&gt;Example&lt;/<span class="t-tag">a</span>&gt;</code><span class="note">Another site</span></div><div class="ln" data-l="29"><code>&lt;<span class="t-tag">a</span> <span class="t-c">href</span>=<span class="t-str">"/about"</span>&gt;About us&lt;/<span class="t-tag">a</span>&gt;</code><span class="note">A page on the same site</span></div><div class="ln" data-l="22"><code>&lt;<span class="t-tag">a</span> <span class="t-c">href</span>=<span class="t-str">"#faq"</span>&gt;FAQ&lt;/<span class="t-tag">a</span>&gt;</code><span class="note">Jump to the element with id="faq"</span></div><div class="ln" data-l="54"><code>&lt;<span class="t-tag">a</span> <span class="t-c">href</span>=<span class="t-str">"https://example.com"</span> <span class="t-c">target</span>=<span class="t-str">"_blank"</span>&gt;Docs&lt;/<span class="t-tag">a</span>&gt;</code><span class="note">Open in a new tab (implies rel="noopener")</span></div><div class="ln" data-l="44"><code>&lt;<span class="t-tag">a</span> <span class="t-c">href</span>=<span class="t-str">"mailto:hi@example.com"</span>&gt;Email us&lt;/<span class="t-tag">a</span>&gt;</code><span class="note">Open the mail app</span></div><div class="ln" data-l="38"><code>&lt;<span class="t-tag">a</span> <span class="t-c">href</span>=<span class="t-str">"tel:+15551234567"</span>&gt;Call us&lt;/<span class="t-tag">a</span>&gt;</code><span class="note">Call on phones</span></div><div class="ln" data-l="40"><code>&lt;<span class="t-tag">a</span> <span class="t-c">href</span>=<span class="t-str">"report.pdf"</span> <span class="t-c">download</span>&gt;Report&lt;/<span class="t-tag">a</span>&gt;</code><span class="note">Save instead of opening (same-origin files only)</span></div><div class="ln" data-l="23"><code>&lt;<span class="t-tag">nav</span> <span class="t-c">aria-label</span>=<span class="t-str">"Main"</span>&gt;</code><span class="note">A block of major navigation links</span></div><div class="ln bare"><code>  &lt;<span class="t-tag">a</span> <span class="t-c">href</span>=<span class="t-str">"/"</span>&gt;Home&lt;/<span class="t-tag">a</span>&gt; &lt;<span class="t-tag">a</span> <span class="t-c">href</span>=<span class="t-str">"/blog"</span>&gt;Blog&lt;/<span class="t-tag">a</span>&gt;</code></div><div class="ln bare"><code>&lt;/<span class="t-tag">nav</span>&gt;</code></div></div></section>
+<section class="card" id="media" aria-labelledby="media-h"><h2 id="media-h">Images &amp; media</h2><p class="about">Images need alt text that says what the image shows, or an empty alt if it's decorative. Giving width and height lets the browser reserve the space before the file loads.</p><div class="code"><div class="ln" data-l="73"><code>&lt;<span class="t-tag">img</span> <span class="t-c">src</span>=<span class="t-str">"cat.jpg"</span> <span class="t-c">alt</span>=<span class="t-str">"A cat asleep on a sofa"</span> <span class="t-c">width</span>=<span class="t-str">"800"</span> <span class="t-c">height</span>=<span class="t-str">"600"</span>&gt;</code><span class="note">Alt text is read aloud; width and height prevent layout shift</span></div><div class="ln" data-l="30"><code>&lt;<span class="t-tag">img</span> <span class="t-c">src</span>=<span class="t-str">"divider.svg"</span> <span class="t-c">alt</span>=<span class="t-str">""</span>&gt;</code><span class="note">Empty alt: decorative, so screen readers skip it</span></div><div class="ln" data-l="50"><code>&lt;<span class="t-tag">img</span> <span class="t-c">src</span>=<span class="t-str">"map.png"</span> <span class="t-c">alt</span>=<span class="t-str">"Store map"</span> <span class="t-c">loading</span>=<span class="t-str">"lazy"</span>&gt;</code><span class="note">Load only when it's about to scroll into view</span></div><div class="ln bare"><code>&lt;<span class="t-tag">img</span> <span class="t-c">src</span>=<span class="t-str">"photo-800.jpg"</span> <span class="t-c">alt</span>=<span class="t-str">"Harbor at dusk"</span></code></div><div class="ln bare"><code>     <span class="t-c">srcset</span>=<span class="t-str">"photo-400.jpg 400w, photo-800.jpg 800w"</span></code></div><div class="ln" data-l="44"><code>     <span class="t-c">sizes</span>=<span class="t-str">"(max-width: 600px) 100vw, 50vw"</span>&gt;</code><span class="note">The browser picks the best file for the screen</span></div><div class="ln" data-l="9"><code>&lt;<span class="t-tag">picture</span>&gt;</code><span class="note">Offer other formats or crops</span></div><div class="ln bare"><code>  &lt;<span class="t-tag">source</span> <span class="t-c">srcset</span>=<span class="t-str">"photo.avif"</span> <span class="t-c">type</span>=<span class="t-str">"image/avif"</span>&gt;</code></div><div class="ln" data-l="44"><code>  &lt;<span class="t-tag">img</span> <span class="t-c">src</span>=<span class="t-str">"photo.jpg"</span> <span class="t-c">alt</span>=<span class="t-str">"Harbor at dusk"</span>&gt;</code><span class="note">The fallback, and where alt goes</span></div><div class="ln bare"><code>&lt;/<span class="t-tag">picture</span>&gt;</code></div><div class="ln" data-l="8"><code>&lt;<span class="t-tag">figure</span>&gt;</code><span class="note">Content with a caption</span></div><div class="ln bare"><code>  &lt;<span class="t-tag">img</span> <span class="t-c">src</span>=<span class="t-str">"chart.png"</span> <span class="t-c">alt</span>=<span class="t-str">"Sales rose 20% in Q3"</span>&gt;</code></div><div class="ln bare"><code>  &lt;<span class="t-tag">figcaption</span>&gt;Quarterly sales&lt;/<span class="t-tag">figcaption</span>&gt;</code></div><div class="ln bare"><code>&lt;/<span class="t-tag">figure</span>&gt;</code></div><div class="ln" data-l="76"><code>&lt;<span class="t-tag">video</span> <span class="t-c">src</span>=<span class="t-str">"clip.mp4"</span> <span class="t-c">controls</span> <span class="t-c">muted</span> <span class="t-c">playsinline</span> <span class="t-c">poster</span>=<span class="t-str">"still.jpg"</span>&gt;&lt;/<span class="t-tag">video</span>&gt;</code><span class="note">The controls attribute shows the player's buttons</span></div><div class="ln bare"><code>&lt;<span class="t-tag">audio</span> <span class="t-c">src</span>=<span class="t-str">"talk.mp3"</span> <span class="t-c">controls</span>&gt;&lt;/<span class="t-tag">audio</span>&gt;</code></div><div class="ln" data-l="82"><code>&lt;<span class="t-tag">iframe</span> <span class="t-c">src</span>=<span class="t-str">"https://example.com/embed"</span> <span class="t-c">title</span>=<span class="t-str">"Store map"</span> <span class="t-c">loading</span>=<span class="t-str">"lazy"</span>&gt;&lt;/<span class="t-tag">iframe</span>&gt;</code><span class="note">Embed another page; title names it</span></div></div></section>
+<section class="card" id="lists" aria-labelledby="lists-h"><h2 id="lists-h">Lists &amp; tables</h2><p class="about">Lists group related items, and tables are for data with rows and columns, not for page layout. Header cells and a caption make a table understandable without seeing it.</p><div class="code"><div class="ln" data-l="38"><code>&lt;<span class="t-tag">ul</span>&gt;&lt;<span class="t-tag">li</span>&gt;Apples&lt;/<span class="t-tag">li</span>&gt;&lt;<span class="t-tag">li</span>&gt;Pears&lt;/<span class="t-tag">li</span>&gt;&lt;/<span class="t-tag">ul</span>&gt;</code><span class="note">Unordered list (bullets)</span></div><div class="ln" data-l="34"><code>&lt;<span class="t-tag">ol</span>&gt;&lt;<span class="t-tag">li</span>&gt;Mix&lt;/<span class="t-tag">li</span>&gt;&lt;<span class="t-tag">li</span>&gt;Bake&lt;/<span class="t-tag">li</span>&gt;&lt;/<span class="t-tag">ol</span>&gt;</code><span class="note">Ordered list; start="5" and reversed change the numbers</span></div><div class="ln" data-l="4"><code>&lt;<span class="t-tag">dl</span>&gt;</code><span class="note">Description list: terms and their descriptions</span></div><div class="ln bare"><code>  &lt;<span class="t-tag">dt</span>&gt;HTML&lt;/<span class="t-tag">dt</span>&gt;&lt;<span class="t-tag">dd</span>&gt;Structure&lt;/<span class="t-tag">dd</span>&gt;</code></div><div class="ln bare"><code>  &lt;<span class="t-tag">dt</span>&gt;CSS&lt;/<span class="t-tag">dt</span>&gt;&lt;<span class="t-tag">dd</span>&gt;Presentation&lt;/<span class="t-tag">dd</span>&gt;</code></div><div class="ln bare"><code>&lt;/<span class="t-tag">dl</span>&gt;</code></div><div class="ln bare"><code>&lt;<span class="t-tag">table</span>&gt;</code></div><div class="ln" data-l="34"><code>  &lt;<span class="t-tag">caption</span>&gt;Opening hours&lt;/<span class="t-tag">caption</span>&gt;</code><span class="note">The table's title</span></div><div class="ln bare"><code>  &lt;<span class="t-tag">thead</span>&gt;</code></div><div class="ln" data-l="63"><code>    &lt;<span class="t-tag">tr</span>&gt;&lt;<span class="t-tag">th</span> <span class="t-c">scope</span>=<span class="t-str">"col"</span>&gt;Day&lt;/<span class="t-tag">th</span>&gt;&lt;<span class="t-tag">th</span> <span class="t-c">scope</span>=<span class="t-str">"col"</span>&gt;Hours&lt;/<span class="t-tag">th</span>&gt;&lt;/<span class="t-tag">tr</span>&gt;</code><span class="note">Header cells; scope says which way they apply</span></div><div class="ln bare"><code>  &lt;/<span class="t-tag">thead</span>&gt;</code></div><div class="ln bare"><code>  &lt;<span class="t-tag">tbody</span>&gt;</code></div><div class="ln bare"><code>    &lt;<span class="t-tag">tr</span>&gt;&lt;<span class="t-tag">th</span> <span class="t-c">scope</span>=<span class="t-str">"row"</span>&gt;Mon&lt;/<span class="t-tag">th</span>&gt;&lt;<span class="t-tag">td</span>&gt;9–5&lt;/<span class="t-tag">td</span>&gt;&lt;/<span class="t-tag">tr</span>&gt;</code></div><div class="ln" data-l="52"><code>    &lt;<span class="t-tag">tr</span>&gt;&lt;<span class="t-tag">td</span> <span class="t-c">colspan</span>=<span class="t-str">"2"</span>&gt;Closed on holidays&lt;/<span class="t-tag">td</span>&gt;&lt;/<span class="t-tag">tr</span>&gt;</code><span class="note">A cell that spans two columns</span></div><div class="ln bare"><code>  &lt;/<span class="t-tag">tbody</span>&gt;</code></div><div class="ln bare"><code>&lt;/<span class="t-tag">table</span>&gt;</code></div></div></section>
+<section class="card" id="forms" aria-labelledby="forms-h"><h2 id="forms-h">Forms</h2><p class="about">A form collects input and sends it as name and value pairs. Every field needs a label, which also makes it easier to tap, and the browser can check many rules before the form is sent.</p><div class="code"><div class="ln" data-l="37"><code>&lt;<span class="t-tag">form</span> <span class="t-c">action</span>=<span class="t-str">"/signup"</span> <span class="t-c">method</span>=<span class="t-str">"post"</span>&gt;</code><span class="note">Where and how to send it (method is get by default)</span></div><div class="ln" data-l="34"><code>  &lt;<span class="t-tag">label</span> <span class="t-c">for</span>=<span class="t-str">"email"</span>&gt;Email&lt;/<span class="t-tag">label</span>&gt;</code><span class="note">The for value matches the input's id</span></div><div class="ln" data-l="76"><code>  &lt;<span class="t-tag">input</span> <span class="t-c">id</span>=<span class="t-str">"email"</span> <span class="t-c">name</span>=<span class="t-str">"email"</span> <span class="t-c">type</span>=<span class="t-str">"email"</span> <span class="t-c">required</span> <span class="t-c">autocomplete</span>=<span class="t-str">"email"</span>&gt;</code><span class="note">The name is the key in the sent data</span></div><div class="ln" data-l="70"><code>  &lt;<span class="t-tag">label</span>&gt;&lt;<span class="t-tag">input</span> <span class="t-c">type</span>=<span class="t-str">"checkbox"</span> <span class="t-c">name</span>=<span class="t-str">"terms"</span> <span class="t-c">required</span>&gt; I agree&lt;/<span class="t-tag">label</span>&gt;</code><span class="note">Wrapping links them too</span></div><div class="ln" data-l="22"><code>  &lt;<span class="t-tag">select</span> <span class="t-c">name</span>=<span class="t-str">"size"</span>&gt;</code><span class="note">Dropdown</span></div><div class="ln bare"><code>    &lt;<span class="t-tag">option</span> <span class="t-c">value</span>=<span class="t-str">"s"</span>&gt;Small&lt;/<span class="t-tag">option</span>&gt;</code></div><div class="ln bare"><code>    &lt;<span class="t-tag">option</span> <span class="t-c">value</span>=<span class="t-str">"m"</span> <span class="t-c">selected</span>&gt;Medium&lt;/<span class="t-tag">option</span>&gt;</code></div><div class="ln bare"><code>  &lt;/<span class="t-tag">select</span>&gt;</code></div><div class="ln" data-l="60"><code>  &lt;<span class="t-tag">textarea</span> <span class="t-c">name</span>=<span class="t-str">"note"</span> <span class="t-c">rows</span>=<span class="t-str">"4"</span> <span class="t-c">maxlength</span>=<span class="t-str">"500"</span>&gt;&lt;/<span class="t-tag">textarea</span>&gt;</code><span class="note">Multi-line text</span></div><div class="ln" data-l="12"><code>  &lt;<span class="t-tag">fieldset</span>&gt;</code><span class="note">A group of related fields</span></div><div class="ln bare"><code>    &lt;<span class="t-tag">legend</span>&gt;Plan&lt;/<span class="t-tag">legend</span>&gt;</code></div><div class="ln" data-l="77"><code>    &lt;<span class="t-tag">label</span>&gt;&lt;<span class="t-tag">input</span> <span class="t-c">type</span>=<span class="t-str">"radio"</span> <span class="t-c">name</span>=<span class="t-str">"plan"</span> <span class="t-c">value</span>=<span class="t-str">"free"</span> <span class="t-c">checked</span>&gt; Free&lt;/<span class="t-tag">label</span>&gt;</code><span class="note">Same name: only one can be picked</span></div><div class="ln bare"><code>    &lt;<span class="t-tag">label</span>&gt;&lt;<span class="t-tag">input</span> <span class="t-c">type</span>=<span class="t-str">"radio"</span> <span class="t-c">name</span>=<span class="t-str">"plan"</span> <span class="t-c">value</span>=<span class="t-str">"pro"</span>&gt; Pro&lt;/<span class="t-tag">label</span>&gt;</code></div><div class="ln bare"><code>  &lt;/<span class="t-tag">fieldset</span>&gt;</code></div><div class="ln" data-l="40"><code>  &lt;<span class="t-tag">button</span> <span class="t-c">type</span>=<span class="t-str">"submit"</span>&gt;Sign up&lt;/<span class="t-tag">button</span>&gt;</code><span class="note">A button's type is submit unless you say otherwise</span></div><div class="ln" data-l="37"><code>  &lt;<span class="t-tag">button</span> <span class="t-c">type</span>=<span class="t-str">"reset"</span>&gt;Clear&lt;/<span class="t-tag">button</span>&gt;</code><span class="note">Restore the starting values</span></div><div class="ln bare"><code>&lt;/<span class="t-tag">form</span>&gt;</code></div></div></section>
+<section class="card" id="inputs" aria-labelledby="inputs-h"><h2 id="inputs-h">Input types</h2><p class="about">The type attribute changes the control the browser shows, which keyboard phones open, and what gets checked before the form is sent.</p><table class="ops"><thead><tr><th scope="col">Type</th><th scope="col">What you get</th></tr></thead><tbody><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"text"</span></code></td><td><span class="desc">Single-line text (the default)</span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"email"</span></code></td><td><span class="desc">Checks for an email address; email keyboard on phones</span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"password"</span></code></td><td><span class="desc">Hides the characters as they're typed</span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"number"</span></code></td><td><span class="desc">Numbers only, with step buttons</span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"tel"</span></code></td><td><span class="desc">Phone keyboard; the format isn't checked</span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"url"</span></code></td><td><span class="desc">Checks for a full URL</span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"search"</span></code></td><td><span class="desc">Text field styled for search, often with a clear button</span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"date"</span></code></td><td><span class="desc">Date picker (also <code class="i"><span class="t-c">time</span></code>, <code class="i"><span class="t-c">datetime-local</span></code>, <code class="i"><span class="t-c">month</span></code>, <code class="i"><span class="t-c">week</span></code>)</span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"range"</span></code></td><td><span class="desc">Slider between <code class="i"><span class="t-c">min</span></code> and <code class="i"><span class="t-c">max</span></code></span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"color"</span></code></td><td><span class="desc">Color picker; the value is a hex color</span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"checkbox"</span></code></td><td><span class="desc">On or off; only sent when checked</span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"radio"</span></code></td><td><span class="desc">Pick one from the group with the same name</span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"file"</span></code></td><td><span class="desc">File chooser; add <code class="i"><span class="t-c">multiple</span></code> and <code class="i"><span class="t-c">accept</span>=<span class="t-str">"image/*"</span></code></span></td></tr><tr><td class="op"><code><span class="t-c">type</span>=<span class="t-str">"hidden"</span></code></td><td><span class="desc">Sent with the form but not shown</span></td></tr></tbody></table></section>
+<section class="card" id="validation" aria-labelledby="validation-h"><h2 id="validation-h">Validation &amp; input attributes</h2><p class="about">Built-in validation blocks the submit and shows a message until the rules pass. It improves the experience, but always check the data again on the server.</p><table class="ops"><thead><tr><th scope="col">Attribute</th><th scope="col">What it does</th></tr></thead><tbody><tr><td class="op"><code><span class="t-c">required</span></code></td><td><span class="desc">Must be filled in before the form can be sent</span></td></tr><tr><td class="op"><code><span class="t-c">minlength</span>=<span class="t-str">"8"</span> <span class="t-c">maxlength</span>=<span class="t-str">"64"</span></code></td><td><span class="desc">Allowed length of the text</span></td></tr><tr><td class="op"><code><span class="t-c">min</span>=<span class="t-str">"1"</span> <span class="t-c">max</span>=<span class="t-str">"10"</span> <span class="t-c">step</span>=<span class="t-str">"1"</span></code></td><td><span class="desc">Allowed range for numbers and dates</span></td></tr><tr><td class="op"><code><span class="t-c">pattern</span>=<span class="t-str">"[0-9]{5}"</span></code></td><td><span class="desc">The whole value must match this regular expression</span></td></tr><tr><td class="op"><code><span class="t-c">placeholder</span>=<span class="t-str">"you@site.com"</span></code></td><td><span class="desc">Example shown while empty; not a replacement for a label</span></td></tr><tr><td class="op"><code><span class="t-c">autocomplete</span>=<span class="t-str">"email"</span></code></td><td><span class="desc">Lets the browser offer saved values</span></td></tr><tr><td class="op"><code><span class="t-c">inputmode</span>=<span class="t-str">"numeric"</span></code></td><td><span class="desc">Which on-screen keyboard to show</span></td></tr><tr><td class="op"><code><span class="t-c">readonly</span></code></td><td><span class="desc">Can't be changed, but is still sent</span></td></tr><tr><td class="op"><code><span class="t-c">disabled</span></code></td><td><span class="desc">Can't be used and isn't sent</span></td></tr><tr><td class="op"><code><span class="t-c">novalidate</span></code></td><td><span class="desc">On the form: skip the built-in checks</span></td></tr></tbody></table></section>
+<section class="card" id="layout" aria-labelledby="layout-h"><h2 id="layout-h">Page layout</h2><p class="about">These elements describe the regions of a page. Screen readers list them as landmarks users can jump between, which plain divs can't do.</p><div class="code"><div class="ln" data-l="32"><code>&lt;<span class="t-tag">header</span>&gt;Logo and search&lt;/<span class="t-tag">header</span>&gt;</code><span class="note">Introduction for the page or a section</span></div><div class="ln" data-l="12"><code>&lt;<span class="t-tag">nav</span>&gt;…&lt;/<span class="t-tag">nav</span>&gt;</code><span class="note">Major navigation links</span></div><div class="ln" data-l="6"><code>&lt;<span class="t-tag">main</span>&gt;</code><span class="note">The page's main content; one per page</span></div><div class="ln" data-l="11"><code>  &lt;<span class="t-tag">article</span>&gt;</code><span class="note">Self-contained: a post, a product, a comment</span></div><div class="ln bare"><code>    &lt;<span class="t-tag">h2</span>&gt;Post title&lt;/<span class="t-tag">h2</span>&gt;</code></div><div class="ln" data-l="24"><code>    &lt;<span class="t-tag">section</span>&gt;…&lt;/<span class="t-tag">section</span>&gt;</code><span class="note">A thematic group, usually with a heading</span></div><div class="ln bare"><code>  &lt;/<span class="t-tag">article</span>&gt;</code></div><div class="ln" data-l="30"><code>  &lt;<span class="t-tag">aside</span>&gt;Related posts&lt;/<span class="t-tag">aside</span>&gt;</code><span class="note">Related but separate, like a sidebar</span></div><div class="ln bare"><code>&lt;/<span class="t-tag">main</span>&gt;</code></div><div class="ln" data-l="28"><code>&lt;<span class="t-tag">footer</span>&gt;<span class="t-c">&amp;copy;</span> 2026&lt;/<span class="t-tag">footer</span>&gt;</code><span class="note">Closing content: copyright, contact, links</span></div><div class="ln" data-l="33"><code>&lt;<span class="t-tag">address</span>&gt;hi@example.com&lt;/<span class="t-tag">address</span>&gt;</code><span class="note">Contact details for the page or article</span></div><div class="ln" data-l="31"><code>&lt;<span class="t-tag">search</span>&gt;&lt;<span class="t-tag">form</span>&gt;…&lt;/<span class="t-tag">form</span>&gt;&lt;/<span class="t-tag">search</span>&gt;</code><span class="note">Wraps a search or filter form</span></div><div class="ln" data-l="27"><code>&lt;<span class="t-tag">div</span>&gt;…&lt;/<span class="t-tag">div</span>&gt; &lt;<span class="t-tag">span</span>&gt;…&lt;/<span class="t-tag">span</span>&gt;</code><span class="note">No meaning; use them when nothing else fits</span></div></div></section>
+<section class="card" id="interactive" aria-labelledby="interactive-h"><h2 id="interactive-h">Interactive elements</h2><p class="about">Some interactive UI is built into HTML: disclosure widgets, dialogs and popovers come with keyboard support and accessibility, often without any JavaScript.</p><div class="code"><div class="ln" data-l="9"><code>&lt;<span class="t-tag">details</span>&gt;</code><span class="note">Opens and closes, no JavaScript needed</span></div><div class="ln" data-l="29"><code>  &lt;<span class="t-tag">summary</span>&gt;Shipping&lt;/<span class="t-tag">summary</span>&gt;</code><span class="note">Always visible; click it to toggle</span></div><div class="ln bare"><code>  &lt;<span class="t-tag">p</span>&gt;Ships in 2 days.&lt;/<span class="t-tag">p</span>&gt;</code></div><div class="ln bare"><code>&lt;/<span class="t-tag">details</span>&gt;</code></div><div class="ln" data-l="57"><code>&lt;<span class="t-tag">details</span> <span class="t-c">name</span>=<span class="t-str">"faq"</span>&gt;&lt;<span class="t-tag">summary</span>&gt;Returns&lt;/<span class="t-tag">summary</span>&gt;…&lt;/<span class="t-tag">details</span>&gt;</code><span class="note">Same name: opening one closes the others</span></div><div class="ln" data-l="21"><code>&lt;<span class="t-tag">dialog</span> <span class="t-c">id</span>=<span class="t-str">"confirm"</span>&gt;</code><span class="note">A dialog box</span></div><div class="ln" data-l="24"><code>  &lt;<span class="t-tag">form</span> <span class="t-c">method</span>=<span class="t-str">"dialog"</span>&gt;</code><span class="note">Submitting this form closes the dialog</span></div><div class="ln bare"><code>    &lt;<span class="t-tag">button</span> <span class="t-c">value</span>=<span class="t-str">"ok"</span>&gt;OK&lt;/<span class="t-tag">button</span>&gt;</code></div><div class="ln bare"><code>  &lt;/<span class="t-tag">form</span>&gt;</code></div><div class="ln bare"><code>&lt;/<span class="t-tag">dialog</span>&gt;</code></div><div class="ln" data-l="66"><code>&lt;<span class="t-tag">button</span> <span class="t-c">commandfor</span>=<span class="t-str">"confirm"</span> <span class="t-c">command</span>=<span class="t-str">"show-modal"</span>&gt;Delete…&lt;/<span class="t-tag">button</span>&gt;</code><span class="note">Open the dialog as a modal, no JavaScript</span></div><div class="ln" data-l="42"><code>&lt;<span class="t-tag">button</span> <span class="t-c">popovertarget</span>=<span class="t-str">"menu"</span>&gt;Menu&lt;/<span class="t-tag">button</span>&gt;</code><span class="note">Shows and hides the popover</span></div><div class="ln" data-l="30"><code>&lt;<span class="t-tag">div</span> <span class="t-c">id</span>=<span class="t-str">"menu"</span> <span class="t-c">popover</span>&gt;…&lt;/<span class="t-tag">div</span>&gt;</code><span class="note">On top of everything; closes on outside click or Esc</span></div><div class="ln" data-l="45"><code>&lt;<span class="t-tag">progress</span> <span class="t-c">value</span>=<span class="t-str">"70"</span> <span class="t-c">max</span>=<span class="t-str">"100"</span>&gt;70%&lt;/<span class="t-tag">progress</span>&gt;</code><span class="note">Progress of a task</span></div><div class="ln" data-l="30"><code>&lt;<span class="t-tag">meter</span> <span class="t-c">value</span>=<span class="t-str">"0.6"</span>&gt;60%&lt;/<span class="t-tag">meter</span>&gt;</code><span class="note">A measurement within a known range</span></div></div></section>
+<section class="card" id="globals" aria-labelledby="globals-h"><h2 id="globals-h">Global attributes</h2><p class="about">These attributes work on any element. id and class are the hooks CSS and JavaScript use most.</p><table class="ops"><thead><tr><th scope="col">Attribute</th><th scope="col">What it does</th></tr></thead><tbody><tr><td class="op"><code><span class="t-c">id</span>=<span class="t-str">"intro"</span></code></td><td><span class="desc">Unique name for links, labels, CSS and scripts</span></td></tr><tr><td class="op"><code><span class="t-c">class</span>=<span class="t-str">"card wide"</span></code></td><td><span class="desc">Space-separated names for CSS and scripts</span></td></tr><tr><td class="op"><code><span class="t-c">style</span>=<span class="t-str">"color: red"</span></code></td><td><span class="desc">Inline CSS; a stylesheet is easier to maintain</span></td></tr><tr><td class="op"><code><span class="t-c">title</span>=<span class="t-str">"More info"</span></code></td><td><span class="desc">Tooltip on hover; touch and keyboard users won't see it</span></td></tr><tr><td class="op"><code><span class="t-c">lang</span>=<span class="t-str">"fr"</span></code></td><td><span class="desc">Language of this part of the page</span></td></tr><tr><td class="op"><code><span class="t-c">dir</span>=<span class="t-str">"rtl"</span></code></td><td><span class="desc">Text direction</span></td></tr><tr><td class="op"><code><span class="t-c">hidden</span></code></td><td><span class="desc">Not shown at all</span></td></tr><tr><td class="op"><code><span class="t-c">tabindex</span>=<span class="t-str">"0"</span></code></td><td><span class="desc">Adds it to the tab order; <code class="i"><span class="t-c">-1</span></code> makes it focusable by script only</span></td></tr><tr><td class="op"><code><span class="t-c">data-user-id</span>=<span class="t-str">"42"</span></code></td><td><span class="desc">Your own data; read it in JavaScript as <code class="i">el.dataset.userId</code></span></td></tr><tr><td class="op"><code><span class="t-c">contenteditable</span></code></td><td><span class="desc">The user can edit the content</span></td></tr><tr><td class="op"><code><span class="t-c">inert</span></code></td><td><span class="desc">It and everything inside can't be focused or clicked</span></td></tr><tr><td class="op"><code><span class="t-c">translate</span>=<span class="t-str">"no"</span></code></td><td><span class="desc">Leave it untranslated, like a brand name</span></td></tr></tbody></table></section>
+<section class="card" id="a11y" aria-labelledby="a11y-h"><h2 id="a11y-h">Accessibility</h2><p class="about">Native elements already work with keyboards and screen readers, so reach for them first. ARIA attributes fill gaps when there's no visible text or no native element for the job.</p><div class="code"><div class="ln" data-l="35"><code>&lt;<span class="t-tag">button</span> <span class="t-c">type</span>=<span class="t-str">"button"</span>&gt;Save&lt;/<span class="t-tag">button</span>&gt;</code><span class="note">✓ Focusable and works with Enter and Space</span></div><div class="ln" data-l="27"><code>&lt;<span class="t-tag">div</span> <span class="t-c">class</span>=<span class="t-str">"btn"</span>&gt;Save&lt;/<span class="t-tag">div</span>&gt;</code><span class="note">✗ Can't be focused or used from the keyboard</span></div><div class="ln" data-l="43"><code>&lt;<span class="t-tag">button</span> <span class="t-c">aria-label</span>=<span class="t-str">"Close"</span>&gt;<span class="t-c">&amp;times;</span>&lt;/<span class="t-tag">button</span>&gt;</code><span class="note">A name for screen readers when there's no visible text</span></div><div class="ln" data-l="60"><code>&lt;<span class="t-tag">input</span> <span class="t-c">type</span>=<span class="t-str">"password"</span> <span class="t-c">name</span>=<span class="t-str">"pw"</span> <span class="t-c">aria-describedby</span>=<span class="t-str">"pw-hint"</span>&gt;</code><span class="note">Links extra help text</span></div><div class="ln bare"><code>&lt;<span class="t-tag">p</span> <span class="t-c">id</span>=<span class="t-str">"pw-hint"</span>&gt;At least 8 characters.&lt;/<span class="t-tag">p</span>&gt;</code></div><div class="ln" data-l="40"><code>&lt;<span class="t-tag">nav</span> <span class="t-c">aria-labelledby</span>=<span class="t-str">"toc-title"</span>&gt;…&lt;/<span class="t-tag">nav</span>&gt;</code><span class="note">Names the region using visible text elsewhere</span></div><div class="ln" data-l="31"><code>&lt;<span class="t-tag">svg</span> <span class="t-c">aria-hidden</span>=<span class="t-str">"true"</span>&gt;…&lt;/<span class="t-tag">svg</span>&gt;</code><span class="note">Hides a decorative graphic from screen readers</span></div><div class="ln" data-l="35"><code>&lt;<span class="t-tag">p</span> <span class="t-c">aria-live</span>=<span class="t-str">"polite"</span>&gt;3 results&lt;/<span class="t-tag">p</span>&gt;</code><span class="note">Screen readers announce changes</span></div><div class="ln" data-l="35"><code>&lt;<span class="t-tag">a</span> <span class="t-c">href</span>=<span class="t-str">"#main"</span>&gt;Skip to content&lt;/<span class="t-tag">a</span>&gt;</code><span class="note">An early link that lets keyboard users skip the menu</span></div><div class="ln" data-l="38"><code>&lt;<span class="t-tag">div</span> <span class="t-c">role</span>=<span class="t-str">"alert"</span>&gt;Payment failed&lt;/<span class="t-tag">div</span>&gt;</code><span class="note">Role adds meaning, but prefer a native element</span></div></div></section>
+<section class="card" id="head" aria-labelledby="head-h"><h2 id="head-h">Head &amp; metadata</h2><p class="about">Metadata isn't shown on the page but tells browsers, search engines and social sites about it, and controls how and when scripts and other files load.</p><div class="code"><div class="ln" data-l="49"><code>&lt;<span class="t-tag">meta</span> <span class="t-c">name</span>=<span class="t-str">"description"</span> <span class="t-c">content</span>=<span class="t-str">"Short summary"</span>&gt;</code><span class="note">The snippet search engines may show</span></div><div class="ln bare"><code>&lt;<span class="t-tag">link</span> <span class="t-c">rel</span>=<span class="t-str">"icon"</span> <span class="t-c">href</span>=<span class="t-str">"/favicon.svg"</span> <span class="t-c">type</span>=<span class="t-str">"image/svg+xml"</span>&gt;</code></div><div class="ln" data-l="54"><code>&lt;<span class="t-tag">link</span> <span class="t-c">rel</span>=<span class="t-str">"canonical"</span> <span class="t-c">href</span>=<span class="t-str">"https://example.com/page"</span>&gt;</code><span class="note">The preferred URL when there are copies</span></div><div class="ln" data-l="47"><code>&lt;<span class="t-tag">meta</span> <span class="t-c">property</span>=<span class="t-str">"og:title"</span> <span class="t-c">content</span>=<span class="t-str">"Page title"</span>&gt;</code><span class="note">Title for link previews (Open Graph)</span></div><div class="ln bare"><code>&lt;<span class="t-tag">meta</span> <span class="t-c">property</span>=<span class="t-str">"og:image"</span> <span class="t-c">content</span>=<span class="t-str">"https://example.com/card.png"</span>&gt;</code></div><div class="ln" data-l="43"><code>&lt;<span class="t-tag">meta</span> <span class="t-c">name</span>=<span class="t-str">"theme-color"</span> <span class="t-c">content</span>=<span class="t-str">"#1c1c1c"</span>&gt;</code><span class="note">Color for the browser's UI on some phones</span></div><div class="ln" data-l="47"><code>&lt;<span class="t-tag">meta</span> <span class="t-c">name</span>=<span class="t-str">"color-scheme"</span> <span class="t-c">content</span>=<span class="t-str">"light dark"</span>&gt;</code><span class="note">The page supports both themes</span></div><div class="ln" data-l="56"><code>&lt;<span class="t-tag">link</span> <span class="t-c">rel</span>=<span class="t-str">"preconnect"</span> <span class="t-c">href</span>=<span class="t-str">"https://fonts.gstatic.com"</span>&gt;</code><span class="note">Open a connection early</span></div><div class="ln" data-l="48"><code>&lt;<span class="t-tag">link</span> <span class="t-c">rel</span>=<span class="t-str">"preload"</span> <span class="t-c">href</span>=<span class="t-str">"hero.avif"</span> <span class="t-c">as</span>=<span class="t-str">"image"</span>&gt;</code><span class="note">Start loading an important file early</span></div><div class="ln" data-l="34"><code>&lt;<span class="t-tag">script</span> <span class="t-c">src</span>=<span class="t-str">"a.js"</span> <span class="t-c">async</span>&gt;&lt;/<span class="t-tag">script</span>&gt;</code><span class="note">Runs as soon as it loads, in any order</span></div><div class="ln" data-l="34"><code>&lt;<span class="t-tag">script</span> <span class="t-c">src</span>=<span class="t-str">"b.js"</span> <span class="t-c">defer</span>&gt;&lt;/<span class="t-tag">script</span>&gt;</code><span class="note">Runs in order, after the page is parsed</span></div><div class="ln" data-l="44"><code>&lt;<span class="t-tag">script</span> <span class="t-c">type</span>=<span class="t-str">"module"</span> <span class="t-c">src</span>=<span class="t-str">"app.js"</span>&gt;&lt;/<span class="t-tag">script</span>&gt;</code><span class="note">JavaScript module; deferred by default</span></div><div class="ln" data-l="47"><code>&lt;<span class="t-tag">noscript</span>&gt;Please turn on JavaScript.&lt;/<span class="t-tag">noscript</span>&gt;</code><span class="note">Shown only when scripts are off</span></div></div></section>
+<section class="card" id="entities" aria-labelledby="entities-h"><h2 id="entities-h">Character references</h2><p class="about">With UTF-8 you can type almost any character directly. You only need these for characters HTML would otherwise read as markup, or ones that are hard to type.</p><table class="ops"><thead><tr><th scope="col">Write</th><th scope="col">To get</th></tr></thead><tbody><tr><td class="op"><code><span class="t-c">&amp;amp;</span></code></td><td><span class="desc">&amp; (needed when it could start a reference)</span></td></tr><tr><td class="op"><code><span class="t-c">&amp;lt;</span> <span class="t-c">&amp;gt;</span></code></td><td><span class="desc">&lt; and &gt; (&lt; is the one that matters in text)</span></td></tr><tr><td class="op"><code><span class="t-c">&amp;quot;</span> <span class="t-c">&amp;#39;</span></code></td><td><span class="desc">" and ' inside quoted attribute values</span></td></tr><tr><td class="op"><code><span class="t-c">&amp;nbsp;</span></code></td><td><span class="desc">Non-breaking space: keeps two words on one line</span></td></tr><tr><td class="op"><code><span class="t-c">&amp;copy;</span> <span class="t-c">&amp;reg;</span> <span class="t-c">&amp;trade;</span></code></td><td><span class="desc">© ® ™</span></td></tr><tr><td class="op"><code><span class="t-c">&amp;mdash;</span> <span class="t-c">&amp;ndash;</span></code></td><td><span class="desc">— and –</span></td></tr><tr><td class="op"><code><span class="t-c">&amp;hellip;</span> <span class="t-c">&amp;rarr;</span></code></td><td><span class="desc">… and →</span></td></tr><tr><td class="op"><code><span class="t-c">&amp;#169;</span> <span class="t-c">&amp;#xA9;</span></code></td><td><span class="desc">Any character by its decimal or hex code point (here ©)</span></td></tr></tbody></table></section>
+  </main>
+  <p class="empty" id="empty" hidden>No card mentions “<span id="empty-q"></span>”.<button type="button" id="clear">Clear filter</button></p>
+</div>
+
+<script>
+(() => {
+  const grid = document.getElementById("grid");
+  const cards = Array.from(grid.querySelectorAll(".card"));
+  const texts = cards.map(c => c.textContent.toLowerCase());
+  const input = document.getElementById("filter");
+  const count = document.getElementById("count");
+  const empty = document.getElementById("empty");
+  const emptyQ = document.getElementById("empty-q");
+  const total = cards.length;
+  let lastW = -1, raf = 0;
+
+  // Masonry: as many columns as fit at --min width; each card goes to the shortest column, in reading order.
+  function layout() {
+    const cs = getComputedStyle(grid);
+    const gap = parseFloat(cs.getPropertyValue("--gap")) || 16;
+    const min = parseFloat(cs.getPropertyValue("--min")) || 420;
+    const n = Math.max(1, Math.floor((grid.clientWidth + gap) / (min + gap)));
+    const cols = Array.from({ length: n }, () => {
+      const d = document.createElement("div");
+      d.className = "col";
+      return d;
+    });
+    grid.replaceChildren(...cols);
+    fitNotes((grid.clientWidth - (n - 1) * gap) / n);
+    const heights = new Array(n).fill(0);
+    for (const card of cards) {
+      if (card.hidden) continue;
+      let k = 0;
+      for (let i = 1; i < n; i++) if (heights[i] < heights[k] - 1) k = i;
+      cols[k].appendChild(card);
+      heights[k] += card.offsetHeight + gap;
+    }
+  }
+  // Explanations line up in one column per card when there's room; lines too long for that
+  // get their explanation on the next line instead.
+  const NOTE_MIN = 20; // characters reserved for an explanation beside the code
+  const probe = document.createElement("span");
+  probe.className = "code probe";
+  probe.setAttribute("aria-hidden", "true");
+  probe.textContent = "0".repeat(20);
+  document.body.appendChild(probe);
+  const blocks = cards.map(c => Array.from(c.querySelectorAll(".code")));
+  const cardStyle = getComputedStyle(cards[0]);
+  const chrome = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"]
+    .reduce((s, k) => s + (parseFloat(cardStyle[k]) || 0), 0) || 36;
+  function fitNotes(colWidth) {
+    const ch = probe.getBoundingClientRect().width / 20 || 7.5;
+    const avail = Math.floor((colWidth - chrome) / ch);
+    const maxCw = Math.min(avail - 1 - NOTE_MIN, 42); // keep one outlier from squeezing every note
+    for (const list of blocks) for (const block of list) {
+      let cw = 0;
+      block.querySelectorAll(".ln[data-l]").forEach(ln => {
+        const len = +ln.dataset.l;
+        const long = len > maxCw;
+        ln.classList.toggle("long", long);
+        if (!long && len > cw) cw = len;
+      });
+      block.style.setProperty("--cw", cw);
+    }
+  }
+  function schedule() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(layout);
+  }
+  new ResizeObserver(entries => {
+    const w = entries[0].contentRect.width;
+    if (Math.abs(w - lastW) > 0.5) { lastW = w; schedule(); }
+  }).observe(grid);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+
+  // Filter: hide cards that don't mention the text, highlight the lines that do.
+  function applyFilter() {
+    const raw = input.value.trim();
+    const q = raw.toLowerCase();
+    let shown = 0;
+    cards.forEach((card, i) => {
+      const match = !q || texts[i].includes(q);
+      card.hidden = !match;
+      if (match) shown++;
+      card.querySelectorAll(".ln, tbody tr").forEach(el => {
+        el.classList.toggle("hit", !!q && el.textContent.toLowerCase().includes(q));
+      });
+    });
+    count.textContent = q ? `${shown} of ${total} cards` : `${total} cards`;
+    emptyQ.textContent = raw;
+    empty.hidden = shown > 0;
+    layout();
+  }
+  input.addEventListener("input", applyFilter);
+  document.getElementById("clear").addEventListener("click", () => {
+    input.value = "";
+    applyFilter();
+    input.focus();
+  });
+  document.addEventListener("keydown", e => {
+    const typing = e.target.closest && e.target.closest("input, textarea, [contenteditable]");
+    if (e.key === "/" && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      input.focus();
+    } else if (e.key === "Escape" && e.target === input && input.value) {
+      input.value = "";
+      applyFilter();
+    }
+  });
+
+  layout();
+})();
+</script>
+</body>
+</html>

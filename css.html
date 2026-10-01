@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>CSS cheat sheet (compact)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --page: #1C1C1C;
+  --card: #262626;
+  --ink: #E3E3E3;
+  --border: #3C3C3C;
+  --note: #9A9A9A;
+  --rule: #353535;
+  --chip: #313131;
+  --code-fg: #E6EDF3;   /* GitHub Dark Default */
+  --comment: #8B949E;
+  --about: #B4B4B4;
+  --kw: #FF7B72;
+  --str: #A5D6FF;
+  --const: #79C0FF;
+  --fn: #D2A8FF;
+  --cls: #FFA657;
+  --tag: #7EE787;
+  --hit: #3A3A3A;
+  --gap: 16px;
+  --bar-h: 42px;
+  --min: 420px;
+  --sans: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--page);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { padding: 20px clamp(14px, 2.4vw, 32px) 40px; }
+
+/* Header */
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 16px; }
+.sheet-title {
+  margin: 0; flex: none;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.02em;
+  line-height: var(--bar-h);    /* same height as the filter box */
+  color: var(--ink);
+}
+.tools { display: flex; align-items: center; gap: 12px; flex: 0 1 380px; }
+.field { position: relative; flex: 1 1 auto; }
+.field input {
+  width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  height: var(--bar-h); padding: 0 38px 0 12px;
+}
+.field input::placeholder { color: var(--note); }
+.field kbd {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--note);
+  border: 1.5px solid var(--rule); border-radius: 4px; padding: 3px 6px; pointer-events: none;
+}
+.field input:focus + kbd { visibility: hidden; }
+.count { font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.field input:focus-visible { outline-offset: 1px; }
+
+/* Masonry */
+.grid { display: flex; align-items: flex-start; gap: var(--gap); }
+.col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--gap); }
+.card {
+  background: var(--card);
+  padding: 16px 18px 18px;
+}
+.card[hidden] { display: none; }
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 19px; font-weight: 800;
+  line-height: 1.15; letter-spacing: -0.01em;
+}
+.card p { margin: 12px 0 8px; font-size: 14px; }
+.card .about { margin: -2px 0 12px; font-size: 13.5px; line-height: 1.5; color: var(--about); }
+.card .about code.i { font-size: 12px; }
+
+/* Code lines: code on the left, explanation on the right (wraps below when the card is narrow) */
+.code { font-family: var(--mono); font-size: 12.5px; line-height: 1.6; color: var(--code-fg); }
+.ln { display: flex; flex-wrap: wrap; align-items: baseline; border-radius: 3px; }
+.ln > code {
+  font: inherit; white-space: pre-wrap; overflow-wrap: anywhere;
+  flex: 0 0 auto; width: min(calc((var(--cw, 0) + 1) * 1ch), 100%);
+}
+.ln.long > code, .ln.bare > code { width: auto; max-width: 100%; }
+.ln .note {
+  flex: 1 1 18ch; min-width: 0; padding-left: 2ch;
+  font-family: var(--sans); font-size: 13px; line-height: 1.45; color: var(--comment);
+}
+.ln.long .note { flex-basis: 100%; padding-left: 2ch; }
+.probe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
+.ln.gap { height: 0.75em; }
+.code + .code { margin-top: 14px; }
+.ln.file { margin: 2px 0 1px; }
+.ln.file span {
+  font-weight: 600; font-size: 11.5px; line-height: 1.7;
+  background: var(--chip); border-radius: 4px; padding: 0 6px;
+}
+.t-kw { color: var(--kw); }
+.t-str { color: var(--str); }
+.t-c { color: var(--const); }
+.t-fn { color: var(--fn); }
+.t-cls { color: var(--cls); }
+.t-tag { color: var(--tag); }
+.t-cm { color: var(--comment); }
+code.i {
+  font-family: var(--mono); font-size: 12.5px; white-space: pre; color: var(--code-fg);
+  background: var(--chip); border-radius: 4px; padding: 1px 5px;
+  display: inline-block; margin: 1px 0; line-height: 1.5;
+}
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead th {
+  text-align: left; font-weight: 650; font-size: 12.5px; color: var(--note);
+  padding: 0 10px 5px 0;
+}
+tbody th, tbody td { text-align: left; vertical-align: top; padding: 6px 10px 6px 0; border-top: 1px solid var(--rule); }
+tbody tr > :last-child { padding-right: 0; }
+.types tbody th { font-weight: 650; white-space: nowrap; width: 1%; padding-top: 8px; }
+.aside { color: var(--note); font-size: 13px; }
+.ops td.op { width: 36%; }
+.ops td.op code { font-family: var(--mono); font-size: 13px; word-spacing: 0.2em; color: var(--code-fg); }
+.kind { display: block; font-weight: 650; }
+.desc { display: block; color: var(--note); font-size: 13px; }
+
+/* Filter matches */
+.ln.hit, tbody tr.hit > * { background: var(--hit); }
+.ln.hit { box-shadow: 0 0 0 3px var(--hit); }
+
+.empty { margin: 8px 0 0; font-size: 16px; }
+.empty button {
+  font: inherit; font-size: 15px; font-weight: 650; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  padding: 6px 12px; margin-left: 8px; cursor: pointer;
+}
+
+@media (hover: none) { .field kbd { display: none; } .field input { padding-right: 12px; } }
+@media (max-width: 640px) {
+  .tools { flex-basis: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="sheet-title">CSS</h1>
+    <div class="tools">
+      <div class="field">
+        <label class="sr" for="filter">Filter cards</label>
+        <input id="filter" type="search" placeholder="Filter: grid, flex, :has…" autocomplete="off" spellcheck="false" aria-keyshortcuts="/">
+        <kbd aria-hidden="true">/</kbd>
+      </div>
+      <span class="count" id="count" aria-live="polite">14 cards</span>
+    </div>
+  </header>
+
+  <main class="grid" id="grid">
+<section class="card" id="selectors" aria-labelledby="selectors-h"><h2 id="selectors-h">Selectors</h2><p class="about">A rule is a selector plus declarations in braces. The selector decides which elements the declarations apply to.</p><div class="code"><div class="ln" data-l="18"><code><span class="t-tag">p</span> { <span class="t-c">color</span>: <span class="t-c">navy</span>; }</code><span class="note">Type: every p element</span></div><div class="ln" data-l="9"><code><span class="t-fn">.card</span> { }</code><span class="note">Class</span></div><div class="ln" data-l="9"><code><span class="t-fn">#main</span> { }</code><span class="note">ID: one element, and it's hard to override</span></div><div class="ln" data-l="29"><code><span class="t-tag">*</span> { <span class="t-c">box-sizing</span>: <span class="t-c">border-box</span>; }</code><span class="note">Universal: every element</span></div><div class="ln" data-l="18"><code>[<span class="t-fn">type</span><span class="t-kw">=</span><span class="t-str">"email"</span>] { }</code><span class="note">Attribute (also ^= starts with, $= ends with, *= contains)</span></div><div class="ln" data-l="9"><code><span class="t-tag">nav</span> <span class="t-tag">a</span> { }</code><span class="note">Descendant: any a inside a nav</span></div><div class="ln" data-l="11"><code><span class="t-tag">ul</span> <span class="t-kw">&gt;</span> <span class="t-tag">li</span> { }</code><span class="note">Child: direct children only</span></div><div class="ln" data-l="10"><code><span class="t-tag">h2</span> <span class="t-kw">+</span> <span class="t-tag">p</span> { }</code><span class="note">Next sibling: the p right after an h2</span></div><div class="ln" data-l="10"><code><span class="t-tag">h2</span> <span class="t-kw">~</span> <span class="t-tag">p</span> { }</code><span class="note">Later siblings: every p after an h2</span></div><div class="ln" data-l="14"><code><span class="t-tag">h1</span>, <span class="t-tag">h2</span>, <span class="t-tag">h3</span> { }</code><span class="note">Selector list: style several at once</span></div></div></section>
+<section class="card" id="pseudo" aria-labelledby="pseudo-h"><h2 id="pseudo-h">Pseudo-classes &amp; pseudo-elements</h2><p class="about">Pseudo-classes select elements by state or position, like hovered or first. Pseudo-elements, written with two colons, style a part of an element or add generated content.</p><div class="code"><div class="ln" data-l="11"><code><span class="t-tag">a</span><span class="t-fn">:hover</span> { }</code><span class="note">The pointer is over it</span></div><div class="ln" data-l="24"><code><span class="t-tag">button</span><span class="t-fn">:focus-visible</span> { }</code><span class="note">Keyboard focus, not mouse clicks</span></div><div class="ln" data-l="18"><code><span class="t-tag">li</span><span class="t-fn">:first-child</span> { }</code><span class="note">Also :last-child and :only-child</span></div><div class="ln" data-l="21"><code><span class="t-tag">tr</span><span class="t-fn">:nth-child</span>(<span class="t-c">odd</span>) { }</code><span class="note">Also even, 3n and 2n+1</span></div><div class="ln" data-l="17"><code><span class="t-tag">input</span><span class="t-fn">:checked</span> { }</code><span class="note">Also :disabled and :required</span></div><div class="ln" data-l="22"><code><span class="t-tag">input</span><span class="t-fn">:user-invalid</span> { }</code><span class="note">Invalid, but only after the user has interacted</span></div><div class="ln" data-l="21"><code><span class="t-fn">:is</span>(<span class="t-tag">h1</span>, <span class="t-tag">h2</span>, <span class="t-tag">h3</span>) <span class="t-tag">a</span> { }</code><span class="note">Matches anything in the list</span></div><div class="ln" data-l="18"><code><span class="t-fn">:where</span>(<span class="t-tag">ul</span>, <span class="t-tag">ol</span>) { }</code><span class="note">Like :is() but adds no specificity</span></div><div class="ln" data-l="18"><code><span class="t-fn">.card</span><span class="t-fn">:has</span>(<span class="t-tag">img</span>) { }</code><span class="note">A .card that contains an img</span></div><div class="ln" data-l="17"><code><span class="t-tag">p</span><span class="t-fn">:not</span>(<span class="t-fn">.intro</span>) { }</code><span class="note">Every p except .intro</span></div><div class="ln" data-l="31"><code><span class="t-fn">.btn</span><span class="t-fn">::before</span> { <span class="t-c">content</span>: <span class="t-str">"→ "</span>; }</code><span class="note">Generated content before the element's own content</span></div><div class="ln" data-l="22"><code><span class="t-tag">input</span><span class="t-fn">::placeholder</span> { }</code><span class="note">The placeholder text</span></div><div class="ln" data-l="33"><code><span class="t-fn">::selection</span> { <span class="t-c">background</span>: <span class="t-c">gold</span>; }</code><span class="note">Text the user has selected</span></div></div></section>
+<section class="card" id="cascade" aria-labelledby="cascade-h"><h2 id="cascade-h">Cascade &amp; specificity</h2><p class="about">When rules conflict, the browser compares layers, then specificity, then source order. Inheritance passes text-related values like color and font down to children.</p><div class="code"><div class="ln" data-l="20"><code><span class="t-fn">#nav</span> <span class="t-fn">.link</span><span class="t-fn">:hover</span> { }</code><span class="note">Specificity 1-2-0: ids, then classes and pseudo-classes, then types</span></div><div class="ln bare"><code><span class="t-fn">.btn</span> { <span class="t-c">color</span>: <span class="t-c">blue</span>; }</code></div><div class="ln" data-l="20"><code><span class="t-fn">.btn</span> { <span class="t-c">color</span>: <span class="t-c">red</span>; }</code><span class="note">Same specificity: the later rule wins</span></div><div class="ln" data-l="29"><code><span class="t-tag">p</span> { <span class="t-c">color</span>: <span class="t-c">gray</span> <span class="t-kw">!important</span>; }</code><span class="note">Beats normal declarations; use sparingly</span></div><div class="ln" data-l="31"><code><span class="t-kw">@layer</span> reset, base, components;</code><span class="note">Set the layer order: later layers win</span></div><div class="ln" data-l="34"><code><span class="t-kw">@layer</span> base { <span class="t-tag">a</span> { <span class="t-c">color</span>: <span class="t-c">teal</span>; } }</code><span class="note">Styles outside any layer beat every layer</span></div><div class="ln" data-l="26"><code><span class="t-fn">.child</span> { <span class="t-c">color</span>: <span class="t-c">inherit</span>; }</code><span class="note">Take the parent's value</span></div><div class="ln" data-l="22"><code><span class="t-fn">.reset</span> { <span class="t-c">all</span>: <span class="t-c">unset</span>; }</code><span class="note">Undo every property: inherit or go back to the default</span></div></div></section>
+<section class="card" id="box" aria-labelledby="box-h"><h2 id="box-h">Box model</h2><p class="about">Every element is a box: content, then padding, border and margin around it. Setting box-sizing to border-box makes width include the padding and border, which is easier to reason about.</p><div class="code"><div class="ln bare"><code><span class="t-fn">.box</span> {</code></div><div class="ln" data-l="25"><code>  <span class="t-c">box-sizing</span>: <span class="t-c">border-box</span>;</code><span class="note">Width includes padding and border</span></div><div class="ln bare"><code>  <span class="t-c">width</span>: <span class="t-c">300</span><span class="t-kw">px</span>;</code></div><div class="ln" data-l="18"><code>  <span class="t-c">max-width</span>: <span class="t-c">100</span><span class="t-kw">%</span>;</code><span class="note">Never wider than its container</span></div><div class="ln" data-l="21"><code>  <span class="t-c">padding</span>: <span class="t-c">1</span><span class="t-kw">rem</span> <span class="t-c">2</span><span class="t-kw">rem</span>;</code><span class="note">Top and bottom 1rem, left and right 2rem</span></div><div class="ln" data-l="26"><code>  <span class="t-c">margin</span>: <span class="t-c">1</span><span class="t-kw">px</span> <span class="t-c">2</span><span class="t-kw">px</span> <span class="t-c">3</span><span class="t-kw">px</span> <span class="t-c">4</span><span class="t-kw">px</span>;</code><span class="note">Clockwise: top, right, bottom, left</span></div><div class="ln" data-l="17"><code>  <span class="t-c">margin</span>: <span class="t-c">0</span> <span class="t-c">auto</span>;</code><span class="note">Centers a block that has a width</span></div><div class="ln bare"><code>  <span class="t-c">border</span>: <span class="t-c">1</span><span class="t-kw">px</span> <span class="t-c">solid</span> <span class="t-c">#ccc</span>;</code></div><div class="ln bare"><code>  <span class="t-c">border-radius</span>: <span class="t-c">8</span><span class="t-kw">px</span>;</code></div><div class="ln" data-l="26"><code>  <span class="t-c">outline</span>: <span class="t-c">2</span><span class="t-kw">px</span> <span class="t-c">solid</span> <span class="t-c">blue</span>;</code><span class="note">Like a border, but takes up no space</span></div><div class="ln bare"><code>  <span class="t-c">aspect-ratio</span>: <span class="t-c">16</span> / <span class="t-c">9</span>;</code></div><div class="ln" data-l="17"><code>  <span class="t-c">overflow</span>: <span class="t-c">auto</span>;</code><span class="note">Scrollbars only when the content overflows</span></div><div class="ln" data-l="21"><code>  <span class="t-c">margin-block</span>: <span class="t-c">1</span><span class="t-kw">rem</span>;</code><span class="note">Logical: top and bottom in horizontal text</span></div><div class="ln" data-l="23"><code>  <span class="t-c">padding-inline</span>: <span class="t-c">2</span><span class="t-kw">rem</span>;</code><span class="note">Logical: left and right in horizontal text</span></div><div class="ln bare"><code>}</code></div></div></section>
+<section class="card" id="units" aria-labelledby="units-h"><h2 id="units-h">Units &amp; math</h2><p class="about">Relative units scale with fonts, containers or the viewport, which makes layouts adapt. Math functions combine units and set limits so values stay within a sensible range.</p><div class="code"><div class="ln" data-l="19"><code><span class="t-c">font-size</span>: <span class="t-c">1.25</span><span class="t-kw">rem</span>;</code><span class="note">Relative to the root font size (rem)</span></div><div class="ln" data-l="15"><code><span class="t-c">padding</span>: <span class="t-c">0.5</span><span class="t-kw">em</span>;</code><span class="note">Relative to the element's own font size (em)</span></div><div class="ln" data-l="11"><code><span class="t-c">width</span>: <span class="t-c">50</span><span class="t-kw">%</span>;</code><span class="note">% of the containing block</span></div><div class="ln" data-l="15"><code><span class="t-c">height</span>: <span class="t-c">100</span><span class="t-kw">dvh</span>;</code><span class="note">Dynamic viewport height (dvh): adjusts for phone toolbars</span></div><div class="ln" data-l="16"><code><span class="t-c">max-width</span>: <span class="t-c">65</span><span class="t-kw">ch</span>;</code><span class="note">The width of a "0" (ch); good for limiting line length</span></div><div class="ln" data-l="25"><code><span class="t-c">width</span>: <span class="t-c">calc</span>(<span class="t-c">100</span><span class="t-kw">%</span> <span class="t-kw">-</span> <span class="t-c">2</span><span class="t-kw">rem</span>);</code><span class="note">Math with mixed units</span></div><div class="ln" data-l="36"><code><span class="t-c">font-size</span>: <span class="t-c">clamp</span>(<span class="t-c">1</span><span class="t-kw">rem</span>, <span class="t-c">2.5</span><span class="t-kw">vw</span>, <span class="t-c">2</span><span class="t-kw">rem</span>);</code><span class="note">A preferred value, kept between a minimum and a maximum</span></div><div class="ln" data-l="24"><code><span class="t-c">width</span>: <span class="t-c">min</span>(<span class="t-c">100</span><span class="t-kw">%</span>, <span class="t-c">600</span><span class="t-kw">px</span>);</code><span class="note">The smaller value (max() gives the larger)</span></div></div></section>
+<section class="card" id="colors" aria-labelledby="colors-h"><h2 id="colors-h">Colors</h2><p class="about">CSS accepts colors in several notations. oklch() is useful for building palettes, because equal steps in lightness look equal to the eye.</p><div class="code"><div class="ln" data-l="15"><code><span class="t-c">color</span>: <span class="t-c">#1e90ff</span>;</code><span class="note">Hex: #rgb, #rrggbb or #rrggbbaa</span></div><div class="ln" data-l="29"><code><span class="t-c">color</span>: <span class="t-c">rgb</span>(<span class="t-c">30</span> <span class="t-c">144</span> <span class="t-c">255</span> / <span class="t-c">50</span><span class="t-kw">%</span>);</code><span class="note">Red, green, blue, then alpha after the slash</span></div><div class="ln" data-l="25"><code><span class="t-c">color</span>: <span class="t-c">hsl</span>(<span class="t-c">210</span> <span class="t-c">100</span><span class="t-kw">%</span> <span class="t-c">56</span><span class="t-kw">%</span>);</code><span class="note">Hue, saturation, lightness</span></div><div class="ln" data-l="26"><code><span class="t-c">color</span>: <span class="t-c">oklch</span>(<span class="t-c">65</span><span class="t-kw">%</span> <span class="t-c">0.2</span> <span class="t-c">250</span>);</code><span class="note">Lightness, chroma, hue</span></div><div class="ln" data-l="44"><code><span class="t-c">color</span>: <span class="t-c">color-mix</span>(<span class="t-c">in</span> <span class="t-c">oklch</span>, <span class="t-c">blue</span> <span class="t-c">70</span><span class="t-kw">%</span>, <span class="t-c">white</span>);</code><span class="note">Blend two colors</span></div><div class="ln" data-l="27"><code><span class="t-c">border-color</span>: <span class="t-c">currentColor</span>;</code><span class="note">The element's text color</span></div><div class="ln" data-l="30"><code><span class="t-c">color</span>: <span class="t-c">light-dark</span>(<span class="t-c">#111</span>, <span class="t-c">#eee</span>);</code><span class="note">Light or dark value, following color-scheme</span></div><div class="ln" data-l="25"><code><span class="t-c">color-scheme</span>: <span class="t-c">light</span> <span class="t-c">dark</span>;</code><span class="note">The page supports both; needed for light-dark()</span></div><div class="ln bare"><code><span class="t-c">background</span>: <span class="t-c">transparent</span>;</code></div></div></section>
+<section class="card" id="type" aria-labelledby="type-h"><h2 id="type-h">Typography</h2><p class="about">Fonts are picked from a list, using the first one that's available. Unitless line heights and rem sizes keep text proportional when users change their font size.</p><div class="code"><div class="ln" data-l="44"><code><span class="t-c">font-family</span>: <span class="t-str">"Inter"</span>, <span class="t-c">system-ui</span>, <span class="t-c">sans-serif</span>;</code><span class="note">First available wins; end with a generic family</span></div><div class="ln bare"><code><span class="t-c">font-size</span>: <span class="t-c">1</span><span class="t-kw">rem</span>;</code></div><div class="ln" data-l="17"><code><span class="t-c">font-weight</span>: <span class="t-c">600</span>;</code><span class="note">100 to 900: 400 is normal, 700 is bold</span></div><div class="ln" data-l="17"><code><span class="t-c">line-height</span>: <span class="t-c">1.5</span>;</code><span class="note">Unitless: scales with the font size</span></div><div class="ln bare"><code><span class="t-c">letter-spacing</span>: <span class="t-c">0.02</span><span class="t-kw">em</span>;</code></div><div class="ln bare"><code><span class="t-c">text-align</span>: <span class="t-c">center</span>;</code></div><div class="ln bare"><code><span class="t-c">text-transform</span>: <span class="t-c">uppercase</span>;</code></div><div class="ln" data-l="36"><code><span class="t-c">text-decoration</span>: <span class="t-c">underline</span> <span class="t-c">wavy</span> <span class="t-c">red</span>;</code><span class="note">Line, style and color</span></div><div class="ln" data-l="19"><code><span class="t-c">text-wrap</span>: <span class="t-c">balance</span>;</code><span class="note">Even line lengths, for headings</span></div><div class="ln" data-l="18"><code><span class="t-c">text-wrap</span>: <span class="t-c">pretty</span>;</code><span class="note">Avoids a single word on the last line; ignored where unsupported</span></div><div class="ln" data-l="77"><code><span class="t-fn">.truncate</span> { <span class="t-c">overflow</span>: <span class="t-c">hidden</span>; <span class="t-c">text-overflow</span>: <span class="t-c">ellipsis</span>; <span class="t-c">white-space</span>: <span class="t-c">nowrap</span>; }</code><span class="note">Cut one line off with …</span></div><div class="ln" data-l="12"><code><span class="t-kw">@font-face</span> {</code><span class="note">Load your own font file</span></div><div class="ln bare"><code>  <span class="t-c">font-family</span>: <span class="t-str">"Brand"</span>;</code></div><div class="ln bare"><code>  <span class="t-c">src</span>: <span class="t-c">url</span>(<span class="t-str">"brand.woff2"</span>) <span class="t-c">format</span>(<span class="t-str">"woff2"</span>);</code></div><div class="ln" data-l="21"><code>  <span class="t-c">font-display</span>: <span class="t-c">swap</span>;</code><span class="note">Show a fallback font until it loads</span></div><div class="ln bare"><code>}</code></div></div></section>
+<section class="card" id="flex" aria-labelledby="flex-h"><h2 id="flex-h">Flexbox</h2><p class="about">Flexbox lays items out in one direction, a row or a column, and shares the space between them. It suits toolbars, navigation and anything that lines up along one axis.</p><div class="code"><div class="ln bare"><code><span class="t-fn">.row</span> {</code></div><div class="ln" data-l="16"><code>  <span class="t-c">display</span>: <span class="t-c">flex</span>;</code><span class="note">Children line up in a row</span></div><div class="ln" data-l="25"><code>  <span class="t-c">flex-direction</span>: <span class="t-c">column</span>;</code><span class="note">Or row (the default), row-reverse, column-reverse</span></div><div class="ln" data-l="33"><code>  <span class="t-c">justify-content</span>: <span class="t-c">space-between</span>;</code><span class="note">Spacing along the main axis</span></div><div class="ln" data-l="22"><code>  <span class="t-c">align-items</span>: <span class="t-c">center</span>;</code><span class="note">Alignment across it</span></div><div class="ln" data-l="18"><code>  <span class="t-c">flex-wrap</span>: <span class="t-c">wrap</span>;</code><span class="note">Allow more than one line</span></div><div class="ln" data-l="12"><code>  <span class="t-c">gap</span>: <span class="t-c">1</span><span class="t-kw">rem</span>;</code><span class="note">Space between items</span></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="18"><code><span class="t-fn">.item</span> { <span class="t-c">flex</span>: <span class="t-c">1</span>; }</code><span class="note">Grow to share the free space equally</span></div><div class="ln" data-l="26"><code><span class="t-fn">.item</span> { <span class="t-c">flex</span>: <span class="t-c">0</span> <span class="t-c">0</span> <span class="t-c">200</span><span class="t-kw">px</span>; }</code><span class="note">Grow, shrink, basis: stays at 200px</span></div><div class="ln" data-l="26"><code><span class="t-fn">.item</span> { <span class="t-c">align-self</span>: <span class="t-c">end</span>; }</code><span class="note">Override align-items for one item</span></div><div class="ln" data-l="20"><code><span class="t-fn">.item</span> { <span class="t-c">order</span>: <span class="t-c">-1</span>; }</code><span class="note">Move it first visually (not for screen readers)</span></div></div></section>
+<section class="card" id="grid" aria-labelledby="grid-h"><h2 id="grid-h">Grid</h2><p class="about">Grid lays items out in rows and columns at the same time. Use it for page layouts and card grids, where things need to line up both ways.</p><div class="code"><div class="ln bare"><code><span class="t-fn">.grid</span> {</code></div><div class="ln bare"><code>  <span class="t-c">display</span>: <span class="t-c">grid</span>;</code></div><div class="ln" data-l="40"><code>  <span class="t-c">grid-template-columns</span>: <span class="t-c">repeat</span>(<span class="t-c">3</span>, <span class="t-c">1</span><span class="t-kw">fr</span>);</code><span class="note">Three equal columns; fr shares the free space</span></div><div class="ln" data-l="62"><code>  <span class="t-c">grid-template-columns</span>: <span class="t-c">repeat</span>(<span class="t-c">auto-fit</span>, <span class="t-c">minmax</span>(<span class="t-c">200</span><span class="t-kw">px</span>, <span class="t-c">1</span><span class="t-kw">fr</span>));</code><span class="note">As many 200px+ columns as fit</span></div><div class="ln" data-l="17"><code>  <span class="t-c">gap</span>: <span class="t-c">1</span><span class="t-kw">rem</span> <span class="t-c">2</span><span class="t-kw">rem</span>;</code><span class="note">Row gap, then column gap</span></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="30"><code><span class="t-fn">.wide</span> { <span class="t-c">grid-column</span>: <span class="t-c">span</span> <span class="t-c">2</span>; }</code><span class="note">Take up two columns</span></div><div class="ln" data-l="30"><code><span class="t-fn">.hero</span> { <span class="t-c">grid-column</span>: <span class="t-c">1</span> / <span class="t-c">-1</span>; }</code><span class="note">From the first column line to the last</span></div><div class="ln bare"><code><span class="t-fn">.page</span> {</code></div><div class="ln bare"><code>  <span class="t-c">display</span>: <span class="t-c">grid</span>;</code></div><div class="ln bare"><code>  <span class="t-c">grid-template-columns</span>: <span class="t-c">200</span><span class="t-kw">px</span> <span class="t-c">1</span><span class="t-kw">fr</span>;</code></div><div class="ln" data-l="22"><code>  <span class="t-c">grid-template-areas</span>:</code><span class="note">Name the regions, then place items by name</span></div><div class="ln bare"><code>    <span class="t-str">"header header"</span></code></div><div class="ln bare"><code>    <span class="t-str">"nav    main"</span>;</code></div><div class="ln bare"><code>}</code></div><div class="ln bare"><code><span class="t-tag">header</span> { <span class="t-c">grid-area</span>: <span class="t-c">header</span>; }</code></div><div class="ln" data-l="47"><code><span class="t-fn">.center</span> { <span class="t-c">display</span>: <span class="t-c">grid</span>; <span class="t-c">place-items</span>: <span class="t-c">center</span>; }</code><span class="note">Center content both ways</span></div><div class="ln" data-l="57"><code><span class="t-fn">.child</span> { <span class="t-c">display</span>: <span class="t-c">grid</span>; <span class="t-c">grid-template-columns</span>: <span class="t-c">subgrid</span>; }</code><span class="note">Use the parent grid's columns</span></div></div></section>
+<section class="card" id="position" aria-labelledby="position-h"><h2 id="position-h">Positioning</h2><p class="about">Positioning takes an element out of the normal flow or pins it in place. Absolute positions are measured from the nearest positioned ancestor, so set position: relative on the parent.</p><div class="code"><div class="ln" data-l="31"><code><span class="t-fn">.parent</span> { <span class="t-c">position</span>: <span class="t-c">relative</span>; }</code><span class="note">The reference point for absolute children</span></div><div class="ln" data-l="48"><code><span class="t-fn">.badge</span> { <span class="t-c">position</span>: <span class="t-c">absolute</span>; <span class="t-c">top</span>: <span class="t-c">0</span>; <span class="t-c">right</span>: <span class="t-c">0</span>; }</code><span class="note">Placed against the nearest positioned ancestor</span></div><div class="ln" data-l="34"><code><span class="t-fn">.bar</span> { <span class="t-c">position</span>: <span class="t-c">sticky</span>; <span class="t-c">top</span>: <span class="t-c">0</span>; }</code><span class="note">Scrolls normally, then sticks at the top</span></div><div class="ln" data-l="55"><code><span class="t-fn">.toast</span> { <span class="t-c">position</span>: <span class="t-c">fixed</span>; <span class="t-c">inset</span>: <span class="t-c">auto</span> <span class="t-c">1</span><span class="t-kw">rem</span> <span class="t-c">1</span><span class="t-kw">rem</span> <span class="t-c">auto</span>; }</code><span class="note">Pinned to the viewport; inset is top, right, bottom, left</span></div><div class="ln" data-l="23"><code><span class="t-fn">.modal</span> { <span class="t-c">z-index</span>: <span class="t-c">10</span>; }</code><span class="note">Stacking order of positioned, flex and grid items</span></div><div class="ln" data-l="29"><code><span class="t-fn">.card</span> { <span class="t-c">isolation</span>: <span class="t-c">isolate</span>; }</code><span class="note">Keeps its children's z-index inside it</span></div><div class="ln" data-l="33"><code><span class="t-fn">.trigger</span> { <span class="t-c">anchor-name</span>: <span class="t-cls">--menu</span>; }</code><span class="note">Anchor positioning (in all major browsers since 2026)</span></div><div class="ln" data-l="77"><code><span class="t-fn">.menu</span> { <span class="t-c">position</span>: <span class="t-c">absolute</span>; <span class="t-c">position-anchor</span>: <span class="t-cls">--menu</span>; <span class="t-c">position-area</span>: <span class="t-c">bottom</span>; }</code><span class="note">Placed below the anchor</span></div><div class="ln" data-l="24"><code><span class="t-fn">.gone</span> { <span class="t-c">display</span>: <span class="t-c">none</span>; }</code><span class="note">Removed from the layout</span></div><div class="ln" data-l="30"><code><span class="t-fn">.ghost</span> { <span class="t-c">visibility</span>: <span class="t-c">hidden</span>; }</code><span class="note">Invisible, but still takes up space</span></div></div></section>
+<section class="card" id="responsive" aria-labelledby="responsive-h"><h2 id="responsive-h">Responsive design</h2><p class="about">Media queries adapt styles to the screen and the user's settings, and container queries adapt a component to the space it's given. Start with the small-screen styles and add queries for wider screens.</p><div class="code"><div class="ln" data-l="27"><code><span class="t-kw">@media</span> (<span class="t-c">width</span> <span class="t-kw">&gt;=</span> <span class="t-c">600</span><span class="t-kw">px</span>) { }</code><span class="note">Range syntax, same as (min-width: 600px)</span></div><div class="ln" data-l="36"><code><span class="t-kw">@media</span> (<span class="t-c">600</span><span class="t-kw">px</span> <span class="t-kw">&lt;=</span> <span class="t-c">width</span> <span class="t-kw">&lt;=</span> <span class="t-c">900</span><span class="t-kw">px</span>) { }</code><span class="note">Between two widths</span></div><div class="ln" data-l="39"><code><span class="t-kw">@media</span> (<span class="t-c">prefers-color-scheme</span>: <span class="t-c">dark</span>) { }</code><span class="note">The user's light or dark setting</span></div><div class="ln" data-l="43"><code><span class="t-kw">@media</span> (<span class="t-c">prefers-reduced-motion</span>: <span class="t-c">reduce</span>) { }</code><span class="note">The user asked for less animation</span></div><div class="ln" data-l="45"><code><span class="t-kw">@media</span> (<span class="t-c">hover</span>: <span class="t-c">hover</span>) <span class="t-kw">and</span> (<span class="t-c">pointer</span>: <span class="t-c">fine</span>) { }</code><span class="note">A mouse or similar</span></div><div class="ln bare"><code><span class="t-kw">@media</span> <span class="t-c">print</span> { }</code></div><div class="ln" data-l="41"><code><span class="t-fn">.wrapper</span> { <span class="t-c">container-type</span>: <span class="t-c">inline-size</span>; }</code><span class="note">Make it a size container</span></div><div class="ln" data-l="28"><code><span class="t-kw">@container</span> (<span class="t-c">width</span> <span class="t-kw">&gt;</span> <span class="t-c">400</span><span class="t-kw">px</span>) {</code><span class="note">Styles based on the container's width, not the viewport's</span></div><div class="ln bare"><code>  <span class="t-fn">.card</span> { <span class="t-c">display</span>: <span class="t-c">flex</span>; }</code></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="38"><code><span class="t-tag">img</span> { <span class="t-c">max-width</span>: <span class="t-c">100</span><span class="t-kw">%</span>; <span class="t-c">height</span>: <span class="t-c">auto</span>; }</code><span class="note">Images shrink to fit their container</span></div></div></section>
+<section class="card" id="vars" aria-labelledby="vars-h"><h2 id="vars-h">Custom properties &amp; nesting</h2><p class="about">Custom properties are variables that cascade and inherit like any other property, so you can override them for one part of the page. Nesting groups related rules inside their parent.</p><div class="code"><div class="ln" data-l="40"><code><span class="t-fn">:root</span> { <span class="t-cls">--brand</span>: <span class="t-c">#0b5fff</span>; <span class="t-cls">--gap</span>: <span class="t-c">1</span><span class="t-kw">rem</span>; }</code><span class="note">Define them, usually on :root</span></div><div class="ln" data-l="34"><code><span class="t-fn">.btn</span> { <span class="t-c">background</span>: <span class="t-c">var</span>(<span class="t-cls">--brand</span>); }</code><span class="note">Use one</span></div><div class="ln" data-l="37"><code><span class="t-fn">.btn</span> { <span class="t-c">padding</span>: <span class="t-c">var</span>(<span class="t-cls">--pad</span>, <span class="t-c">0.5</span><span class="t-kw">rem</span>); }</code><span class="note">A fallback for when it isn't set</span></div><div class="ln" data-l="27"><code><span class="t-fn">.dark</span> { <span class="t-cls">--brand</span>: <span class="t-c">#7aa2ff</span>; }</code><span class="note">Override it for part of the page</span></div><div class="ln" data-l="19"><code><span class="t-kw">@property</span> <span class="t-cls">--angle</span> {</code><span class="note">A typed custom property, which can be animated</span></div><div class="ln bare"><code>  <span class="t-c">syntax</span>: <span class="t-str">"&lt;angle&gt;"</span>;</code></div><div class="ln bare"><code>  <span class="t-c">inherits</span>: <span class="t-c">false</span>;</code></div><div class="ln bare"><code>  <span class="t-c">initial-value</span>: <span class="t-c">0</span><span class="t-kw">deg</span>;</code></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="7"><code><span class="t-fn">.card</span> {</code><span class="note">Nesting</span></div><div class="ln bare"><code>  <span class="t-c">padding</span>: <span class="t-c">1</span><span class="t-kw">rem</span>;</code></div><div class="ln" data-l="34"><code>  <span class="t-kw">&amp;</span><span class="t-fn">:hover</span> { <span class="t-c">background</span>: <span class="t-c">#f5f5f5</span>; }</code><span class="note">&amp; stands for the parent selector</span></div><div class="ln" data-l="30"><code>  <span class="t-fn">.title</span> { <span class="t-c">font-weight</span>: <span class="t-c">700</span>; }</code><span class="note">Same as .card .title</span></div><div class="ln bare"><code>  <span class="t-kw">@media</span> (<span class="t-c">width</span> <span class="t-kw">&gt;=</span> <span class="t-c">600</span><span class="t-kw">px</span>) { <span class="t-c">padding</span>: <span class="t-c">2</span><span class="t-kw">rem</span>; }</code></div><div class="ln bare"><code>}</code></div></div></section>
+<section class="card" id="motion" aria-labelledby="motion-h"><h2 id="motion-h">Transitions &amp; animations</h2><p class="about">Transitions animate a change from one value to another, like a hover. Animations run through keyframes on their own and can loop.</p><div class="code"><div class="ln" data-l="64"><code><span class="t-fn">.btn</span> { <span class="t-c">transition</span>: <span class="t-c">background-color</span> <span class="t-c">0.2</span><span class="t-kw">s</span> <span class="t-c">ease</span>, <span class="t-c">transform</span> <span class="t-c">0.2</span><span class="t-kw">s</span>; }</code><span class="note">Animate changes to these properties</span></div><div class="ln bare"><code><span class="t-fn">.btn</span><span class="t-fn">:hover</span> { <span class="t-c">transform</span>: <span class="t-c">translateY</span>(<span class="t-c">-2</span><span class="t-kw">px</span>); }</code></div><div class="ln" data-l="54"><code><span class="t-fn">.icon</span> { <span class="t-c">rotate</span>: <span class="t-c">45</span><span class="t-kw">deg</span>; <span class="t-c">scale</span>: <span class="t-c">1.2</span>; <span class="t-c">translate</span>: <span class="t-c">0</span> <span class="t-c">4</span><span class="t-kw">px</span>; }</code><span class="note">Individual transform properties</span></div><div class="ln" data-l="17"><code><span class="t-kw">@keyframes</span> spin {</code><span class="note">The named steps of an animation</span></div><div class="ln bare"><code>  <span class="t-tag">from</span> { <span class="t-c">rotate</span>: <span class="t-c">0</span><span class="t-kw">deg</span>; }</code></div><div class="ln bare"><code>  <span class="t-tag">to</span> { <span class="t-c">rotate</span>: <span class="t-c">360</span><span class="t-kw">deg</span>; }</code></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="47"><code><span class="t-fn">.loader</span> { <span class="t-c">animation</span>: <span class="t-c">spin</span> <span class="t-c">1</span><span class="t-kw">s</span> <span class="t-c">linear</span> <span class="t-c">infinite</span>; }</code><span class="note">Name, duration, easing, repeat</span></div><div class="ln" data-l="65"><code><span class="t-fn">.popup</span> { <span class="t-c">transition</span>: <span class="t-c">opacity</span> <span class="t-c">0.3</span><span class="t-kw">s</span>, <span class="t-c">display</span> <span class="t-c">0.3</span><span class="t-kw">s</span> <span class="t-c">allow-discrete</span>; }</code><span class="note">Lets display: none animate too</span></div><div class="ln" data-l="42"><code><span class="t-kw">@starting-style</span> { <span class="t-fn">.popup</span> { <span class="t-c">opacity</span>: <span class="t-c">0</span>; } }</code><span class="note">Where the transition starts when it first appears</span></div></div></section>
+<section class="card" id="effects" aria-labelledby="effects-h"><h2 id="effects-h">Backgrounds &amp; effects</h2><p class="about">Backgrounds, shadows and filters change how a box looks without changing the layout around it.</p><div class="code"><div class="ln" data-l="56"><code><span class="t-c">background</span>: <span class="t-c">#fff</span> <span class="t-c">url</span>(<span class="t-str">"bg.png"</span>) <span class="t-c">center</span> / <span class="t-c">cover</span> <span class="t-c">no-repeat</span>;</code><span class="note">Color, image, position / size, repeat</span></div><div class="ln bare"><code><span class="t-c">background</span>: <span class="t-c">linear-gradient</span>(<span class="t-c">to</span> <span class="t-c">right</span>, <span class="t-c">#0b5fff</span>, <span class="t-c">#7c3aed</span>);</code></div><div class="ln bare"><code><span class="t-c">background</span>: <span class="t-c">radial-gradient</span>(<span class="t-c">circle</span>, <span class="t-c">gold</span>, <span class="t-c">transparent</span> <span class="t-c">70</span><span class="t-kw">%</span>);</code></div><div class="ln" data-l="39"><code><span class="t-c">box-shadow</span>: <span class="t-c">0</span> <span class="t-c">2</span><span class="t-kw">px</span> <span class="t-c">8</span><span class="t-kw">px</span> <span class="t-c">rgb</span>(<span class="t-c">0</span> <span class="t-c">0</span> <span class="t-c">0</span> / <span class="t-c">20</span><span class="t-kw">%</span>);</code><span class="note">X, y, blur, color</span></div><div class="ln" data-l="32"><code><span class="t-c">box-shadow</span>: <span class="t-c">inset</span> <span class="t-c">0</span> <span class="t-c">0</span> <span class="t-c">0</span> <span class="t-c">2</span><span class="t-kw">px</span> <span class="t-c">red</span>;</code><span class="note">An inner shadow, like a border that takes no space</span></div><div class="ln" data-l="13"><code><span class="t-c">opacity</span>: <span class="t-c">0.5</span>;</code><span class="note">Fades the children too</span></div><div class="ln bare"><code><span class="t-c">filter</span>: <span class="t-c">blur</span>(<span class="t-c">4</span><span class="t-kw">px</span>) <span class="t-c">grayscale</span>(<span class="t-c">1</span>);</code></div><div class="ln" data-l="28"><code><span class="t-c">backdrop-filter</span>: <span class="t-c">blur</span>(<span class="t-c">10</span><span class="t-kw">px</span>);</code><span class="note">Blurs whatever is behind the element</span></div><div class="ln" data-l="18"><code><span class="t-c">object-fit</span>: <span class="t-c">cover</span>;</code><span class="note">For images: fill the box, cropping instead of stretching</span></div><div class="ln bare"><code><span class="t-c">cursor</span>: <span class="t-c">pointer</span>;</code></div><div class="ln" data-l="22"><code><span class="t-c">accent-color</span>: <span class="t-c">#0b5fff</span>;</code><span class="note">Color for checkboxes, radio buttons and sliders</span></div></div></section>
+  </main>
+  <p class="empty" id="empty" hidden>No card mentions “<span id="empty-q"></span>”.<button type="button" id="clear">Clear filter</button></p>
+</div>
+
+<script>
+(() => {
+  const grid = document.getElementById("grid");
+  const cards = Array.from(grid.querySelectorAll(".card"));
+  const texts = cards.map(c => c.textContent.toLowerCase());
+  const input = document.getElementById("filter");
+  const count = document.getElementById("count");
+  const empty = document.getElementById("empty");
+  const emptyQ = document.getElementById("empty-q");
+  const total = cards.length;
+  let lastW = -1, raf = 0;
+
+  // Masonry: as many columns as fit at --min width; each card goes to the shortest column, in reading order.
+  function layout() {
+    const cs = getComputedStyle(grid);
+    const gap = parseFloat(cs.getPropertyValue("--gap")) || 16;
+    const min = parseFloat(cs.getPropertyValue("--min")) || 420;
+    const n = Math.max(1, Math.floor((grid.clientWidth + gap) / (min + gap)));
+    const cols = Array.from({ length: n }, () => {
+      const d = document.createElement("div");
+      d.className = "col";
+      return d;
+    });
+    grid.replaceChildren(...cols);
+    fitNotes((grid.clientWidth - (n - 1) * gap) / n);
+    const heights = new Array(n).fill(0);
+    for (const card of cards) {
+      if (card.hidden) continue;
+      let k = 0;
+      for (let i = 1; i < n; i++) if (heights[i] < heights[k] - 1) k = i;
+      cols[k].appendChild(card);
+      heights[k] += card.offsetHeight + gap;
+    }
+  }
+  // Explanations line up in one column per card when there's room; lines too long for that
+  // get their explanation on the next line instead.
+  const NOTE_MIN = 20; // characters reserved for an explanation beside the code
+  const probe = document.createElement("span");
+  probe.className = "code probe";
+  probe.setAttribute("aria-hidden", "true");
+  probe.textContent = "0".repeat(20);
+  document.body.appendChild(probe);
+  const blocks = cards.map(c => Array.from(c.querySelectorAll(".code")));
+  const cardStyle = getComputedStyle(cards[0]);
+  const chrome = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"]
+    .reduce((s, k) => s + (parseFloat(cardStyle[k]) || 0), 0) || 36;
+  function fitNotes(colWidth) {
+    const ch = probe.getBoundingClientRect().width / 20 || 7.5;
+    const avail = Math.floor((colWidth - chrome) / ch);
+    const maxCw = Math.min(avail - 1 - NOTE_MIN, 42); // keep one outlier from squeezing every note
+    for (const list of blocks) for (const block of list) {
+      let cw = 0;
+      block.querySelectorAll(".ln[data-l]").forEach(ln => {
+        const len = +ln.dataset.l;
+        const long = len > maxCw;
+        ln.classList.toggle("long", long);
+        if (!long && len > cw) cw = len;
+      });
+      block.style.setProperty("--cw", cw);
+    }
+  }
+  function schedule() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(layout);
+  }
+  new ResizeObserver(entries => {
+    const w = entries[0].contentRect.width;
+    if (Math.abs(w - lastW) > 0.5) { lastW = w; schedule(); }
+  }).observe(grid);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+
+  // Filter: hide cards that don't mention the text, highlight the lines that do.
+  function applyFilter() {
+    const raw = input.value.trim();
+    const q = raw.toLowerCase();
+    let shown = 0;
+    cards.forEach((card, i) => {
+      const match = !q || texts[i].includes(q);
+      card.hidden = !match;
+      if (match) shown++;
+      card.querySelectorAll(".ln, tbody tr").forEach(el => {
+        el.classList.toggle("hit", !!q && el.textContent.toLowerCase().includes(q));
+      });
+    });
+    count.textContent = q ? `${shown} of ${total} cards` : `${total} cards`;
+    emptyQ.textContent = raw;
+    empty.hidden = shown > 0;
+    layout();
+  }
+  input.addEventListener("input", applyFilter);
+  document.getElementById("clear").addEventListener("click", () => {
+    input.value = "";
+    applyFilter();
+    input.focus();
+  });
+  document.addEventListener("keydown", e => {
+    const typing = e.target.closest && e.target.closest("input, textarea, [contenteditable]");
+    if (e.key === "/" && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      input.focus();
+    } else if (e.key === "Escape" && e.target === input && input.value) {
+      input.value = "";
+      applyFilter();
+    }
+  });
+
+  layout();
+})();
+</script>
+</body>
+</html>

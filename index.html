@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Cheat sheets</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&display=swap">
+<style>
+:root {
+  --page: #1C1C1C;
+  --card: #262626;
+  --card-hover: #2E2E2E;
+  --ink: #E3E3E3;
+  --about: #B4B4B4;
+  --muted: #8B949E;
+  --gap: 16px;
+  --sans: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  color-scheme: dark;
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--page);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { padding: 20px clamp(14px, 2.4vw, 32px) 40px; }
+h1 {
+  margin: 0 0 16px;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.02em;
+  line-height: 42px;            /* same as the headings on the cheat sheets */
+}
+.grid { display: flex; flex-wrap: wrap; gap: var(--gap); }
+.card {
+  flex: 1 1 300px;
+  display: flex; flex-direction: column;
+  padding: 16px 18px 18px;
+  background: var(--card);
+  color: inherit; text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+.card:hover { background: var(--card-hover); }
+.card:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.card h2 {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 12px;
+  margin: 0 0 8px;
+  font-size: 19px; font-weight: 800; letter-spacing: -0.01em; line-height: 1.15;
+}
+.card h2::after {
+  content: "→";
+  font-weight: 400; color: var(--muted);
+  transition: transform 0.15s ease, color 0.15s ease;
+}
+.card:hover h2::after, .card:focus-visible h2::after { color: var(--ink); transform: translateX(3px); }
+.card p { margin: 0; font-size: 14px; line-height: 1.5; color: var(--about); }
+@media (prefers-reduced-motion: reduce) {
+  .card, .card h2::after { transition: none; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Cheat sheets</h1>
+  <!-- Change each href to wherever that cheat sheet lives. -->
+  <main class="grid">
+    <a class="card" href="css.html">
+      <h2>CSS</h2>
+      <p>The language that styles HTML: colors, fonts, spacing, layout and animation, adapting to any screen size.</p>
+    </a>
+    <a class="card" href="graphql.html">
+      <h2>GraphQL</h2>
+      <p>A query language for APIs and a runtime for executing those queries with your existing data.</p>
+    </a>
+    <a class="card" href="html.html">
+      <h2>HTML</h2>
+      <p>The markup that gives a web page its structure and meaning: headings, text, links, images and forms.</p>
+    </a>
+    <a class="card" href="javascript.html">
+      <h2>JavaScript</h2>
+      <p>The programming language of the web. It makes pages interactive in the browser and runs servers and scripts through Node.js.</p>
+    </a>
+    <a class="card" href="react.html">
+      <h2>React</h2>
+      <p>A JavaScript library for building interfaces out of components that update themselves when their data changes.</p>
+    </a>
+    <a class="card" href="liquid.html">
+      <h2>Shopify Liquid</h2>
+      <p>Shopify's template language. It runs on Shopify's servers and turns store data like products and carts into a theme's HTML.</p>
+    </a>
+    <a class="card" href="typescript.html">
+      <h2>TypeScript</h2>
+      <p>JavaScript with types. It checks your code for mistakes before it runs, then compiles to plain JavaScript.</p>
+    </a>
+  </main>
+</div>
+</body>
+</html>

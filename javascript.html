@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>JavaScript cheat sheet (compact)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --page: #1C1C1C;
+  --card: #262626;
+  --ink: #E3E3E3;
+  --border: #3C3C3C;
+  --note: #9A9A9A;
+  --rule: #353535;
+  --chip: #313131;
+  --code-fg: #E6EDF3;   /* GitHub Dark Default */
+  --comment: #8B949E;
+  --about: #B4B4B4;
+  --kw: #FF7B72;
+  --str: #A5D6FF;
+  --const: #79C0FF;
+  --fn: #D2A8FF;
+  --cls: #FFA657;
+  --tag: #7EE787;
+  --hit: #3A3A3A;
+  --gap: 16px;
+  --bar-h: 42px;
+  --min: 420px;
+  --sans: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--page);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { padding: 20px clamp(14px, 2.4vw, 32px) 40px; }
+
+/* Header */
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 16px; }
+.sheet-title {
+  margin: 0; flex: none;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.02em;
+  line-height: var(--bar-h);    /* same height as the filter box */
+  color: var(--ink);
+}
+.tools { display: flex; align-items: center; gap: 12px; flex: 0 1 380px; }
+.field { position: relative; flex: 1 1 auto; }
+.field input {
+  width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  height: var(--bar-h); padding: 0 38px 0 12px;
+}
+.field input::placeholder { color: var(--note); }
+.field kbd {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--note);
+  border: 1.5px solid var(--rule); border-radius: 4px; padding: 3px 6px; pointer-events: none;
+}
+.field input:focus + kbd { visibility: hidden; }
+.count { font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.field input:focus-visible { outline-offset: 1px; }
+
+/* Masonry */
+.grid { display: flex; align-items: flex-start; gap: var(--gap); }
+.col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--gap); }
+.card {
+  background: var(--card);
+  padding: 16px 18px 18px;
+}
+.card[hidden] { display: none; }
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 19px; font-weight: 800;
+  line-height: 1.15; letter-spacing: -0.01em;
+}
+.card p { margin: 12px 0 8px; font-size: 14px; }
+.card .about { margin: -2px 0 12px; font-size: 13.5px; line-height: 1.5; color: var(--about); }
+.card .about code.i { font-size: 12px; }
+
+/* Code lines: code on the left, explanation on the right (wraps below when the card is narrow) */
+.code { font-family: var(--mono); font-size: 12.5px; line-height: 1.6; color: var(--code-fg); }
+.ln { display: flex; flex-wrap: wrap; align-items: baseline; border-radius: 3px; }
+.ln > code {
+  font: inherit; white-space: pre-wrap; overflow-wrap: anywhere;
+  flex: 0 0 auto; width: min(calc((var(--cw, 0) + 1) * 1ch), 100%);
+}
+.ln.long > code, .ln.bare > code { width: auto; max-width: 100%; }
+.ln .note {
+  flex: 1 1 18ch; min-width: 0; padding-left: 2ch;
+  font-family: var(--sans); font-size: 13px; line-height: 1.45; color: var(--comment);
+}
+.ln.long .note { flex-basis: 100%; padding-left: 2ch; }
+.probe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
+.ln.gap { height: 0.75em; }
+.code + .code { margin-top: 14px; }
+.ln.file { margin: 2px 0 1px; }
+.ln.file span {
+  font-weight: 600; font-size: 11.5px; line-height: 1.7;
+  background: var(--chip); border-radius: 4px; padding: 0 6px;
+}
+.t-kw { color: var(--kw); }
+.t-str { color: var(--str); }
+.t-c { color: var(--const); }
+.t-fn { color: var(--fn); }
+.t-cls { color: var(--cls); }
+.t-tag { color: var(--tag); }
+.t-cm { color: var(--comment); }
+code.i {
+  font-family: var(--mono); font-size: 12.5px; white-space: pre; color: var(--code-fg);
+  background: var(--chip); border-radius: 4px; padding: 1px 5px;
+  display: inline-block; margin: 1px 0; line-height: 1.5;
+}
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead th {
+  text-align: left; font-weight: 650; font-size: 12.5px; color: var(--note);
+  padding: 0 10px 5px 0;
+}
+tbody th, tbody td { text-align: left; vertical-align: top; padding: 6px 10px 6px 0; border-top: 1px solid var(--rule); }
+tbody tr > :last-child { padding-right: 0; }
+.types tbody th { font-weight: 650; white-space: nowrap; width: 1%; padding-top: 8px; }
+.aside { color: var(--note); font-size: 13px; }
+.ops td.op { width: 36%; }
+.ops td.op code { font-family: var(--mono); font-size: 13px; word-spacing: 0.2em; color: var(--code-fg); }
+.kind { display: block; font-weight: 650; }
+.desc { display: block; color: var(--note); font-size: 13px; }
+
+/* Filter matches */
+.ln.hit, tbody tr.hit > * { background: var(--hit); }
+.ln.hit { box-shadow: 0 0 0 3px var(--hit); }
+
+.empty { margin: 8px 0 0; font-size: 16px; }
+.empty button {
+  font: inherit; font-size: 15px; font-weight: 650; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  padding: 6px 12px; margin-left: 8px; cursor: pointer;
+}
+
+@media (hover: none) { .field kbd { display: none; } .field input { padding-right: 12px; } }
+@media (max-width: 640px) {
+  .tools { flex-basis: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="sheet-title">JavaScript</h1>
+    <div class="tools">
+      <div class="field">
+        <label class="sr" for="filter">Filter cards</label>
+        <input id="filter" type="search" placeholder="Filter: map, class, fetch…" autocomplete="off" spellcheck="false" aria-keyshortcuts="/">
+        <kbd aria-hidden="true">/</kbd>
+      </div>
+      <span class="count" id="count" aria-live="polite">12 cards</span>
+    </div>
+  </header>
+
+  <main class="grid" id="grid">
+<section class="card" id="variables" aria-labelledby="variables-h"><h2 id="variables-h">Variables &amp; data types</h2><p class="about">Variables hold values, and the type belongs to the value rather than the variable, so one variable can hold different types over time. Use <code class="i"><span class="t-kw">const</span></code> by default and <code class="i"><span class="t-kw">let</span></code> when you need to reassign; <code class="i"><span class="t-kw">var</span></code> is the older, function-scoped form.</p><div class="code"><div class="ln" data-l="27"><code><span class="t-c">console</span>.<span class="t-fn">log</span>(<span class="t-str">"Hello World"</span>);</code><span class="note">Print to the console</span></div><div class="ln" data-l="17"><code><span class="t-kw">let</span> a <span class="t-kw">=</span> <span class="t-c">1</span>, b <span class="t-kw">=</span> <span class="t-c">2</span>;</code><span class="note">Block-scoped, can be reassigned</span></div><div class="ln" data-l="16"><code><span class="t-kw">const</span> <span class="t-c">PI</span> <span class="t-kw">=</span> <span class="t-c">3.14</span>;</code><span class="note">Block-scoped, can't be reassigned</span></div><div class="ln" data-l="13"><code><span class="t-kw">var</span> old <span class="t-kw">=</span> <span class="t-c">12</span>;</code><span class="note">Function-scoped (legacy)</span></div><div class="ln" data-l="9"><code><span class="t-kw">typeof</span> a;</code><span class="note">"number"</span></div><div class="ln" data-l="23"><code>obj <span class="t-kw">instanceof</span> <span class="t-cls">MyClass</span>;</code><span class="note">True if obj was built from MyClass or a subclass of it</span></div><div class="ln" data-l="7"><code><span class="t-kw">void</span> <span class="t-c">0</span>;</code><span class="note">Always evaluates to undefined</span></div></div><p>JavaScript has eight types: seven primitives plus Object.</p><table class="types"><thead><tr><th scope="col">Type</th><th scope="col">Literals</th></tr></thead><tbody><tr><th scope="row">Number</th><td><code class="i"><span class="t-c">150</span></code> <code class="i"><span class="t-c">9.81</span></code> <code class="i"><span class="t-c">2.99e8</span></code> <code class="i"><span class="t-c">1.2e-3</span></code> <code class="i"><span class="t-c">0b1011</span></code> <code class="i"><span class="t-c">0o552</span></code> <code class="i"><span class="t-c">0xF36A</span></code> <code class="i"><span class="t-c">1_000_000</span></code></td></tr><tr><th scope="row">String</th><td><code class="i"><span class="t-str">"a"</span></code> <code class="i"><span class="t-str">'b'</span></code> <code class="i"><span class="t-str">`Hi </span><span class="t-kw">${</span>name<span class="t-kw">}</span><span class="t-str">`</span></code> <span class="aside">(template)</span></td></tr><tr><th scope="row">Boolean</th><td><code class="i"><span class="t-c">true</span></code> <code class="i"><span class="t-c">false</span></code></td></tr><tr><th scope="row">BigInt</th><td><code class="i"><span class="t-c">123n</span></code> <code class="i"><span class="t-c">BigInt</span>(<span class="t-str">"9007199254740993"</span>)</code></td></tr><tr><th scope="row">Undefined</th><td><code class="i"><span class="t-c">undefined</span></code></td></tr><tr><th scope="row">Null</th><td><code class="i"><span class="t-c">null</span></code></td></tr><tr><th scope="row">Symbol</th><td><code class="i"><span class="t-c">Symbol</span>(<span class="t-str">"id"</span>)</code></td></tr><tr><th scope="row">Object</th><td><code class="i">{ k: <span class="t-c">1</span> }</code> <code class="i">[<span class="t-c">1</span>, <span class="t-c">2</span>, <span class="t-c">3</span>]</code> <span class="aside">(arrays are objects)</span></td></tr></tbody></table></section>
+<section class="card" id="operators" aria-labelledby="operators-h"><h2 id="operators-h">Operators</h2><p class="about">Operators combine and compare values. Some convert types automatically, like <code class="i"><span class="t-kw">==</span></code> or <code class="i"><span class="t-kw">+</span></code> with a string, so the strict <code class="i"><span class="t-kw">===</span></code> and <code class="i"><span class="t-kw">!==</span></code> are the safer default.</p><table class="ops"><thead><tr><th scope="col">Syntax</th><th scope="col">What it does</th></tr></thead><tbody><tr><td class="op"><code><span class="t-kw">+</span> <span class="t-kw">-</span> <span class="t-kw">*</span> <span class="t-kw">/</span> <span class="t-kw">%</span> <span class="t-kw">**</span></code></td><td><span class="kind">Arithmetic</span><span class="desc"><code class="i"><span class="t-c">5</span> <span class="t-kw">%</span> <span class="t-c">3</span></code> is 2 (remainder), <code class="i"><span class="t-c">5</span> <span class="t-kw">**</span> <span class="t-c">3</span></code> is 125 (power)</span></td></tr><tr><td class="op"><code><span class="t-kw">=</span> <span class="t-kw">+=</span> <span class="t-kw">-=</span> <span class="t-kw">*=</span> <span class="t-kw">/=</span> <span class="t-kw">%=</span> <span class="t-kw">**=</span></code></td><td><span class="kind">Assignment</span><span class="desc"><code class="i">x <span class="t-kw">+=</span> y</code> means <code class="i">x <span class="t-kw">=</span> x <span class="t-kw">+</span> y</code></span></td></tr><tr><td class="op"><code>x<span class="t-kw">++</span> x<span class="t-kw">--</span> <span class="t-kw">++</span>x <span class="t-kw">--</span>x</code></td><td><span class="kind">Increment / decrement</span><span class="desc">postfix returns the old value, prefix the new one</span></td></tr><tr><td class="op"><code><span class="t-kw">==</span> <span class="t-kw">!=</span> <span class="t-kw">&gt;</span> <span class="t-kw">&lt;</span> <span class="t-kw">&gt;=</span> <span class="t-kw">&lt;=</span></code></td><td><span class="kind">Loose comparison</span><span class="desc"><code class="i"><span class="t-kw">==</span></code> converts types first: <code class="i"><span class="t-str">"5"</span> <span class="t-kw">==</span> <span class="t-c">5</span></code> is true</span></td></tr><tr><td class="op"><code><span class="t-kw">===</span> <span class="t-kw">!==</span></code></td><td><span class="kind">Strict equality</span><span class="desc">compares value and type: <code class="i"><span class="t-str">"5"</span> <span class="t-kw">===</span> <span class="t-c">5</span></code> is false</span></td></tr><tr><td class="op"><code><span class="t-kw">!</span> <span class="t-kw">&amp;&amp;</span> <span class="t-kw">||</span></code></td><td><span class="kind">Logical</span><span class="desc"><code class="i"><span class="t-kw">&amp;&amp;</span></code> and <code class="i"><span class="t-kw">||</span></code> short-circuit and return an operand</span></td></tr><tr><td class="op"><code><span class="t-kw">&amp;&amp;=</span> <span class="t-kw">||=</span> <span class="t-kw">??=</span></code></td><td><span class="kind">Logical assignment</span><span class="desc">assign only if the left side is truthy / falsy / null or undefined</span></td></tr><tr><td class="op"><code>c <span class="t-kw">?</span> a <span class="t-kw">:</span> b</code></td><td><span class="kind">Conditional</span><span class="desc"><code class="i">a</code> if <code class="i">c</code> is truthy, else <code class="i">b</code></span></td></tr><tr><td class="op"><code>a <span class="t-kw">??</span> b</code></td><td><span class="kind">Nullish coalescing</span><span class="desc"><code class="i">b</code> only when <code class="i">a</code> is null or undefined</span></td></tr><tr><td class="op"><code><span class="t-kw">&amp;</span> <span class="t-kw">|</span> <span class="t-kw">^</span> <span class="t-kw">~</span></code></td><td><span class="kind">Bitwise</span><span class="desc">AND, OR, XOR, NOT on each bit</span></td></tr><tr><td class="op"><code><span class="t-kw">&lt;&lt;</span> <span class="t-kw">&gt;&gt;</span> <span class="t-kw">&gt;&gt;&gt;</span></code></td><td><span class="kind">Shift</span><span class="desc">left, signed right, unsigned right</span></td></tr><tr><td class="op"><code><span class="t-kw">&amp;=</span> <span class="t-kw">|=</span> <span class="t-kw">^=</span> <span class="t-kw">&lt;&lt;=</span> <span class="t-kw">&gt;&gt;=</span> <span class="t-kw">&gt;&gt;&gt;=</span></code></td><td><span class="kind">Bitwise assignment</span><span class="desc"><code class="i">x <span class="t-kw">&amp;=</span> m</code> means <code class="i">x <span class="t-kw">=</span> x <span class="t-kw">&amp;</span> m</code></span></td></tr></tbody></table><p>Group with parentheses to control order: <code class="i">((x <span class="t-kw">*</span> <span class="t-c">3.5</span>) <span class="t-kw">+</span> y) <span class="t-kw">/</span> <span class="t-c">8</span></code>.</p></section>
+<section class="card" id="control" aria-labelledby="control-h"><h2 id="control-h">Conditions &amp; loops</h2><p class="about">Conditions choose which code runs and loops repeat it. <code class="i"><span class="t-kw">for</span><span class="t-kw">...</span><span class="t-kw">of</span></code> walks the values of arrays and other iterables, while <code class="i"><span class="t-kw">for</span><span class="t-kw">...</span><span class="t-kw">in</span></code> walks an object's property names.</p><div class="code"><div class="ln bare"><code><span class="t-kw">if</span> (x <span class="t-kw">&gt;</span> <span class="t-c">0</span>) { … }</code></div><div class="ln bare"><code><span class="t-kw">else</span> <span class="t-kw">if</span> (x <span class="t-kw">&lt;</span> <span class="t-c">0</span>) { … }</code></div><div class="ln bare"><code><span class="t-kw">else</span> { … }</code></div><div class="ln gap"></div><div class="ln bare"><code><span class="t-kw">switch</span> (day) {</code></div><div class="ln bare"><code>  <span class="t-kw">case</span> <span class="t-c">6</span>:</code></div><div class="ln" data-l="24"><code>  <span class="t-kw">case</span> <span class="t-c">7</span>: <span class="t-fn">rest</span>(); <span class="t-kw">break</span>;</code><span class="note">Stacked cases share one branch; without break, it falls through to the next case</span></div><div class="ln" data-l="18"><code>  <span class="t-kw">default</span>: <span class="t-fn">work</span>();</code><span class="note">Runs when no case matches</span></div><div class="ln bare"><code>}</code></div><div class="ln gap"></div><div class="ln" data-l="18"><code><span class="t-kw">while</span> (cond) { … }</code><span class="note">Test first, may run 0 times</span></div><div class="ln" data-l="22"><code><span class="t-kw">do</span> { … } <span class="t-kw">while</span> (cond);</code><span class="note">Runs at least once</span></div><div class="ln" data-l="33"><code><span class="t-kw">for</span> (<span class="t-kw">let</span> i <span class="t-kw">=</span> <span class="t-c">0</span>; i <span class="t-kw">&lt;</span> <span class="t-c">5</span>; i<span class="t-kw">++</span>) { … }</code><span class="note">Init; test; update</span></div><div class="ln" data-l="31"><code><span class="t-kw">for</span> (<span class="t-kw">const</span> v <span class="t-kw">of</span> [<span class="t-c">10</span>, <span class="t-c">20</span>]) { … }</code><span class="note">Values of an array, string or iterable</span></div><div class="ln" data-l="26"><code><span class="t-kw">for</span> (<span class="t-kw">const</span> k <span class="t-kw">in</span> obj) { … }</code><span class="note">Property names of an object</span></div><div class="ln" data-l="14"><code><span class="t-kw">for</span> (;;) { … }</code><span class="note">Infinite, same as while (true)</span></div><div class="ln gap"></div><div class="ln" data-l="6"><code><span class="t-kw">break</span>;</code><span class="note">Leave the loop now</span></div><div class="ln" data-l="9"><code><span class="t-kw">continue</span>;</code><span class="note">Skip to the next iteration</span></div></div></section>
+<section class="card" id="functions" aria-labelledby="functions-h"><h2 id="functions-h">Functions</h2><p class="about">Functions are values: you can store them in variables, pass them to other functions and return them. Arrow functions are shorter and don't have their own <code class="i"><span class="t-c">this</span></code>, which makes them handy for callbacks.</p><div class="code"><div class="ln" data-l="36"><code><span class="t-kw">function</span> <span class="t-fn">add</span>(a, b) { <span class="t-kw">return</span> a <span class="t-kw">+</span> b; }</code><span class="note">Declaration (hoisted)</span></div><div class="ln" data-l="29"><code><span class="t-kw">const</span> sub <span class="t-kw">=</span> <span class="t-kw">function</span> (a, b) {</code><span class="note">Anonymous function expression</span></div><div class="ln bare"><code>  <span class="t-kw">return</span> a <span class="t-kw">-</span> b;</code></div><div class="ln bare"><code>};</code></div><div class="ln" data-l="28"><code><span class="t-kw">const</span> mul <span class="t-kw">=</span> (a, b) <span class="t-kw">=&gt;</span> a <span class="t-kw">*</span> b;</code><span class="note">Arrow: implicit return</span></div><div class="ln" data-l="32"><code><span class="t-kw">const</span> box <span class="t-kw">=</span> x <span class="t-kw">=&gt;</span> ({ value: x });</code><span class="note">One param; wrap a returned object in ()</span></div><div class="ln" data-l="51"><code><span class="t-kw">const</span> div <span class="t-kw">=</span> <span class="t-kw">new</span> <span class="t-cls">Function</span>(<span class="t-str">"a"</span>, <span class="t-str">"b"</span>, <span class="t-str">"return a / b"</span>);</code><span class="note">Built from strings (rare)</span></div><div class="ln" data-l="22"><code>(<span class="t-kw">function</span> () { … })();</code><span class="note">IIFE: runs as soon as it's defined</span></div><div class="ln gap"></div><div class="ln" data-l="36"><code><span class="t-kw">function</span> <span class="t-fn">greet</span>(name <span class="t-kw">=</span> <span class="t-str">"guest"</span>) { … }</code><span class="note">Default parameter</span></div><div class="ln" data-l="29"><code><span class="t-kw">function</span> <span class="t-fn">total</span>(<span class="t-kw">...</span>nums) { … }</code><span class="note">Rest: nums is an array of all args</span></div><div class="ln bare"><code><span class="t-fn">total</span>(<span class="t-c">1</span>, <span class="t-c">3</span>, <span class="t-c">5</span>);</code></div><div class="ln gap"></div><div class="ln" data-l="30"><code><span class="t-kw">const</span> op <span class="t-kw">=</span> useAdd <span class="t-kw">?</span> add <span class="t-kw">:</span> sub;</code><span class="note">Functions are values</span></div><div class="ln bare"><code><span class="t-fn">op</span>(<span class="t-c">2</span>, <span class="t-c">1</span>);</code></div><div class="ln" data-l="18"><code><span class="t-kw">function</span> <span class="t-fn">outer</span>() {</code><span class="note">Nested functions</span></div><div class="ln bare"><code>  <span class="t-kw">function</span> <span class="t-fn">inner</span>() { … }</code></div><div class="ln bare"><code>  <span class="t-fn">inner</span>();</code></div><div class="ln bare"><code>}</code></div><div class="ln gap"></div><div class="ln" data-l="20"><code><span class="t-kw">function</span><span class="t-kw">*</span> <span class="t-fn">count</span>(n) {</code><span class="note">Generator: pauses at each yield</span></div><div class="ln bare"><code>  <span class="t-kw">yield</span> n; <span class="t-kw">yield</span> n <span class="t-kw">+</span> <span class="t-c">1</span>; <span class="t-kw">return</span> n <span class="t-kw">+</span> <span class="t-c">10</span>;</code></div><div class="ln bare"><code>}</code></div><div class="ln bare"><code><span class="t-kw">const</span> g <span class="t-kw">=</span> <span class="t-fn">count</span>(<span class="t-c">1</span>);</code></div><div class="ln" data-l="15"><code>g.<span class="t-fn">next</span>().value;</code><span class="note">1, then 2, then 11</span></div></div></section>
+<section class="card" id="objects" aria-labelledby="objects-h"><h2 id="objects-h">Objects</h2><p class="about">Objects group related values as named properties, and methods are properties that hold functions. Objects also inherit properties from their prototype, which is how methods are shared.</p><div class="code"><div class="ln bare"><code><span class="t-kw">const</span> user <span class="t-kw">=</span> {</code></div><div class="ln" data-l="29"><code>  first: <span class="t-str">"Ana"</span>, last: <span class="t-str">"Diaz"</span>,</code><span class="note">Properties</span></div><div class="ln" data-l="28"><code>  address: { city: <span class="t-str">"Lima"</span> },</code><span class="note">Nested object</span></div><div class="ln" data-l="38"><code>  <span class="t-fn">hi</span>() { <span class="t-kw">return</span> <span class="t-str">`Hi </span><span class="t-kw">${</span><span class="t-c">this</span>.first<span class="t-kw">}</span><span class="t-str">`</span>; },</code><span class="note">Method</span></div><div class="ln" data-l="14"><code>  <span class="t-kw">get</span> <span class="t-fn">full</span>() {</code><span class="note">Getter: read user.full</span></div><div class="ln bare"><code>    <span class="t-kw">return</span> <span class="t-str">`</span><span class="t-kw">${</span><span class="t-c">this</span>.first<span class="t-kw">}</span><span class="t-str"> </span><span class="t-kw">${</span><span class="t-c">this</span>.last<span class="t-kw">}</span><span class="t-str">`</span>;</code></div><div class="ln bare"><code>  },</code></div><div class="ln" data-l="15"><code>  <span class="t-kw">set</span> <span class="t-fn">full</span>(s) {</code><span class="note">Setter: user.full = "Bo Li"</span></div><div class="ln bare"><code>    [<span class="t-c">this</span>.first, <span class="t-c">this</span>.last] <span class="t-kw">=</span> s.<span class="t-fn">split</span>(<span class="t-str">" "</span>);</code></div><div class="ln bare"><code>  },</code></div><div class="ln bare"><code>};</code></div><div class="ln gap"></div><div class="ln" data-l="27"><code>user.first;  user[<span class="t-str">"first"</span>];</code><span class="note">Read with dot or bracket</span></div><div class="ln" data-l="18"><code>user.address.city;</code><span class="note">"Lima"</span></div><div class="ln" data-l="10"><code>user.<span class="t-fn">hi</span>();</code><span class="note">Call a method</span></div><div class="ln" data-l="14"><code>user.age <span class="t-kw">=</span> <span class="t-c">30</span>;</code><span class="note">Add a property</span></div><div class="ln" data-l="23"><code>user.bye <span class="t-kw">=</span> () <span class="t-kw">=&gt;</span> <span class="t-str">"Bye"</span>;</code><span class="note">Add a method</span></div><div class="ln" data-l="16"><code><span class="t-kw">delete</span> user.age;</code><span class="note">Remove a property</span></div><div class="ln gap"></div><div class="ln" data-l="22"><code><span class="t-kw">function</span> <span class="t-cls">Point</span>(x, y) {</code><span class="note">Constructor function</span></div><div class="ln bare"><code>  <span class="t-c">this</span>.x <span class="t-kw">=</span> x; <span class="t-c">this</span>.y <span class="t-kw">=</span> y;</code></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="35"><code><span class="t-cls">Point</span>.<span class="t-c">prototype</span>.len <span class="t-kw">=</span> <span class="t-kw">function</span> () {</code><span class="note">Shared method on the prototype</span></div><div class="ln bare"><code>  <span class="t-kw">return</span> <span class="t-c">Math</span>.<span class="t-fn">hypot</span>(<span class="t-c">this</span>.x, <span class="t-c">this</span>.y);</code></div><div class="ln bare"><code>};</code></div><div class="ln" data-l="22"><code><span class="t-kw">new</span> <span class="t-cls">Point</span>(<span class="t-c">3</span>, <span class="t-c">4</span>).<span class="t-fn">len</span>();</code><span class="note">5</span></div></div></section>
+<section class="card" id="strings" aria-labelledby="strings-h"><h2 id="strings-h">Strings &amp; numbers</h2><p class="about">Strings can't be changed in place, so string methods return a new string instead. Numbers are 64-bit floating point, and <code class="i"><span class="t-c">Math</span></code> holds the common math functions.</p><div class="code"><div class="ln bare"><code><span class="t-kw">const</span> s <span class="t-kw">=</span> <span class="t-str">"Hello, World"</span>;</code></div><div class="ln" data-l="9"><code>s.<span class="t-c">length</span>;</code><span class="note">12</span></div><div class="ln" data-l="16"><code>s[<span class="t-c">0</span>];  s.<span class="t-fn">at</span>(<span class="t-kw">-</span><span class="t-c">1</span>);</code><span class="note">"H", "d"</span></div><div class="ln" data-l="16"><code>s.<span class="t-fn">toUpperCase</span>();</code><span class="note">"HELLO, WORLD" (also toLowerCase)</span></div><div class="ln" data-l="20"><code>s.<span class="t-fn">includes</span>(<span class="t-str">"World"</span>);</code><span class="note">true</span></div><div class="ln" data-l="19"><code>s.<span class="t-fn">startsWith</span>(<span class="t-str">"He"</span>);</code><span class="note">true</span></div><div class="ln" data-l="16"><code>s.<span class="t-fn">endsWith</span>(<span class="t-str">"!"</span>);</code><span class="note">false</span></div><div class="ln" data-l="15"><code>s.<span class="t-fn">indexOf</span>(<span class="t-str">"o"</span>);</code><span class="note">4 (-1 if missing)</span></div><div class="ln" data-l="14"><code>s.<span class="t-fn">slice</span>(<span class="t-c">0</span>, <span class="t-c">5</span>);</code><span class="note">"Hello" (end excluded; negatives count from the end)</span></div><div class="ln" data-l="14"><code>s.<span class="t-fn">split</span>(<span class="t-str">", "</span>);</code><span class="note">["Hello", "World"]</span></div><div class="ln" data-l="25"><code>s.<span class="t-fn">replace</span>(<span class="t-str">"World"</span>, <span class="t-str">"JS"</span>);</code><span class="note">First match only</span></div><div class="ln" data-l="23"><code>s.<span class="t-fn">replaceAll</span>(<span class="t-str">"l"</span>, <span class="t-str">"L"</span>);</code><span class="note">Every match</span></div><div class="ln" data-l="16"><code><span class="t-str">"  hi  "</span>.<span class="t-fn">trim</span>();</code><span class="note">"hi"</span></div><div class="ln" data-l="21"><code><span class="t-str">"5"</span>.<span class="t-fn">padStart</span>(<span class="t-c">3</span>, <span class="t-str">"0"</span>);</code><span class="note">"005"</span></div><div class="ln" data-l="15"><code><span class="t-str">"ab"</span>.<span class="t-fn">repeat</span>(<span class="t-c">3</span>);</code><span class="note">"ababab"</span></div><div class="ln gap"></div><div class="ln" data-l="13"><code><span class="t-c">Number</span>(<span class="t-str">"42"</span>);</code><span class="note">42</span></div><div class="ln" data-l="17"><code><span class="t-c">parseInt</span>(<span class="t-str">"42px"</span>);</code><span class="note">42</span></div><div class="ln" data-l="19"><code><span class="t-c">parseFloat</span>(<span class="t-str">"3.14"</span>);</code><span class="note">3.14</span></div><div class="ln" data-l="21"><code>(<span class="t-c">3.14159</span>).<span class="t-fn">toFixed</span>(<span class="t-c">2</span>);</code><span class="note">"3.14" (a string)</span></div><div class="ln" data-l="20"><code><span class="t-c">Number</span>.<span class="t-fn">isInteger</span>(<span class="t-c">5</span>);</code><span class="note">true</span></div><div class="ln" data-l="18"><code><span class="t-c">Number</span>.<span class="t-fn">isNaN</span>(<span class="t-c">NaN</span>);</code><span class="note">true</span></div><div class="ln" data-l="16"><code><span class="t-c">Math</span>.<span class="t-fn">round</span>(<span class="t-c">2.5</span>);</code><span class="note">3</span></div><div class="ln" data-l="33"><code><span class="t-c">Math</span>.<span class="t-fn">floor</span>(<span class="t-c">2.9</span>);  <span class="t-c">Math</span>.<span class="t-fn">ceil</span>(<span class="t-c">2.1</span>);</code><span class="note">2, 3</span></div><div class="ln" data-l="38"><code><span class="t-c">Math</span>.<span class="t-fn">max</span>(<span class="t-c">1</span>, <span class="t-c">5</span>, <span class="t-c">3</span>);  <span class="t-c">Math</span>.<span class="t-fn">min</span>(<span class="t-c">1</span>, <span class="t-c">5</span>, <span class="t-c">3</span>);</code><span class="note">5, 1</span></div><div class="ln" data-l="14"><code><span class="t-c">Math</span>.<span class="t-fn">random</span>();</code><span class="note">0 ≤ n &lt; 1</span></div></div></section>
+<section class="card" id="arrays" aria-labelledby="arrays-h"><h2 id="arrays-h">Arrays</h2><p class="about">Arrays are ordered lists that can hold any mix of values. Some methods change the array in place (<code class="i">push</code>, <code class="i">splice</code>, <code class="i">sort</code>, <code class="i">reverse</code>) and others return a new one (<code class="i">map</code>, <code class="i">filter</code>, <code class="i">slice</code>), and mixing them up is a common source of bugs.</p><div class="code"><div class="ln" data-l="20"><code><span class="t-kw">const</span> a <span class="t-kw">=</span> [<span class="t-c">3</span>, <span class="t-c">1</span>, <span class="t-c">2</span>];</code><span class="note">Each line below starts from this array</span></div><div class="ln" data-l="9"><code>a.<span class="t-c">length</span>;</code><span class="note">3</span></div><div class="ln" data-l="16"><code>a[<span class="t-c">0</span>];  a.<span class="t-fn">at</span>(<span class="t-kw">-</span><span class="t-c">1</span>);</code><span class="note">3, 2</span></div><div class="ln" data-l="20"><code>a.<span class="t-fn">push</span>(<span class="t-c">4</span>);  a.<span class="t-fn">pop</span>();</code><span class="note">Add / remove at the end</span></div><div class="ln" data-l="25"><code>a.<span class="t-fn">unshift</span>(<span class="t-c">0</span>);  a.<span class="t-fn">shift</span>();</code><span class="note">Add / remove at the start</span></div><div class="ln" data-l="29"><code>a.<span class="t-fn">includes</span>(<span class="t-c">2</span>);  a.<span class="t-fn">indexOf</span>(<span class="t-c">2</span>);</code><span class="note">true, 2</span></div><div class="ln" data-l="14"><code>a.<span class="t-fn">slice</span>(<span class="t-c">1</span>, <span class="t-c">3</span>);</code><span class="note">Copy of a part: [1, 2]</span></div><div class="ln" data-l="18"><code>a.<span class="t-fn">splice</span>(<span class="t-c">1</span>, <span class="t-c">1</span>, <span class="t-c">9</span>);</code><span class="note">At index 1 remove 1, insert 9 → [3, 9, 2] (mutates)</span></div><div class="ln" data-l="26"><code>[<span class="t-kw">...</span>a, <span class="t-c">5</span>];  a.<span class="t-fn">concat</span>([<span class="t-c">5</span>]);</code><span class="note">New array with 5 appended</span></div><div class="ln" data-l="12"><code>a.<span class="t-fn">join</span>(<span class="t-str">"-"</span>);</code><span class="note">"3-1-2"</span></div><div class="ln gap"></div><div class="ln" data-l="18"><code>a.<span class="t-fn">map</span>(x <span class="t-kw">=&gt;</span> x <span class="t-kw">*</span> <span class="t-c">2</span>);</code><span class="note">[6, 2, 4]</span></div><div class="ln" data-l="21"><code>a.<span class="t-fn">filter</span>(x <span class="t-kw">=&gt;</span> x <span class="t-kw">&gt;</span> <span class="t-c">1</span>);</code><span class="note">[3, 2]</span></div><div class="ln" data-l="33"><code>a.<span class="t-fn">reduce</span>((sum, x) <span class="t-kw">=&gt;</span> sum <span class="t-kw">+</span> x, <span class="t-c">0</span>);</code><span class="note">6</span></div><div class="ln" data-l="19"><code>a.<span class="t-fn">find</span>(x <span class="t-kw">=&gt;</span> x <span class="t-kw">&gt;</span> <span class="t-c">1</span>);</code><span class="note">3</span></div><div class="ln" data-l="24"><code>a.<span class="t-fn">findIndex</span>(x <span class="t-kw">=&gt;</span> x <span class="t-kw">&gt;</span> <span class="t-c">1</span>);</code><span class="note">0</span></div><div class="ln" data-l="19"><code>a.<span class="t-fn">some</span>(x <span class="t-kw">=&gt;</span> x <span class="t-kw">&gt;</span> <span class="t-c">2</span>);</code><span class="note">true</span></div><div class="ln" data-l="20"><code>a.<span class="t-fn">every</span>(x <span class="t-kw">=&gt;</span> x <span class="t-kw">&gt;</span> <span class="t-c">0</span>);</code><span class="note">true</span></div><div class="ln" data-l="39"><code>a.<span class="t-fn">forEach</span>((x, i) <span class="t-kw">=&gt;</span> <span class="t-c">console</span>.<span class="t-fn">log</span>(i, x));</code><span class="note">Run for each item, returns nothing</span></div><div class="ln" data-l="29"><code>[<span class="t-kw">...</span>a].<span class="t-fn">sort</span>((x, y) <span class="t-kw">=&gt;</span> x <span class="t-kw">-</span> y);</code><span class="note">[1, 2, 3] (sort mutates, so copy first)</span></div><div class="ln" data-l="12"><code>a.<span class="t-fn">reverse</span>();</code><span class="note">[2, 1, 3] (mutates)</span></div><div class="ln" data-l="21"><code>[[<span class="t-c">1</span>, <span class="t-c">2</span>], [<span class="t-c">3</span>]].<span class="t-fn">flat</span>();</code><span class="note">[1, 2, 3]</span></div><div class="ln" data-l="18"><code><span class="t-c">Array</span>.<span class="t-fn">from</span>(<span class="t-str">"abc"</span>);</code><span class="note">["a", "b", "c"]</span></div><div class="ln" data-l="17"><code><span class="t-c">Array</span>.<span class="t-fn">isArray</span>(a);</code><span class="note">true</span></div><div class="ln gap"></div><div class="ln" data-l="46"><code><span class="t-kw">const</span> [first, second, <span class="t-kw">...</span>rest] <span class="t-kw">=</span> [<span class="t-c">1</span>, <span class="t-c">2</span>, <span class="t-c">3</span>, <span class="t-c">4</span>];</code><span class="note">Destructuring: rest is [3, 4]</span></div></div></section>
+<section class="card" id="classes" aria-labelledby="classes-h"><h2 id="classes-h">Classes</h2><p class="about">Classes are a cleaner syntax for constructor functions and prototypes. <code class="i"><span class="t-kw">extends</span></code> builds one class on another, and <code class="i">#</code> fields keep data private to the class.</p><div class="code"><div class="ln bare"><code><span class="t-kw">class</span> <span class="t-cls">Animal</span> {</code></div><div class="ln" data-l="19"><code>  <span class="t-kw">static</span> count <span class="t-kw">=</span> <span class="t-c">0</span>;</code><span class="note">On the class: Animal.count</span></div><div class="ln" data-l="6"><code>  #id;</code><span class="note">Private field: usable only inside the class</span></div><div class="ln bare"><code>  <span class="t-fn">constructor</span>(name) {</code></div><div class="ln bare"><code>    <span class="t-c">this</span>.name <span class="t-kw">=</span> name;</code></div><div class="ln bare"><code>    <span class="t-c">this</span>.#id <span class="t-kw">=</span> <span class="t-kw">++</span><span class="t-cls">Animal</span>.count;</code></div><div class="ln bare"><code>  }</code></div><div class="ln bare"><code>  <span class="t-fn">speak</span>() {</code></div><div class="ln bare"><code>    <span class="t-kw">return</span> <span class="t-str">`</span><span class="t-kw">${</span><span class="t-c">this</span>.name<span class="t-kw">}</span><span class="t-str"> makes a sound`</span>;</code></div><div class="ln bare"><code>  }</code></div><div class="ln" data-l="20"><code>  <span class="t-kw">static</span> <span class="t-fn">create</span>(n) {</code><span class="note">Animal.create("Tom")</span></div><div class="ln bare"><code>    <span class="t-kw">return</span> <span class="t-kw">new</span> <span class="t-cls">Animal</span>(n);</code></div><div class="ln bare"><code>  }</code></div><div class="ln" data-l="35"><code>  <span class="t-fn">#tag</span>() { <span class="t-kw">return</span> <span class="t-str">`#</span><span class="t-kw">${</span><span class="t-c">this</span>.#id<span class="t-kw">}</span><span class="t-str">`</span>; }</code><span class="note">Private method</span></div><div class="ln bare"><code>}</code></div><div class="ln gap"></div><div class="ln" data-l="26"><code><span class="t-kw">class</span> <span class="t-cls">Dog</span> <span class="t-kw">extends</span> <span class="t-cls">Animal</span> {</code><span class="note">Inherit from Animal</span></div><div class="ln bare"><code>  <span class="t-fn">constructor</span>(name, breed) {</code></div><div class="ln" data-l="16"><code>    <span class="t-c">super</span>(name);</code><span class="note">Call super() before using this</span></div><div class="ln bare"><code>    <span class="t-c">this</span>.breed <span class="t-kw">=</span> breed;</code></div><div class="ln bare"><code>  }</code></div><div class="ln" data-l="11"><code>  <span class="t-fn">speak</span>() {</code><span class="note">Override a parent method</span></div><div class="ln bare"><code>    <span class="t-kw">return</span> <span class="t-str">`</span><span class="t-kw">${</span><span class="t-c">this</span>.name<span class="t-kw">}</span><span class="t-str"> barks`</span>;</code></div><div class="ln bare"><code>  }</code></div><div class="ln bare"><code>}</code></div><div class="ln gap"></div><div class="ln bare"><code><span class="t-kw">const</span> d <span class="t-kw">=</span> <span class="t-kw">new</span> <span class="t-cls">Dog</span>(<span class="t-str">"Rex"</span>, <span class="t-str">"lab"</span>);</code></div><div class="ln" data-l="10"><code>d.<span class="t-fn">speak</span>();</code><span class="note">"Rex barks"</span></div><div class="ln" data-l="6"><code>d.#id;</code><span class="note">SyntaxError outside the class</span></div></div></section>
+<section class="card" id="errors" aria-labelledby="errors-h"><h2 id="errors-h">Errors &amp; debugging</h2><p class="about">An error stops normal execution until something catches it. <code class="i"><span class="t-kw">try</span></code>/<code class="i"><span class="t-kw">catch</span></code> handles errors where you choose, and <code class="i"><span class="t-kw">finally</span></code> runs cleanup either way.</p><div class="code"><div class="ln bare"><code><span class="t-kw">try</span> {</code></div><div class="ln bare"><code>  <span class="t-kw">if</span> (side <span class="t-kw">&lt;</span> <span class="t-c">0</span>) {</code></div><div class="ln" data-l="37"><code>    <span class="t-kw">throw</span> <span class="t-kw">new</span> <span class="t-c">Error</span>(<span class="t-str">"Negative side"</span>);</code><span class="note">Raise your own error</span></div><div class="ln bare"><code>  }</code></div><div class="ln bare"><code>  <span class="t-fn">risky</span>();</code></div><div class="ln bare"><code>} <span class="t-kw">catch</span> (err) {</code></div><div class="ln" data-l="29"><code>  <span class="t-c">console</span>.<span class="t-fn">error</span>(err.message);</code><span class="note">Runs only if the try block threw</span></div><div class="ln bare"><code>} <span class="t-kw">finally</span> {</code></div><div class="ln" data-l="12"><code>  <span class="t-fn">cleanup</span>();</code><span class="note">Always runs, error or not</span></div><div class="ln bare"><code>}</code></div><div class="ln gap"></div><div class="ln" data-l="9"><code><span class="t-kw">debugger</span>;</code><span class="note">Breakpoint: pauses here while DevTools (F12) is open</span></div></div></section>
+<section class="card" id="async" aria-labelledby="async-h"><h2 id="async-h">Async</h2><p class="about">Some work, like a network request, finishes later. A Promise stands for that future result, and <code class="i"><span class="t-kw">async</span></code>/<code class="i"><span class="t-kw">await</span></code> let you wait for it in code that reads top to bottom without blocking the page.</p><div class="code"><div class="ln" data-l="27"><code><span class="t-kw">async</span> <span class="t-kw">function</span> <span class="t-fn">getPosts</span>() {</code><span class="note">Always returns a Promise</span></div><div class="ln bare"><code>  <span class="t-kw">const</span> url <span class="t-kw">=</span> <span class="t-str">"https://jsonplaceholder.typicode.com/posts"</span>;</code></div><div class="ln" data-l="31"><code>  <span class="t-kw">const</span> res <span class="t-kw">=</span> <span class="t-kw">await</span> <span class="t-fn">fetch</span>(url);</code><span class="note">Pause until the response headers arrive</span></div><div class="ln" data-l="20"><code>  <span class="t-kw">return</span> res.<span class="t-fn">json</span>();</code><span class="note">Read the body and parse it as JSON (also async)</span></div><div class="ln bare"><code>}</code></div><div class="ln gap"></div><div class="ln bare"><code><span class="t-fn">getPosts</span>().<span class="t-fn">then</span>(p <span class="t-kw">=&gt;</span> <span class="t-c">console</span>.<span class="t-fn">log</span>(p.<span class="t-c">length</span>));</code></div><div class="ln" data-l="31"><code><span class="t-kw">const</span> posts <span class="t-kw">=</span> <span class="t-kw">await</span> <span class="t-fn">getPosts</span>();</code><span class="note">Same, inside an async function or module</span></div></div></section>
+<section class="card" id="modules" aria-labelledby="modules-h"><h2 id="modules-h">Modules</h2><p class="about">Modules split code into files with their own scope, and only what a file exports can be imported elsewhere. In the browser, load the entry file with a script tag that has <code class="i">type<span class="t-kw">=</span><span class="t-str">"module"</span></code>.</p><div class="code"><div class="ln file"><span>util.js</span></div><div class="ln" data-l="23"><code><span class="t-kw">export</span> <span class="t-kw">const</span> <span class="t-c">PI</span> <span class="t-kw">=</span> <span class="t-c">3.14</span>;</code><span class="note">Named export</span></div><div class="ln" data-l="16"><code><span class="t-kw">export</span> { x, y };</code><span class="note">Export several at once</span></div><div class="ln" data-l="33"><code><span class="t-kw">export</span> <span class="t-kw">default</span> <span class="t-kw">function</span> <span class="t-fn">log</span>() { }</code><span class="note">One default export per file</span></div><div class="ln gap"></div><div class="ln file"><span>main.js</span></div><div class="ln" data-l="36"><code><span class="t-kw">import</span> log, { <span class="t-c">PI</span> } <span class="t-kw">from</span> <span class="t-str">"./util.js"</span>;</code><span class="note">Default (any name) + named</span></div><div class="ln" data-l="36"><code><span class="t-kw">import</span> { x <span class="t-kw">as</span> px } <span class="t-kw">from</span> <span class="t-str">"./util.js"</span>;</code><span class="note">Rename on import</span></div><div class="ln" data-l="34"><code><span class="t-kw">import</span> <span class="t-kw">*</span> <span class="t-kw">as</span> util <span class="t-kw">from</span> <span class="t-str">"./util.js"</span>;</code><span class="note">Everything: util.PI, util.x …</span></div></div></section>
+<section class="card" id="dom" aria-labelledby="dom-h"><h2 id="dom-h">DOM &amp; events</h2><p class="about">The DOM is the browser's live tree of the page's elements. Select elements, change their text, classes and styles or create new ones, and respond to clicks and other actions with event listeners.</p><div class="code"><div class="ln" data-l="32"><code><span class="t-c">document</span>.<span class="t-fn">querySelector</span>(<span class="t-str">".card"</span>);</code><span class="note">First match for a CSS selector, or null</span></div><div class="ln" data-l="32"><code><span class="t-c">document</span>.<span class="t-fn">querySelectorAll</span>(<span class="t-str">"li"</span>);</code><span class="note">Every match (NodeList)</span></div><div class="ln bare"><code><span class="t-c">document</span>.<span class="t-fn">getElementById</span>(<span class="t-str">"app"</span>);</code></div><div class="ln gap"></div><div class="ln" data-l="22"><code>el.textContent <span class="t-kw">=</span> <span class="t-str">"Hi"</span>;</code><span class="note">Set text (safe)</span></div><div class="ln" data-l="27"><code>el.innerHTML <span class="t-kw">=</span> <span class="t-str">"&lt;b&gt;Hi&lt;/b&gt;"</span>;</code><span class="note">Set HTML (never with user input)</span></div><div class="ln" data-l="23"><code>el.classList.<span class="t-fn">add</span>(<span class="t-str">"on"</span>);</code><span class="note">Also remove, toggle, contains</span></div><div class="ln" data-l="23"><code>el.style.color <span class="t-kw">=</span> <span class="t-str">"red"</span>;</code><span class="note">Inline style</span></div><div class="ln" data-l="33"><code>el.<span class="t-fn">setAttribute</span>(<span class="t-str">"title"</span>, <span class="t-str">"Info"</span>);</code><span class="note">Also getAttribute</span></div><div class="ln" data-l="14"><code>el.dataset.id;</code><span class="note">Reads data-id="…"</span></div><div class="ln gap"></div><div class="ln" data-l="40"><code><span class="t-kw">const</span> li <span class="t-kw">=</span> <span class="t-c">document</span>.<span class="t-fn">createElement</span>(<span class="t-str">"li"</span>);</code><span class="note">Create an element</span></div><div class="ln bare"><code>li.textContent <span class="t-kw">=</span> <span class="t-str">"New"</span>;</code></div><div class="ln" data-l="16"><code>list.<span class="t-fn">append</span>(li);</code><span class="note">Insert at the end (also prepend, before, after)</span></div><div class="ln" data-l="12"><code>li.<span class="t-fn">remove</span>();</code><span class="note">Take it off the page</span></div><div class="ln gap"></div><div class="ln" data-l="34"><code>btn.<span class="t-fn">addEventListener</span>(<span class="t-str">"click"</span>, fn);</code><span class="note">Listen for an event</span></div><div class="ln" data-l="37"><code>btn.<span class="t-fn">removeEventListener</span>(<span class="t-str">"click"</span>, fn);</code><span class="note">Needs the same function reference</span></div><div class="ln bare"><code>form.<span class="t-fn">addEventListener</span>(<span class="t-str">"submit"</span>, e <span class="t-kw">=&gt;</span> {</code></div><div class="ln" data-l="21"><code>  e.<span class="t-fn">preventDefault</span>();</code><span class="note">Stop the default action</span></div><div class="ln bare"><code>});</code></div><div class="ln" data-l="37"><code>list.<span class="t-fn">addEventListener</span>(<span class="t-str">"click"</span>, e <span class="t-kw">=&gt;</span> {</code><span class="note">One listener for many children</span></div><div class="ln bare"><code>  <span class="t-kw">if</span> (e.target.<span class="t-fn">closest</span>(<span class="t-str">"li"</span>)) { … }</code></div><div class="ln bare"><code>});</code></div><div class="ln" data-l="52"><code><span class="t-c">document</span>.<span class="t-fn">addEventListener</span>(<span class="t-str">"DOMContentLoaded"</span>, init);</code><span class="note">Run once the HTML is parsed</span></div></div></section>
+  </main>
+  <p class="empty" id="empty" hidden>No card mentions “<span id="empty-q"></span>”.<button type="button" id="clear">Clear filter</button></p>
+</div>
+
+<script>
+(() => {
+  const grid = document.getElementById("grid");
+  const cards = Array.from(grid.querySelectorAll(".card"));
+  const texts = cards.map(c => c.textContent.toLowerCase());
+  const input = document.getElementById("filter");
+  const count = document.getElementById("count");
+  const empty = document.getElementById("empty");
+  const emptyQ = document.getElementById("empty-q");
+  const total = cards.length;
+  let lastW = -1, raf = 0;
+
+  // Masonry: as many columns as fit at --min width; each card goes to the shortest column, in reading order.
+  function layout() {
+    const cs = getComputedStyle(grid);
+    const gap = parseFloat(cs.getPropertyValue("--gap")) || 16;
+    const min = parseFloat(cs.getPropertyValue("--min")) || 420;
+    const n = Math.max(1, Math.floor((grid.clientWidth + gap) / (min + gap)));
+    const cols = Array.from({ length: n }, () => {
+      const d = document.createElement("div");
+      d.className = "col";
+      return d;
+    });
+    grid.replaceChildren(...cols);
+    fitNotes((grid.clientWidth - (n - 1) * gap) / n);
+    const heights = new Array(n).fill(0);
+    for (const card of cards) {
+      if (card.hidden) continue;
+      let k = 0;
+      for (let i = 1; i < n; i++) if (heights[i] < heights[k] - 1) k = i;
+      cols[k].appendChild(card);
+      heights[k] += card.offsetHeight + gap;
+    }
+  }
+  // Explanations line up in one column per card when there's room; lines too long for that
+  // get their explanation on the next line instead.
+  const NOTE_MIN = 20; // characters reserved for an explanation beside the code
+  const probe = document.createElement("span");
+  probe.className = "code probe";
+  probe.setAttribute("aria-hidden", "true");
+  probe.textContent = "0".repeat(20);
+  document.body.appendChild(probe);
+  const blocks = cards.map(c => Array.from(c.querySelectorAll(".code")));
+  const cardStyle = getComputedStyle(cards[0]);
+  const chrome = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"]
+    .reduce((s, k) => s + (parseFloat(cardStyle[k]) || 0), 0) || 36;
+  function fitNotes(colWidth) {
+    const ch = probe.getBoundingClientRect().width / 20 || 7.5;
+    const avail = Math.floor((colWidth - chrome) / ch);
+    const maxCw = Math.min(avail - 1 - NOTE_MIN, 42); // keep one outlier from squeezing every note
+    for (const list of blocks) for (const block of list) {
+      let cw = 0;
+      block.querySelectorAll(".ln[data-l]").forEach(ln => {
+        const len = +ln.dataset.l;
+        const long = len > maxCw;
+        ln.classList.toggle("long", long);
+        if (!long && len > cw) cw = len;
+      });
+      block.style.setProperty("--cw", cw);
+    }
+  }
+  function schedule() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(layout);
+  }
+  new ResizeObserver(entries => {
+    const w = entries[0].contentRect.width;
+    if (Math.abs(w - lastW) > 0.5) { lastW = w; schedule(); }
+  }).observe(grid);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+
+  // Filter: hide cards that don't mention the text, highlight the lines that do.
+  function applyFilter() {
+    const raw = input.value.trim();
+    const q = raw.toLowerCase();
+    let shown = 0;
+    cards.forEach((card, i) => {
+      const match = !q || texts[i].includes(q);
+      card.hidden = !match;
+      if (match) shown++;
+      card.querySelectorAll(".ln, tbody tr").forEach(el => {
+        el.classList.toggle("hit", !!q && el.textContent.toLowerCase().includes(q));
+      });
+    });
+    count.textContent = q ? `${shown} of ${total} cards` : `${total} cards`;
+    emptyQ.textContent = raw;
+    empty.hidden = shown > 0;
+    layout();
+  }
+  input.addEventListener("input", applyFilter);
+  document.getElementById("clear").addEventListener("click", () => {
+    input.value = "";
+    applyFilter();
+    input.focus();
+  });
+  document.addEventListener("keydown", e => {
+    const typing = e.target.closest && e.target.closest("input, textarea, [contenteditable]");
+    if (e.key === "/" && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      input.focus();
+    } else if (e.key === "Escape" && e.target === input && input.value) {
+      input.value = "";
+      applyFilter();
+    }
+  });
+
+  layout();
+})();
+</script>
+</body>
+</html>

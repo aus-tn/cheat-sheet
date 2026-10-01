@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>GraphQL cheat sheet (compact)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --page: #1C1C1C;
+  --card: #262626;
+  --ink: #E3E3E3;
+  --border: #3C3C3C;
+  --note: #9A9A9A;
+  --rule: #353535;
+  --chip: #313131;
+  --code-fg: #E6EDF3;   /* GitHub Dark Default */
+  --comment: #8B949E;
+  --about: #B4B4B4;
+  --kw: #FF7B72;
+  --str: #A5D6FF;
+  --const: #79C0FF;
+  --fn: #D2A8FF;
+  --cls: #FFA657;
+  --tag: #7EE787;
+  --hit: #3A3A3A;
+  --gap: 16px;
+  --bar-h: 42px;
+  --min: 420px;
+  --sans: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--page);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { padding: 20px clamp(14px, 2.4vw, 32px) 40px; }
+
+/* Header */
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 16px; }
+.sheet-title {
+  margin: 0; flex: none;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.02em;
+  line-height: var(--bar-h);    /* same height as the filter box */
+  color: var(--ink);
+}
+.tools { display: flex; align-items: center; gap: 12px; flex: 0 1 380px; }
+.field { position: relative; flex: 1 1 auto; }
+.field input {
+  width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  height: var(--bar-h); padding: 0 38px 0 12px;
+}
+.field input::placeholder { color: var(--note); }
+.field kbd {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--note);
+  border: 1.5px solid var(--rule); border-radius: 4px; padding: 3px 6px; pointer-events: none;
+}
+.field input:focus + kbd { visibility: hidden; }
+.count { font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.field input:focus-visible { outline-offset: 1px; }
+
+/* Masonry */
+.grid { display: flex; align-items: flex-start; gap: var(--gap); }
+.col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--gap); }
+.card {
+  background: var(--card);
+  padding: 16px 18px 18px;
+}
+.card[hidden] { display: none; }
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 19px; font-weight: 800;
+  line-height: 1.15; letter-spacing: -0.01em;
+}
+.card p { margin: 12px 0 8px; font-size: 14px; }
+.card .about { margin: -2px 0 12px; font-size: 13.5px; line-height: 1.5; color: var(--about); }
+.card .about code.i { font-size: 12px; }
+
+/* Code lines: code on the left, explanation on the right (wraps below when the card is narrow) */
+.code { font-family: var(--mono); font-size: 12.5px; line-height: 1.6; color: var(--code-fg); }
+.ln { display: flex; flex-wrap: wrap; align-items: baseline; border-radius: 3px; }
+.ln > code {
+  font: inherit; white-space: pre-wrap; overflow-wrap: anywhere;
+  flex: 0 0 auto; width: min(calc((var(--cw, 0) + 1) * 1ch), 100%);
+}
+.ln.long > code, .ln.bare > code { width: auto; max-width: 100%; }
+.ln .note {
+  flex: 1 1 18ch; min-width: 0; padding-left: 2ch;
+  font-family: var(--sans); font-size: 13px; line-height: 1.45; color: var(--comment);
+}
+.ln.long .note { flex-basis: 100%; padding-left: 2ch; }
+.probe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
+.ln.gap { height: 0.75em; }
+.code + .code { margin-top: 14px; }
+.ln.file { margin: 2px 0 1px; }
+.ln.file span {
+  font-weight: 600; font-size: 11.5px; line-height: 1.7;
+  background: var(--chip); border-radius: 4px; padding: 0 6px;
+}
+.t-kw { color: var(--kw); }
+.t-str { color: var(--str); }
+.t-c { color: var(--const); }
+.t-fn { color: var(--fn); }
+.t-cls { color: var(--cls); }
+.t-tag { color: var(--tag); }
+.t-cm { color: var(--comment); }
+code.i {
+  font-family: var(--mono); font-size: 12.5px; white-space: pre; color: var(--code-fg);
+  background: var(--chip); border-radius: 4px; padding: 1px 5px;
+  display: inline-block; margin: 1px 0; line-height: 1.5;
+}
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead th {
+  text-align: left; font-weight: 650; font-size: 12.5px; color: var(--note);
+  padding: 0 10px 5px 0;
+}
+tbody th, tbody td { text-align: left; vertical-align: top; padding: 6px 10px 6px 0; border-top: 1px solid var(--rule); }
+tbody tr > :last-child { padding-right: 0; }
+.types tbody th { font-weight: 650; white-space: nowrap; width: 1%; padding-top: 8px; }
+.aside { color: var(--note); font-size: 13px; }
+.ops td.op { width: 36%; }
+.ops td.op code { font-family: var(--mono); font-size: 13px; word-spacing: 0.2em; color: var(--code-fg); }
+.kind { display: block; font-weight: 650; }
+.desc { display: block; color: var(--note); font-size: 13px; }
+
+/* Filter matches */
+.ln.hit, tbody tr.hit > * { background: var(--hit); }
+.ln.hit { box-shadow: 0 0 0 3px var(--hit); }
+
+.empty { margin: 8px 0 0; font-size: 16px; }
+.empty button {
+  font: inherit; font-size: 15px; font-weight: 650; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  padding: 6px 12px; margin-left: 8px; cursor: pointer;
+}
+
+@media (hover: none) { .field kbd { display: none; } .field input { padding-right: 12px; } }
+@media (max-width: 640px) {
+  .tools { flex-basis: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="sheet-title">GraphQL</h1>
+    <div class="tools">
+      <div class="field">
+        <label class="sr" for="filter">Filter cards</label>
+        <input id="filter" type="search" placeholder="Filter: fragment, mutation, enum…" autocomplete="off" spellcheck="false" aria-keyshortcuts="/">
+        <kbd aria-hidden="true">/</kbd>
+      </div>
+      <span class="count" id="count" aria-live="polite">14 cards</span>
+    </div>
+  </header>
+
+  <main class="grid" id="grid">
+<section class="card" id="queries" aria-labelledby="queries-h"><h2 id="queries-h">Queries</h2><p class="about">A query asks for exactly the fields you want, and the response comes back in the same shape. Fields that return objects need their own set of fields in braces.</p><div class="code"><div class="ln" data-l="7"><code><span class="t-kw">query</span> {</code><span class="note">Read data</span></div><div class="ln" data-l="21"><code>  product(id: <span class="t-str">"42"</span>) {</code><span class="note">A field can take arguments</span></div><div class="ln bare"><code>    title</code></div><div class="ln bare"><code>    price</code></div><div class="ln" data-l="13"><code>    reviews {</code><span class="note">Object fields need their own selection</span></div><div class="ln bare"><code>      rating</code></div><div class="ln bare"><code>    }</code></div><div class="ln bare"><code>  }</code></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="15"><code>{ me { name } }</code><span class="note">Shorthand for an unnamed query</span></div><div class="ln bare"><code><span class="t-cm"># a comment</span></code></div></div></section>
+<section class="card" id="variables" aria-labelledby="variables-h"><h2 id="variables-h">Variables &amp; operation names</h2><p class="about">Variables keep values out of the query text, so the same query can be reused and the server can check every value's type. Naming the operation helps with logs and debugging.</p><div class="code"><div class="ln" data-l="55"><code><span class="t-kw">query</span> <span class="t-fn">GetProduct</span>(<span class="t-c">$id</span>: <span class="t-c">ID</span><span class="t-kw">!</span>, <span class="t-c">$currency</span>: <span class="t-cls">Currency</span> <span class="t-kw">=</span> <span class="t-c">USD</span>) {</code><span class="note">Declare variables with their types and defaults</span></div><div class="ln bare"><code>  product(id: <span class="t-c">$id</span>) {</code></div><div class="ln bare"><code>    title</code></div><div class="ln" data-l="30"><code>    price(currency: <span class="t-c">$currency</span>)</code><span class="note">Use a variable as an argument</span></div><div class="ln bare"><code>  }</code></div><div class="ln bare"><code>}</code></div></div><div class="code"><div class="ln" data-l="33"><code>{ <span class="t-c">"id"</span>: <span class="t-str">"42"</span>, <span class="t-c">"currency"</span>: <span class="t-str">"EUR"</span> }</code><span class="note">The variables, sent as JSON beside the query</span></div></div></section>
+<section class="card" id="fragments" aria-labelledby="fragments-h"><h2 id="fragments-h">Aliases &amp; fragments</h2><p class="about">An alias renames a field in the response, which lets you ask for the same field twice with different arguments. A fragment is a named, reusable set of fields for one type.</p><div class="code"><div class="ln bare"><code><span class="t-kw">query</span> {</code></div><div class="ln" data-l="57"><code>  hats: products(first: <span class="t-c">3</span>, category: <span class="t-c">HATS</span>) { totalCount }</code><span class="note">Alias: the result is under hats</span></div><div class="ln bare"><code>  shoes: products(first: <span class="t-c">3</span>, category: <span class="t-c">SHOES</span>) { totalCount }</code></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="33"><code><span class="t-kw">fragment</span> <span class="t-fn">ProductCard</span> <span class="t-kw">on</span> <span class="t-cls">Product</span> {</code><span class="note">Fields to reuse wherever a Product appears</span></div><div class="ln bare"><code>  id</code></div><div class="ln bare"><code>  title</code></div><div class="ln bare"><code>  price</code></div><div class="ln bare"><code>}</code></div><div class="ln bare"><code><span class="t-kw">query</span> {</code></div><div class="ln" data-l="46"><code>  product(id: <span class="t-str">"42"</span>) { <span class="t-kw">...</span><span class="t-fn">ProductCard</span> inStock }</code><span class="note">Spread the fragment with ...</span></div><div class="ln bare"><code>}</code></div></div></section>
+<section class="card" id="abstract" aria-labelledby="abstract-h"><h2 id="abstract-h">Unions &amp; interfaces</h2><p class="about">A field can return one of several types. Inline fragments pick fields for each possible type, and __typename tells you which type each result actually is.</p><div class="code"><div class="ln bare"><code><span class="t-kw">query</span> {</code></div><div class="ln" data-l="23"><code>  search(text: <span class="t-str">"red"</span>) {</code><span class="note">SearchResult is a union: Product or User</span></div><div class="ln" data-l="14"><code>    __typename</code><span class="note">The concrete type of each result</span></div><div class="ln" data-l="34"><code>    <span class="t-kw">...</span> <span class="t-kw">on</span> <span class="t-cls">Product</span> { title price }</code><span class="note">Only applies to results that are Products</span></div><div class="ln bare"><code>    <span class="t-kw">...</span> <span class="t-kw">on</span> <span class="t-cls">User</span> { name }</code></div><div class="ln bare"><code>  }</code></div><div class="ln" data-l="18"><code>  node(id: <span class="t-str">"42"</span>) {</code><span class="note">Node is an interface</span></div><div class="ln" data-l="6"><code>    id</code><span class="note">Fields on the interface need no fragment</span></div><div class="ln bare"><code>    <span class="t-kw">...</span> <span class="t-kw">on</span> <span class="t-cls">Product</span> { title }</code></div><div class="ln bare"><code>  }</code></div><div class="ln bare"><code>}</code></div></div></section>
+<section class="card" id="directives" aria-labelledby="directives-h"><h2 id="directives-h">Directives</h2><p class="about">Directives adjust how a query runs. The built-in @include and @skip turn fields on or off with a variable, so one query can serve several screens.</p><div class="code"><div class="ln bare"><code><span class="t-kw">query</span> <span class="t-fn">Product</span>(<span class="t-c">$id</span>: <span class="t-c">ID</span><span class="t-kw">!</span>, <span class="t-c">$full</span>: <span class="t-cls">Boolean</span><span class="t-kw">!</span>) {</code></div><div class="ln bare"><code>  product(id: <span class="t-c">$id</span>) {</code></div><div class="ln bare"><code>    title</code></div><div class="ln" data-l="42"><code>    reviews <span class="t-fn">@include</span>(if: <span class="t-c">$full</span>) { rating }</code><span class="note">Only when $full is true</span></div><div class="ln" data-l="25"><code>    tags <span class="t-fn">@skip</span>(if: <span class="t-c">$full</span>)</code><span class="note">Left out when $full is true</span></div><div class="ln bare"><code>  }</code></div><div class="ln bare"><code>}</code></div></div></section>
+<section class="card" id="mutations" aria-labelledby="mutations-h"><h2 id="mutations-h">Mutations</h2><p class="about">Mutations change data and then return fields, just like a query. When one request has several mutation fields, they run one at a time in order; query fields can run in parallel.</p><div class="code"><div class="ln" data-l="45"><code><span class="t-kw">mutation</span> <span class="t-fn">AddToCart</span>(<span class="t-c">$input</span>: <span class="t-cls">AddToCartInput</span><span class="t-kw">!</span>) {</code><span class="note">Input objects bundle the arguments</span></div><div class="ln bare"><code>  addToCart(input: <span class="t-c">$input</span>) {</code></div><div class="ln" data-l="29"><code>    cart { id totalQuantity }</code><span class="note">Ask for whatever changed</span></div><div class="ln" data-l="28"><code>    errors { field message }</code><span class="note">Many APIs return validation problems as data</span></div><div class="ln bare"><code>  }</code></div><div class="ln bare"><code>}</code></div><div class="ln bare"><code><span class="t-kw">mutation</span> {</code></div><div class="ln" data-l="61"><code>  first: addToCart(input: { productId: <span class="t-str">"1"</span> }) { cart { id } }</code><span class="note">Runs first</span></div><div class="ln" data-l="62"><code>  second: addToCart(input: { productId: <span class="t-str">"2"</span> }) { cart { id } }</code><span class="note">Then this one</span></div><div class="ln bare"><code>}</code></div></div><div class="code"><div class="ln bare"><code>{ <span class="t-c">"input"</span>: { <span class="t-c">"productId"</span>: <span class="t-str">"42"</span>, <span class="t-c">"quantity"</span>: <span class="t-c">2</span> } }</code></div></div></section>
+<section class="card" id="subscriptions" aria-labelledby="subscriptions-h"><h2 id="subscriptions-h">Subscriptions</h2><p class="about">A subscription keeps a connection open and receives a new result each time an event happens. How it's delivered, often WebSockets or server-sent events, depends on the server.</p><div class="code"><div class="ln" data-l="22"><code><span class="t-kw">subscription</span> <span class="t-fn">OnOrder</span> {</code><span class="note">Exactly one top-level field per subscription</span></div><div class="ln bare"><code>  orderPlaced {</code></div><div class="ln bare"><code>    id</code></div><div class="ln bare"><code>    total</code></div><div class="ln bare"><code>    placedAt</code></div><div class="ln bare"><code>  }</code></div><div class="ln bare"><code>}</code></div></div></section>
+<section class="card" id="types" aria-labelledby="types-h"><h2 id="types-h">Object types</h2><p class="about">The schema defines every type and field an API offers, written in the schema definition language. The built-in scalars are Int, Float, String, Boolean and ID.</p><div class="code"><div class="ln" data-l="14"><code><span class="t-kw">type</span> <span class="t-cls">Product</span> {</code><span class="note">An object type and its fields</span></div><div class="ln" data-l="9"><code>  id: <span class="t-c">ID</span><span class="t-kw">!</span></code><span class="note">! means never null</span></div><div class="ln bare"><code>  title: <span class="t-cls">String</span><span class="t-kw">!</span></code></div><div class="ln" data-l="41"><code>  price(currency: <span class="t-cls">Currency</span> <span class="t-kw">=</span> <span class="t-c">USD</span>): <span class="t-cls">Float</span><span class="t-kw">!</span></code><span class="note">Fields can take arguments, with defaults</span></div><div class="ln bare"><code>  inStock: <span class="t-cls">Boolean</span><span class="t-kw">!</span></code></div><div class="ln" data-l="20"><code>  category: <span class="t-cls">Category</span></code><span class="note">No !: may be null</span></div><div class="ln bare"><code>  reviews(first: <span class="t-cls">Int</span> <span class="t-kw">=</span> <span class="t-c">5</span>): [<span class="t-cls">Review</span><span class="t-kw">!</span>]<span class="t-kw">!</span></code></div><div class="ln bare"><code>}</code></div></div><div class="code"><div class="ln" data-l="14"><code>tags: [<span class="t-cls">String</span>]</code><span class="note">The list and its items may be null</span></div><div class="ln" data-l="15"><code>tags: [<span class="t-cls">String</span><span class="t-kw">!</span>]</code><span class="note">The list may be null; its items can't be</span></div><div class="ln" data-l="16"><code>tags: [<span class="t-cls">String</span><span class="t-kw">!</span>]<span class="t-kw">!</span></code><span class="note">Neither can be null</span></div></div></section>
+<section class="card" id="more-types" aria-labelledby="more-types-h"><h2 id="more-types-h">Enums, inputs &amp; abstract types</h2><p class="about">Beyond object types, a schema can define fixed value sets, input shapes for arguments, shared fields across types, and fields that can return one of several types.</p><div class="code"><div class="ln" data-l="35"><code><span class="t-kw">enum</span> <span class="t-cls">Category</span> { <span class="t-c">SHIRTS</span> <span class="t-c">SHOES</span> <span class="t-c">HATS</span> }</code><span class="note">One of a fixed set of values</span></div><div class="ln" data-l="22"><code><span class="t-kw">input</span> <span class="t-cls">AddToCartInput</span> {</code><span class="note">The shape of an argument object</span></div><div class="ln bare"><code>  productId: <span class="t-c">ID</span><span class="t-kw">!</span></code></div><div class="ln" data-l="19"><code>  quantity: <span class="t-cls">Int</span> <span class="t-kw">=</span> <span class="t-c">1</span></code><span class="note">A default value</span></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="26"><code><span class="t-kw">interface</span> <span class="t-cls">Node</span> { id: <span class="t-c">ID</span><span class="t-kw">!</span> }</code><span class="note">Fields that several types share</span></div><div class="ln" data-l="27"><code><span class="t-kw">type</span> <span class="t-cls">User</span> <span class="t-kw">implements</span> <span class="t-cls">Node</span> {</code><span class="note">Must include every field of Node</span></div><div class="ln bare"><code>  id: <span class="t-c">ID</span><span class="t-kw">!</span></code></div><div class="ln bare"><code>  name: <span class="t-cls">String</span><span class="t-kw">!</span></code></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="35"><code><span class="t-kw">union</span> <span class="t-cls">SearchResult</span> <span class="t-kw">=</span> <span class="t-cls">Product</span> <span class="t-kw">|</span> <span class="t-cls">User</span></code><span class="note">One of these types</span></div><div class="ln" data-l="15"><code><span class="t-kw">scalar</span> <span class="t-cls">DateTime</span></code><span class="note">A custom scalar; the server sets its format</span></div><div class="ln" data-l="28"><code><span class="t-kw">input</span> <span class="t-cls">ProductLookup</span> <span class="t-fn">@oneOf</span> {</code><span class="note">Exactly one field must be given (spec since September 2025)</span></div><div class="ln bare"><code>  id: <span class="t-c">ID</span></code></div><div class="ln bare"><code>  handle: <span class="t-cls">String</span></code></div><div class="ln bare"><code>}</code></div></div></section>
+<section class="card" id="schema" aria-labelledby="schema-h"><h2 id="schema-h">Descriptions &amp; schema</h2><p class="about">Descriptions document the schema right where it's defined, and tools like GraphiQL show them as you type. Deprecation marks a field you plan to remove without breaking existing queries.</p><div class="code"><div class="ln" data-l="3"><code><span class="t-str">"""</span></code><span class="note">A description, shown in tools</span></div><div class="ln bare"><code><span class="t-str">A product for sale.</span></code></div><div class="ln bare"><code><span class="t-str">"""</span></code></div><div class="ln bare"><code><span class="t-kw">type</span> <span class="t-cls">Product</span> {</code></div><div class="ln bare"><code>  <span class="t-str">"The price in the store's currency."</span></code></div><div class="ln bare"><code>  price: <span class="t-cls">Float</span><span class="t-kw">!</span></code></div><div class="ln" data-l="60"><code>  oldPrice: <span class="t-cls">Float</span> <span class="t-fn">@deprecated</span>(reason: <span class="t-str">"Use compareAtPrice."</span>)</code><span class="note">Still works, but tools flag it</span></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="8"><code><span class="t-kw">schema</span> {</code><span class="note">The entry points (these names are the defaults)</span></div><div class="ln bare"><code>  query: <span class="t-cls">Query</span></code></div><div class="ln bare"><code>  mutation: <span class="t-cls">Mutation</span></code></div><div class="ln bare"><code>  subscription: <span class="t-cls">Subscription</span></code></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="37"><code><span class="t-kw">extend</span> <span class="t-kw">type</span> <span class="t-cls">Product</span> { rating: <span class="t-cls">Float</span> }</code><span class="note">Add fields to a type defined elsewhere</span></div><div class="ln" data-l="49"><code><span class="t-kw">directive</span> <span class="t-fn">@auth</span>(role: <span class="t-cls">String</span>) <span class="t-kw">on</span> <span class="t-c">FIELD_DEFINITION</span></code><span class="note">A custom directive and where it can go</span></div></div></section>
+<section class="card" id="pagination" aria-labelledby="pagination-h"><h2 id="pagination-h">Pagination</h2><p class="about">Many APIs page through lists with cursor connections, a convention from Relay rather than part of the spec. Ask for a page, then pass the last cursor back to get the next one.</p><div class="code"><div class="ln bare"><code><span class="t-kw">query</span> <span class="t-fn">Page</span>(<span class="t-c">$after</span>: <span class="t-cls">String</span>) {</code></div><div class="ln" data-l="38"><code>  products(first: <span class="t-c">20</span>, after: <span class="t-c">$after</span>) {</code><span class="note">First: page size; after: where to continue</span></div><div class="ln bare"><code>    edges {</code></div><div class="ln" data-l="12"><code>      cursor</code><span class="note">This item's position in the list</span></div><div class="ln" data-l="23"><code>      node { id title }</code><span class="note">The item itself</span></div><div class="ln bare"><code>    }</code></div><div class="ln bare"><code>    pageInfo {</code></div><div class="ln" data-l="17"><code>      hasNextPage</code><span class="note">Keep going while this is true</span></div><div class="ln" data-l="15"><code>      endCursor</code><span class="note">Send it as $after for the next page</span></div><div class="ln bare"><code>    }</code></div><div class="ln bare"><code>  }</code></div><div class="ln bare"><code>}</code></div></div></section>
+<section class="card" id="introspection" aria-labelledby="introspection-h"><h2 id="introspection-h">Introspection</h2><p class="about">A GraphQL API can describe itself. Introspection queries are how editors, GraphiQL and code generators learn the schema; some APIs turn it off in production.</p><div class="code"><div class="ln" data-l="36"><code>{ __schema { types { name kind } } }</code><span class="note">Every type in the schema</span></div><div class="ln" data-l="66"><code>{ __type(name: <span class="t-str">"Product"</span>) { fields { name type { name kind } } } }</code><span class="note">One type's fields</span></div><div class="ln" data-l="36"><code>{ product(id: <span class="t-str">"42"</span>) { __typename } }</code><span class="note">The type name of any object</span></div></div></section>
+<section class="card" id="requests" aria-labelledby="requests-h"><h2 id="requests-h">Sending requests</h2><p class="about">Most GraphQL APIs take a POST to one endpoint with a JSON body. The query is sent as a string, with variables and the operation name beside it.</p><div class="code"><div class="ln" data-l="13"><code><span class="t-kw">POST</span> <span class="t-str">/graphql</span></code><span class="note">One endpoint for every query and mutation</span></div><div class="ln bare"><code><span class="t-c">Content-Type</span>: <span class="t-str">application/json</span></code></div></div><div class="code"><div class="ln bare"><code>{</code></div><div class="ln bare"><code>  <span class="t-c">"query"</span>: <span class="t-str">"query GetProduct($id: ID!) { product(id: $id) { title } }"</span>,</code></div><div class="ln bare"><code>  <span class="t-c">"variables"</span>: { <span class="t-c">"id"</span>: <span class="t-str">"42"</span> },</code></div><div class="ln" data-l="31"><code>  <span class="t-c">"operationName"</span>: <span class="t-str">"GetProduct"</span></code><span class="note">Which operation to run, when the document has several</span></div><div class="ln bare"><code>}</code></div></div><div class="code"><div class="ln bare"><code><span class="t-kw">const</span> res <span class="t-kw">=</span> <span class="t-kw">await</span> <span class="t-fn">fetch</span>(<span class="t-str">"https://api.example.com/graphql"</span>, {</code></div><div class="ln bare"><code>  method: <span class="t-str">"POST"</span>,</code></div><div class="ln bare"><code>  headers: { <span class="t-str">"Content-Type"</span>: <span class="t-str">"application/json"</span> },</code></div><div class="ln bare"><code>  body: <span class="t-c">JSON</span>.<span class="t-fn">stringify</span>({ query, variables: { id: <span class="t-str">"42"</span> } }),</code></div><div class="ln bare"><code>});</code></div><div class="ln bare"><code><span class="t-kw">const</span> { data, errors } <span class="t-kw">=</span> <span class="t-kw">await</span> res.<span class="t-fn">json</span>(); <span class="t-kw">/</span><span class="t-kw">/</span> check errors even when the status is <span class="t-c">200</span></code></div></div></section>
+<section class="card" id="errors" aria-labelledby="errors-h"><h2 id="errors-h">Responses &amp; errors</h2><p class="about">A response can hold data and errors at the same time. A field that fails becomes null and gets an entry in errors; if that field is non-null, the null moves up to the nearest parent that allows it.</p><div class="code"><div class="ln bare"><code>{</code></div><div class="ln" data-l="11"><code>  <span class="t-c">"data"</span>: {</code><span class="note">Same shape as the query</span></div><div class="ln bare"><code>    <span class="t-c">"product"</span>: { <span class="t-c">"title"</span>: <span class="t-str">"Hat"</span>, <span class="t-c">"reviews"</span>: <span class="t-c">null</span> }</code></div><div class="ln bare"><code>  },</code></div><div class="ln" data-l="14"><code>  <span class="t-c">"errors"</span>: [{</code><span class="note">Only present when something went wrong</span></div><div class="ln bare"><code>    <span class="t-c">"message"</span>: <span class="t-str">"Not authorized"</span>,</code></div><div class="ln" data-l="46"><code>    <span class="t-c">"locations"</span>: [{ <span class="t-c">"line"</span>: <span class="t-c">4</span>, <span class="t-c">"column"</span>: <span class="t-c">5</span> }],</code><span class="note">Where in the query</span></div><div class="ln" data-l="34"><code>    <span class="t-c">"path"</span>: [<span class="t-str">"product"</span>, <span class="t-str">"reviews"</span>]</code><span class="note">Which field failed</span></div><div class="ln bare"><code>  }],</code></div><div class="ln" data-l="19"><code>  <span class="t-c">"extensions"</span>: { }</code><span class="note">Extra server-specific details, like query cost</span></div><div class="ln bare"><code>}</code></div></div></section>
+  </main>
+  <p class="empty" id="empty" hidden>No card mentions “<span id="empty-q"></span>”.<button type="button" id="clear">Clear filter</button></p>
+</div>
+
+<script>
+(() => {
+  const grid = document.getElementById("grid");
+  const cards = Array.from(grid.querySelectorAll(".card"));
+  const texts = cards.map(c => c.textContent.toLowerCase());
+  const input = document.getElementById("filter");
+  const count = document.getElementById("count");
+  const empty = document.getElementById("empty");
+  const emptyQ = document.getElementById("empty-q");
+  const total = cards.length;
+  let lastW = -1, raf = 0;
+
+  // Masonry: as many columns as fit at --min width; each card goes to the shortest column, in reading order.
+  function layout() {
+    const cs = getComputedStyle(grid);
+    const gap = parseFloat(cs.getPropertyValue("--gap")) || 16;
+    const min = parseFloat(cs.getPropertyValue("--min")) || 420;
+    const n = Math.max(1, Math.floor((grid.clientWidth + gap) / (min + gap)));
+    const cols = Array.from({ length: n }, () => {
+      const d = document.createElement("div");
+      d.className = "col";
+      return d;
+    });
+    grid.replaceChildren(...cols);
+    fitNotes((grid.clientWidth - (n - 1) * gap) / n);
+    const heights = new Array(n).fill(0);
+    for (const card of cards) {
+      if (card.hidden) continue;
+      let k = 0;
+      for (let i = 1; i < n; i++) if (heights[i] < heights[k] - 1) k = i;
+      cols[k].appendChild(card);
+      heights[k] += card.offsetHeight + gap;
+    }
+  }
+  // Explanations line up in one column per card when there's room; lines too long for that
+  // get their explanation on the next line instead.
+  const NOTE_MIN = 20; // characters reserved for an explanation beside the code
+  const probe = document.createElement("span");
+  probe.className = "code probe";
+  probe.setAttribute("aria-hidden", "true");
+  probe.textContent = "0".repeat(20);
+  document.body.appendChild(probe);
+  const blocks = cards.map(c => Array.from(c.querySelectorAll(".code")));
+  const cardStyle = getComputedStyle(cards[0]);
+  const chrome = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"]
+    .reduce((s, k) => s + (parseFloat(cardStyle[k]) || 0), 0) || 36;
+  function fitNotes(colWidth) {
+    const ch = probe.getBoundingClientRect().width / 20 || 7.5;
+    const avail = Math.floor((colWidth - chrome) / ch);
+    const maxCw = Math.min(avail - 1 - NOTE_MIN, 42); // keep one outlier from squeezing every note
+    for (const list of blocks) for (const block of list) {
+      let cw = 0;
+      block.querySelectorAll(".ln[data-l]").forEach(ln => {
+        const len = +ln.dataset.l;
+        const long = len > maxCw;
+        ln.classList.toggle("long", long);
+        if (!long && len > cw) cw = len;
+      });
+      block.style.setProperty("--cw", cw);
+    }
+  }
+  function schedule() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(layout);
+  }
+  new ResizeObserver(entries => {
+    const w = entries[0].contentRect.width;
+    if (Math.abs(w - lastW) > 0.5) { lastW = w; schedule(); }
+  }).observe(grid);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+
+  // Filter: hide cards that don't mention the text, highlight the lines that do.
+  function applyFilter() {
+    const raw = input.value.trim();
+    const q = raw.toLowerCase();
+    let shown = 0;
+    cards.forEach((card, i) => {
+      const match = !q || texts[i].includes(q);
+      card.hidden = !match;
+      if (match) shown++;
+      card.querySelectorAll(".ln, tbody tr").forEach(el => {
+        el.classList.toggle("hit", !!q && el.textContent.toLowerCase().includes(q));
+      });
+    });
+    count.textContent = q ? `${shown} of ${total} cards` : `${total} cards`;
+    emptyQ.textContent = raw;
+    empty.hidden = shown > 0;
+    layout();
+  }
+  input.addEventListener("input", applyFilter);
+  document.getElementById("clear").addEventListener("click", () => {
+    input.value = "";
+    applyFilter();
+    input.focus();
+  });
+  document.addEventListener("keydown", e => {
+    const typing = e.target.closest && e.target.closest("input, textarea, [contenteditable]");
+    if (e.key === "/" && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      input.focus();
+    } else if (e.key === "Escape" && e.target === input && input.value) {
+      input.value = "";
+      applyFilter();
+    }
+  });
+
+  layout();
+})();
+</script>
+</body>
+</html>

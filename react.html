@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>React cheat sheet (compact)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --page: #1C1C1C;
+  --card: #262626;
+  --ink: #E3E3E3;
+  --border: #3C3C3C;
+  --note: #9A9A9A;
+  --rule: #353535;
+  --chip: #313131;
+  --code-fg: #E6EDF3;   /* GitHub Dark Default */
+  --comment: #8B949E;
+  --about: #B4B4B4;
+  --kw: #FF7B72;
+  --str: #A5D6FF;
+  --const: #79C0FF;
+  --fn: #D2A8FF;
+  --cls: #FFA657;
+  --tag: #7EE787;
+  --hit: #3A3A3A;
+  --gap: 16px;
+  --bar-h: 42px;
+  --min: 420px;
+  --sans: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--page);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { padding: 20px clamp(14px, 2.4vw, 32px) 40px; }
+
+/* Header */
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 16px; }
+.sheet-title {
+  margin: 0; flex: none;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.02em;
+  line-height: var(--bar-h);    /* same height as the filter box */
+  color: var(--ink);
+}
+.tools { display: flex; align-items: center; gap: 12px; flex: 0 1 380px; }
+.field { position: relative; flex: 1 1 auto; }
+.field input {
+  width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  height: var(--bar-h); padding: 0 38px 0 12px;
+}
+.field input::placeholder { color: var(--note); }
+.field kbd {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--note);
+  border: 1.5px solid var(--rule); border-radius: 4px; padding: 3px 6px; pointer-events: none;
+}
+.field input:focus + kbd { visibility: hidden; }
+.count { font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.field input:focus-visible { outline-offset: 1px; }
+
+/* Masonry */
+.grid { display: flex; align-items: flex-start; gap: var(--gap); }
+.col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--gap); }
+.card {
+  background: var(--card);
+  padding: 16px 18px 18px;
+}
+.card[hidden] { display: none; }
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 19px; font-weight: 800;
+  line-height: 1.15; letter-spacing: -0.01em;
+}
+.card p { margin: 12px 0 8px; font-size: 14px; }
+.card .about { margin: -2px 0 12px; font-size: 13.5px; line-height: 1.5; color: var(--about); }
+.card .about code.i { font-size: 12px; }
+
+/* Code lines: code on the left, explanation on the right (wraps below when the card is narrow) */
+.code { font-family: var(--mono); font-size: 12.5px; line-height: 1.6; color: var(--code-fg); }
+.ln { display: flex; flex-wrap: wrap; align-items: baseline; border-radius: 3px; }
+.ln > code {
+  font: inherit; white-space: pre-wrap; overflow-wrap: anywhere;
+  flex: 0 0 auto; width: min(calc((var(--cw, 0) + 1) * 1ch), 100%);
+}
+.ln.long > code, .ln.bare > code { width: auto; max-width: 100%; }
+.ln .note {
+  flex: 1 1 18ch; min-width: 0; padding-left: 2ch;
+  font-family: var(--sans); font-size: 13px; line-height: 1.45; color: var(--comment);
+}
+.ln.long .note { flex-basis: 100%; padding-left: 2ch; }
+.probe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
+.ln.gap { height: 0.75em; }
+.code + .code { margin-top: 14px; }
+.ln.file { margin: 2px 0 1px; }
+.ln.file span {
+  font-weight: 600; font-size: 11.5px; line-height: 1.7;
+  background: var(--chip); border-radius: 4px; padding: 0 6px;
+}
+.t-kw { color: var(--kw); }
+.t-str { color: var(--str); }
+.t-c { color: var(--const); }
+.t-fn { color: var(--fn); }
+.t-cls { color: var(--cls); }
+.t-tag { color: var(--tag); }
+.t-cm { color: var(--comment); }
+code.i {
+  font-family: var(--mono); font-size: 12.5px; white-space: pre; color: var(--code-fg);
+  background: var(--chip); border-radius: 4px; padding: 1px 5px;
+  display: inline-block; margin: 1px 0; line-height: 1.5;
+}
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead th {
+  text-align: left; font-weight: 650; font-size: 12.5px; color: var(--note);
+  padding: 0 10px 5px 0;
+}
+tbody th, tbody td { text-align: left; vertical-align: top; padding: 6px 10px 6px 0; border-top: 1px solid var(--rule); }
+tbody tr > :last-child { padding-right: 0; }
+.types tbody th { font-weight: 650; white-space: nowrap; width: 1%; padding-top: 8px; }
+.aside { color: var(--note); font-size: 13px; }
+.ops td.op { width: 36%; }
+.ops td.op code { font-family: var(--mono); font-size: 13px; word-spacing: 0.2em; color: var(--code-fg); }
+.kind { display: block; font-weight: 650; }
+.desc { display: block; color: var(--note); font-size: 13px; }
+
+/* Filter matches */
+.ln.hit, tbody tr.hit > * { background: var(--hit); }
+.ln.hit { box-shadow: 0 0 0 3px var(--hit); }
+
+.empty { margin: 8px 0 0; font-size: 16px; }
+.empty button {
+  font: inherit; font-size: 15px; font-weight: 650; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  padding: 6px 12px; margin-left: 8px; cursor: pointer;
+}
+
+@media (hover: none) { .field kbd { display: none; } .field input { padding-right: 12px; } }
+@media (max-width: 640px) {
+  .tools { flex-basis: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="sheet-title">React</h1>
+    <div class="tools">
+      <div class="field">
+        <label class="sr" for="filter">Filter cards</label>
+        <input id="filter" type="search" placeholder="Filter: useState, effect, key…" autocomplete="off" spellcheck="false" aria-keyshortcuts="/">
+        <kbd aria-hidden="true">/</kbd>
+      </div>
+      <span class="count" id="count" aria-live="polite">14 cards</span>
+    </div>
+  </header>
+
+  <main class="grid" id="grid">
+<section class="card" id="jsx" aria-labelledby="jsx-h"><h2 id="jsx-h">JSX</h2><p class="about">JSX is HTML-like syntax inside JavaScript that compiles to function calls describing the UI. Curly braces switch back to JavaScript, so any expression can go inside markup.</p><div class="code"><div class="ln" data-l="47"><code><span class="t-kw">const</span> title <span class="t-kw">=</span> &lt;<span class="t-tag">h1</span> <span class="t-c">className</span><span class="t-kw">=</span><span class="t-str">"title"</span>&gt;Hello&lt;/<span class="t-tag">h1</span>&gt;;</code><span class="note">JSX is an expression you can store or return</span></div><div class="ln" data-l="23"><code>&lt;<span class="t-tag">p</span>&gt;Hi, <span class="t-kw">{</span>user.name<span class="t-kw">}</span>!&lt;/<span class="t-tag">p</span>&gt;</code><span class="note">{} embeds any JavaScript expression</span></div><div class="ln" data-l="24"><code>&lt;<span class="t-tag">img</span> <span class="t-c">src</span><span class="t-kw">=</span><span class="t-kw">{</span>url<span class="t-kw">}</span> <span class="t-c">alt</span><span class="t-kw">=</span><span class="t-str">""</span> /&gt;</code><span class="note">Every tag must be closed; self-close ones without children</span></div><div class="ln" data-l="36"><code>&lt;<span class="t-tag">label</span> <span class="t-c">htmlFor</span><span class="t-kw">=</span><span class="t-str">"email"</span>&gt;Email&lt;/<span class="t-tag">label</span>&gt;</code><span class="note">Use className and htmlFor instead of class and for</span></div><div class="ln" data-l="46"><code>&lt;<span class="t-tag">div</span> <span class="t-c">style</span><span class="t-kw">=</span><span class="t-kw">{</span>{ color: <span class="t-str">"red"</span>, fontSize: <span class="t-c">14</span> }<span class="t-kw">}</span> /&gt;</code><span class="note">The style prop takes an object with camelCase keys</span></div><div class="ln" data-l="52"><code>&lt;<span class="t-tag">button</span> <span class="t-c">onClick</span><span class="t-kw">=</span><span class="t-kw">{</span>save<span class="t-kw">}</span> <span class="t-c">disabled</span><span class="t-kw">=</span><span class="t-kw">{</span>busy<span class="t-kw">}</span>&gt;Save&lt;/<span class="t-tag">button</span>&gt;</code><span class="note">Event props are camelCase too</span></div><div class="ln" data-l="2"><code>&lt;&gt;</code><span class="note">Fragment: groups elements without adding a wrapper</span></div><div class="ln bare"><code>  &lt;<span class="t-tag">Header</span> /&gt;</code></div><div class="ln bare"><code>  &lt;<span class="t-tag">Main</span> /&gt;</code></div><div class="ln bare"><code>&lt;/&gt;</code></div><div class="ln bare"><code>{<span class="t-cm">/* a comment inside JSX */</span>}</code></div></div></section>
+<section class="card" id="components" aria-labelledby="components-h"><h2 id="components-h">Components &amp; props</h2><p class="about">A component is a function that returns JSX, and its name must start with a capital letter. Props pass data from parent to child; they're read-only, so a component never changes its own props.</p><div class="code"><div class="ln" data-l="46"><code><span class="t-kw">function</span> <span class="t-fn">Greeting</span>({ name, greeting <span class="t-kw">=</span> <span class="t-str">"Hi"</span> }) {</code><span class="note">Props arrive as one object; destructure them</span></div><div class="ln bare"><code>  <span class="t-kw">return</span> &lt;<span class="t-tag">p</span>&gt;<span class="t-kw">{</span>greeting<span class="t-kw">}</span>, <span class="t-kw">{</span>name<span class="t-kw">}</span>!&lt;/<span class="t-tag">p</span>&gt;;</code></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="23"><code>&lt;<span class="t-tag">Greeting</span> <span class="t-c">name</span><span class="t-kw">=</span><span class="t-str">"Ana"</span> /&gt;</code><span class="note">Pass props like attributes</span></div><div class="ln" data-l="22"><code>&lt;<span class="t-tag">Greeting</span> <span class="t-kw">{</span><span class="t-kw">...</span>user<span class="t-kw">}</span> /&gt;</code><span class="note">Spread an object's properties as props</span></div><div class="ln" data-l="29"><code><span class="t-kw">function</span> <span class="t-fn">Card</span>({ children }) {</code><span class="note">The children prop: whatever is nested inside the tag</span></div><div class="ln bare"><code>  <span class="t-kw">return</span> &lt;<span class="t-tag">div</span> <span class="t-c">className</span><span class="t-kw">=</span><span class="t-str">"card"</span>&gt;<span class="t-kw">{</span>children<span class="t-kw">}</span>&lt;/<span class="t-tag">div</span>&gt;;</code></div><div class="ln bare"><code>}</code></div><div class="ln bare"><code>&lt;<span class="t-tag">Card</span>&gt;&lt;<span class="t-tag">Greeting</span> <span class="t-c">name</span><span class="t-kw">=</span><span class="t-str">"Bo"</span> /&gt;&lt;/<span class="t-tag">Card</span>&gt;</code></div><div class="ln" data-l="35"><code><span class="t-kw">export</span> <span class="t-kw">default</span> <span class="t-kw">function</span> <span class="t-fn">App</span>() { … }</code><span class="note">Usually one component per file</span></div></div></section>
+<section class="card" id="conditions" aria-labelledby="conditions-h"><h2 id="conditions-h">Conditions &amp; lists</h2><p class="about">Use plain JavaScript to decide what to render: ternaries, &amp;&amp;, early returns and map. Each item in a list needs a key so React can tell items apart when the list changes.</p><div class="code"><div class="ln" data-l="40"><code>{isLoggedIn <span class="t-kw">?</span> &lt;<span class="t-tag">Dashboard</span> /&gt; <span class="t-kw">:</span> &lt;<span class="t-tag">Login</span> /&gt;}</code><span class="note">One or the other</span></div><div class="ln" data-l="23"><code>{hasError <span class="t-kw">&amp;&amp;</span> &lt;<span class="t-tag">Alert</span> /&gt;}</code><span class="note">Render or nothing</span></div><div class="ln" data-l="23"><code><span class="t-kw">if</span> (<span class="t-kw">!</span>user) <span class="t-kw">return</span> <span class="t-c">null</span>;</code><span class="note">Returning null renders nothing</span></div><div class="ln bare"><code>&lt;<span class="t-tag">ul</span>&gt;</code></div><div class="ln bare"><code>  <span class="t-kw">{</span>items.<span class="t-fn">map</span>(item <span class="t-kw">=&gt;</span> (</code></div><div class="ln" data-l="38"><code>    &lt;<span class="t-tag">li</span> <span class="t-c">key</span><span class="t-kw">=</span><span class="t-kw">{</span>item.id<span class="t-kw">}</span>&gt;<span class="t-kw">{</span>item.name<span class="t-kw">}</span>&lt;/<span class="t-tag">li</span>&gt;</code><span class="note">Key: stable and unique among siblings</span></div><div class="ln bare"><code>  ))<span class="t-kw">}</span></code></div><div class="ln bare"><code>&lt;/<span class="t-tag">ul</span>&gt;</code></div></div></section>
+<section class="card" id="state" aria-labelledby="state-h"><h2 id="state-h">State</h2><p class="about">State is data a component remembers between renders. Calling the setter schedules a re-render with the new value, so treat state as read-only and replace objects and arrays instead of changing them.</p><div class="code"><div class="ln" data-l="38"><code><span class="t-kw">const</span> [count, setCount] <span class="t-kw">=</span> <span class="t-fn">useState</span>(<span class="t-c">0</span>);</code><span class="note">Current value and a setter; 0 is the initial value</span></div><div class="ln" data-l="20"><code><span class="t-fn">setCount</span>(count <span class="t-kw">+</span> <span class="t-c">1</span>);</code><span class="note">Schedules a re-render with the new value</span></div><div class="ln" data-l="19"><code><span class="t-c">console</span>.<span class="t-fn">log</span>(count);</code><span class="note">Still the old value until the next render</span></div><div class="ln" data-l="21"><code><span class="t-fn">setCount</span>(c <span class="t-kw">=&gt;</span> c <span class="t-kw">+</span> <span class="t-c">1</span>);</code><span class="note">Updater: use it when the next value depends on the previous one</span></div><div class="ln bare"><code><span class="t-kw">const</span> [user, setUser] <span class="t-kw">=</span> <span class="t-fn">useState</span>({ name: <span class="t-str">"Ana"</span>, age: <span class="t-c">30</span> });</code></div><div class="ln" data-l="30"><code><span class="t-fn">setUser</span>({ <span class="t-kw">...</span>user, age: <span class="t-c">31</span> });</code><span class="note">Copy, then change</span></div><div class="ln" data-l="27"><code><span class="t-fn">setItems</span>([<span class="t-kw">...</span>items, item]);</code><span class="note">Add to an array</span></div><div class="ln" data-l="41"><code><span class="t-fn">setItems</span>(items.<span class="t-fn">filter</span>(i <span class="t-kw">=&gt;</span> i.id <span class="t-kw">!==</span> id));</code><span class="note">Remove from an array</span></div><div class="ln" data-l="43"><code><span class="t-kw">const</span> [rows] <span class="t-kw">=</span> <span class="t-fn">useState</span>(() <span class="t-kw">=&gt;</span> <span class="t-fn">buildRows</span>());</code><span class="note">Lazy initial value: computed on the first render only</span></div></div></section>
+<section class="card" id="events" aria-labelledby="events-h"><h2 id="events-h">Events &amp; forms</h2><p class="about">Event handlers are functions you pass as props. A controlled input gets its value from state and reports every change, while an uncontrolled one keeps its own value in the DOM.</p><div class="code"><div class="ln" data-l="51"><code>&lt;<span class="t-tag">button</span> <span class="t-c">onClick</span><span class="t-kw">=</span><span class="t-kw">{</span>() <span class="t-kw">=&gt;</span> <span class="t-fn">setOpen</span>(<span class="t-c">true</span>)<span class="t-kw">}</span>&gt;Open&lt;/<span class="t-tag">button</span>&gt;</code><span class="note">Pass a function to run on click</span></div><div class="ln" data-l="25"><code><span class="t-kw">function</span> <span class="t-fn">handleClick</span>(e) {</code><span class="note">React passes a wrapper around the browser event</span></div><div class="ln" data-l="22"><code>  e.<span class="t-fn">stopPropagation</span>();</code><span class="note">Keep the event from reaching parent handlers</span></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="62"><code>&lt;<span class="t-tag">input</span> <span class="t-c">value</span><span class="t-kw">=</span><span class="t-kw">{</span>text<span class="t-kw">}</span> <span class="t-c">onChange</span><span class="t-kw">=</span><span class="t-kw">{</span>e <span class="t-kw">=&gt;</span> <span class="t-fn">setText</span>(e.target.value)<span class="t-kw">}</span> /&gt;</code><span class="note">Controlled: state holds the value</span></div><div class="ln" data-l="28"><code>&lt;<span class="t-tag">input</span> <span class="t-c">defaultValue</span><span class="t-kw">=</span><span class="t-str">"Ana"</span> /&gt;</code><span class="note">Uncontrolled: the DOM holds the value</span></div><div class="ln bare"><code>&lt;<span class="t-tag">input</span> <span class="t-c">type</span><span class="t-kw">=</span><span class="t-str">"checkbox"</span> <span class="t-c">checked</span><span class="t-kw">=</span><span class="t-kw">{</span>on<span class="t-kw">}</span> <span class="t-c">onChange</span><span class="t-kw">=</span><span class="t-kw">{</span>e <span class="t-kw">=&gt;</span> <span class="t-fn">setOn</span>(e.target.checked)<span class="t-kw">}</span> /&gt;</code></div><div class="ln bare"><code><span class="t-kw">function</span> <span class="t-fn">handleSubmit</span>(e) {</code></div><div class="ln" data-l="21"><code>  e.<span class="t-fn">preventDefault</span>();</code><span class="note">Stop the browser's full-page submit</span></div><div class="ln bare"><code>  <span class="t-fn">save</span>(<span class="t-kw">new</span> <span class="t-cls">FormData</span>(e.currentTarget));</code></div><div class="ln bare"><code>}</code></div><div class="ln bare"><code>&lt;<span class="t-tag">form</span> <span class="t-c">onSubmit</span><span class="t-kw">=</span><span class="t-kw">{</span>handleSubmit<span class="t-kw">}</span>&gt;…&lt;/<span class="t-tag">form</span>&gt;</code></div><div class="ln" data-l="34"><code>&lt;<span class="t-tag">form</span> <span class="t-c">action</span><span class="t-kw">=</span><span class="t-kw">{</span>saveAction<span class="t-kw">}</span>&gt;…&lt;/<span class="t-tag">form</span>&gt;</code><span class="note">React 19: the function receives the FormData</span></div></div></section>
+<section class="card" id="effects" aria-labelledby="effects-h"><h2 id="effects-h">Effects</h2><p class="about">Effects run after React updates the screen, to sync a component with something outside React, like a timer, a subscription or a network request. If a value can be calculated from props or state, calculate it during render instead.</p><div class="code"><div class="ln bare"><code><span class="t-fn">useEffect</span>(() <span class="t-kw">=&gt;</span> {</code></div><div class="ln bare"><code>  <span class="t-c">document</span>.title <span class="t-kw">=</span> <span class="t-str">`</span><span class="t-kw">${</span>count<span class="t-kw">}</span><span class="t-str"> clicks`</span>;</code></div><div class="ln" data-l="12"><code>}, [count]);</code><span class="note">Dependencies: re-run only when count changes</span></div><div class="ln" data-l="27"><code><span class="t-fn">useEffect</span>(() <span class="t-kw">=&gt;</span> { … }, []);</code><span class="note">Run after the first render (twice in development Strict Mode)</span></div><div class="ln" data-l="23"><code><span class="t-fn">useEffect</span>(() <span class="t-kw">=&gt;</span> { … });</code><span class="note">No array: run after every render</span></div><div class="ln bare"><code><span class="t-fn">useEffect</span>(() <span class="t-kw">=&gt;</span> {</code></div><div class="ln bare"><code>  <span class="t-kw">const</span> id <span class="t-kw">=</span> <span class="t-fn">setInterval</span>(tick, <span class="t-c">1000</span>);</code></div><div class="ln" data-l="33"><code>  <span class="t-kw">return</span> () <span class="t-kw">=&gt;</span> <span class="t-fn">clearInterval</span>(id);</code><span class="note">Cleanup: runs before the next run and on unmount</span></div><div class="ln bare"><code>}, []);</code></div><div class="ln bare"><code><span class="t-fn">useEffect</span>(() <span class="t-kw">=&gt;</span> {</code></div><div class="ln" data-l="21"><code>  <span class="t-kw">let</span> ignore <span class="t-kw">=</span> <span class="t-c">false</span>;</code><span class="note">Ignore responses that arrive after id changed</span></div><div class="ln bare"><code>  <span class="t-fn">fetch</span>(<span class="t-str">`/api/users/</span><span class="t-kw">${</span>id<span class="t-kw">}</span><span class="t-str">`</span>)</code></div><div class="ln bare"><code>    .<span class="t-fn">then</span>(res <span class="t-kw">=&gt;</span> res.<span class="t-fn">json</span>())</code></div><div class="ln bare"><code>    .<span class="t-fn">then</span>(data <span class="t-kw">=&gt;</span> { <span class="t-kw">if</span> (<span class="t-kw">!</span>ignore) <span class="t-fn">setUser</span>(data); });</code></div><div class="ln bare"><code>  <span class="t-kw">return</span> () <span class="t-kw">=&gt;</span> { ignore <span class="t-kw">=</span> <span class="t-c">true</span>; };</code></div><div class="ln bare"><code>}, [id]);</code></div><div class="ln" data-l="48"><code><span class="t-kw">const</span> onTick <span class="t-kw">=</span> <span class="t-fn">useEffectEvent</span>(() <span class="t-kw">=&gt;</span> <span class="t-fn">log</span>(count));</code><span class="note">Call it from effects only; it reads the latest count without being a dependency</span></div></div></section>
+<section class="card" id="refs" aria-labelledby="refs-h"><h2 id="refs-h">Refs</h2><p class="about">A ref holds a value that survives re-renders without causing them. The most common use is reaching a DOM node to focus, measure or scroll it.</p><div class="code"><div class="ln" data-l="30"><code><span class="t-kw">const</span> inputRef <span class="t-kw">=</span> <span class="t-fn">useRef</span>(<span class="t-c">null</span>);</code><span class="note">An object { current: null } that's kept across renders</span></div><div class="ln" data-l="24"><code>&lt;<span class="t-tag">input</span> <span class="t-c">ref</span><span class="t-kw">=</span><span class="t-kw">{</span>inputRef<span class="t-kw">}</span> /&gt;</code><span class="note">React sets current to the DOM node</span></div><div class="ln" data-l="25"><code>inputRef.current.<span class="t-fn">focus</span>();</code><span class="note">Use it in handlers and effects, not during render</span></div><div class="ln" data-l="24"><code><span class="t-kw">const</span> timer <span class="t-kw">=</span> <span class="t-fn">useRef</span>(<span class="t-c">0</span>);</code><span class="note">Any value; changing it doesn't re-render</span></div><div class="ln bare"><code>timer.current <span class="t-kw">=</span> <span class="t-fn">setTimeout</span>(save, <span class="t-c">500</span>);</code></div><div class="ln" data-l="35"><code><span class="t-kw">function</span> <span class="t-fn">Field</span>({ ref, <span class="t-kw">...</span>props }) {</code><span class="note">React 19: ref is a normal prop, no forwardRef needed</span></div><div class="ln bare"><code>  <span class="t-kw">return</span> &lt;<span class="t-tag">input</span> <span class="t-c">ref</span><span class="t-kw">=</span><span class="t-kw">{</span>ref<span class="t-kw">}</span> <span class="t-kw">{</span><span class="t-kw">...</span>props<span class="t-kw">}</span> /&gt;;</code></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="19"><code>&lt;<span class="t-tag">div</span> <span class="t-c">ref</span><span class="t-kw">=</span><span class="t-kw">{</span>node <span class="t-kw">=&gt;</span> {</code><span class="note">Callback ref; returning a function cleans up (React 19)</span></div><div class="ln bare"><code>  <span class="t-fn">observe</span>(node);</code></div><div class="ln bare"><code>  <span class="t-kw">return</span> () <span class="t-kw">=&gt;</span> <span class="t-fn">unobserve</span>(node);</code></div><div class="ln bare"><code>}<span class="t-kw">}</span> /&gt;</code></div><div class="ln" data-l="37"><code>&lt;<span class="t-tag">Fragment</span> <span class="t-c">ref</span><span class="t-kw">=</span><span class="t-kw">{</span>groupRef<span class="t-kw">}</span>&gt;…&lt;/<span class="t-tag">Fragment</span>&gt;</code><span class="note">React 19.3: focus, events and observers for a group</span></div></div></section>
+<section class="card" id="context" aria-labelledby="context-h"><h2 id="context-h">Context</h2><p class="about">Context passes a value deep down the tree without threading it through every level of props. Any component below a provider can read the nearest value.</p><div class="code"><div class="ln" data-l="44"><code><span class="t-kw">const</span> <span class="t-cls">ThemeContext</span> <span class="t-kw">=</span> <span class="t-fn">createContext</span>(<span class="t-str">"light"</span>);</code><span class="note">The default, used when no provider is above</span></div><div class="ln" data-l="27"><code>&lt;<span class="t-tag">ThemeContext</span> <span class="t-c">value</span><span class="t-kw">=</span><span class="t-str">"dark"</span>&gt;</code><span class="note">React 19: render the context as its provider</span></div><div class="ln bare"><code>  &lt;<span class="t-tag">Page</span> /&gt;</code></div><div class="ln bare"><code>&lt;/<span class="t-tag">ThemeContext</span>&gt;</code></div><div class="ln" data-l="39"><code><span class="t-kw">const</span> theme <span class="t-kw">=</span> <span class="t-fn">useContext</span>(<span class="t-cls">ThemeContext</span>);</code><span class="note">Read the nearest value above this component</span></div><div class="ln" data-l="33"><code><span class="t-kw">const</span> theme2 <span class="t-kw">=</span> <span class="t-fn">use</span>(<span class="t-cls">ThemeContext</span>);</code><span class="note">Same, but use() can also be called conditionally</span></div></div></section>
+<section class="card" id="reducers" aria-labelledby="reducers-h"><h2 id="reducers-h">Reducers &amp; custom hooks</h2><p class="about">A reducer moves update logic out of the component: events dispatch actions, and one function decides the next state. Custom hooks package stateful logic so several components can reuse it.</p><div class="code"><div class="ln" data-l="33"><code><span class="t-kw">function</span> <span class="t-fn">reducer</span>(state, action) {</code><span class="note">Returns the next state; never changes the current one</span></div><div class="ln bare"><code>  <span class="t-kw">switch</span> (action.type) {</code></div><div class="ln bare"><code>    <span class="t-kw">case</span> <span class="t-str">"added"</span>: <span class="t-kw">return</span> [<span class="t-kw">...</span>state, action.item];</code></div><div class="ln bare"><code>    <span class="t-kw">case</span> <span class="t-str">"removed"</span>: <span class="t-kw">return</span> state.<span class="t-fn">filter</span>(t <span class="t-kw">=&gt;</span> t.id <span class="t-kw">!==</span> action.id);</code></div><div class="ln bare"><code>    <span class="t-kw">default</span>: <span class="t-kw">return</span> state;</code></div><div class="ln bare"><code>  }</code></div><div class="ln bare"><code>}</code></div><div class="ln bare"><code><span class="t-kw">const</span> [todos, dispatch] <span class="t-kw">=</span> <span class="t-fn">useReducer</span>(reducer, []);</code></div><div class="ln" data-l="34"><code><span class="t-fn">dispatch</span>({ type: <span class="t-str">"added"</span>, item });</code><span class="note">Describe what happened</span></div><div class="ln" data-l="37"><code><span class="t-kw">function</span> <span class="t-fn">useToggle</span>(initial <span class="t-kw">=</span> <span class="t-c">false</span>) {</code><span class="note">Custom hook: a function named use… that calls hooks</span></div><div class="ln bare"><code>  <span class="t-kw">const</span> [on, setOn] <span class="t-kw">=</span> <span class="t-fn">useState</span>(initial);</code></div><div class="ln bare"><code>  <span class="t-kw">const</span> toggle <span class="t-kw">=</span> () <span class="t-kw">=&gt;</span> <span class="t-fn">setOn</span>(o <span class="t-kw">=&gt;</span> <span class="t-kw">!</span>o);</code></div><div class="ln bare"><code>  <span class="t-kw">return</span> [on, toggle];</code></div><div class="ln bare"><code>}</code></div><div class="ln" data-l="39"><code><span class="t-kw">const</span> [open, toggleOpen] <span class="t-kw">=</span> <span class="t-fn">useToggle</span>();</code><span class="note">Every call gets its own state</span></div></div></section>
+<section class="card" id="performance" aria-labelledby="performance-h"><h2 id="performance-h">Performance</h2><p class="about">React re-renders a component when its state, its parent or a context it reads changes. These tools skip work that hasn't changed; with React Compiler turned on, most memoization happens automatically.</p><div class="code"><div class="ln" data-l="56"><code><span class="t-kw">const</span> sorted <span class="t-kw">=</span> <span class="t-fn">useMemo</span>(() <span class="t-kw">=&gt;</span> <span class="t-fn">sortItems</span>(items), [items]);</code><span class="note">Cache a calculation between renders</span></div><div class="ln" data-l="49"><code><span class="t-kw">const</span> onSave <span class="t-kw">=</span> <span class="t-fn">useCallback</span>(() <span class="t-kw">=&gt;</span> <span class="t-fn">save</span>(id), [id]);</code><span class="note">Cache a function so its identity stays the same</span></div><div class="ln" data-l="47"><code><span class="t-kw">const</span> <span class="t-cls">Row</span> <span class="t-kw">=</span> <span class="t-fn">memo</span>(<span class="t-kw">function</span> <span class="t-fn">Row</span>({ item }) { … });</code><span class="note">Skip re-rendering when props haven't changed</span></div><div class="ln" data-l="24"><code>&lt;<span class="t-tag">Profile</span> <span class="t-c">key</span><span class="t-kw">=</span><span class="t-kw">{</span>userId<span class="t-kw">}</span> /&gt;</code><span class="note">A different key resets the component's state</span></div><div class="ln" data-l="44"><code><span class="t-kw">const</span> <span class="t-cls">Chart</span> <span class="t-kw">=</span> <span class="t-fn">lazy</span>(() <span class="t-kw">=&gt;</span> <span class="t-kw">import</span>(<span class="t-str">"./Chart"</span>));</code><span class="note">Load the component's code the first time it renders</span></div><div class="ln" data-l="53"><code>&lt;<span class="t-tag">Suspense</span> <span class="t-c">fallback</span><span class="t-kw">=</span><span class="t-kw">{</span>&lt;<span class="t-tag">Spinner</span> /&gt;<span class="t-kw">}</span>&gt;&lt;<span class="t-tag">Chart</span> /&gt;&lt;/<span class="t-tag">Suspense</span>&gt;</code><span class="note">Show a fallback while it loads</span></div></div></section>
+<section class="card" id="async" aria-labelledby="async-h"><h2 id="async-h">Suspense, transitions &amp; actions</h2><p class="about">Suspense shows a fallback while part of the tree waits for code or data. Transitions mark updates as non-urgent so the UI stays responsive, and actions handle async work like form submissions with built-in pending states.</p><div class="code"><div class="ln" data-l="33"><code>&lt;<span class="t-tag">Suspense</span> <span class="t-c">fallback</span><span class="t-kw">=</span><span class="t-kw">{</span>&lt;<span class="t-tag">Spinner</span> /&gt;<span class="t-kw">}</span>&gt;</code><span class="note">Shown while anything inside is waiting</span></div><div class="ln bare"><code>  &lt;<span class="t-tag">Comments</span> /&gt;</code></div><div class="ln bare"><code>&lt;/<span class="t-tag">Suspense</span>&gt;</code></div><div class="ln" data-l="26"><code><span class="t-kw">const</span> data <span class="t-kw">=</span> <span class="t-fn">use</span>(promise);</code><span class="note">Wait for a promise created outside render (cached or passed in)</span></div><div class="ln bare"><code><span class="t-kw">const</span> [isPending, startTransition] <span class="t-kw">=</span> <span class="t-fn">useTransition</span>();</code></div><div class="ln" data-l="39"><code><span class="t-fn">startTransition</span>(() <span class="t-kw">=&gt;</span> <span class="t-fn">setTab</span>(<span class="t-str">"posts"</span>));</code><span class="note">Non-urgent update: the UI stays responsive while it renders</span></div><div class="ln" data-l="41"><code><span class="t-kw">const</span> deferred <span class="t-kw">=</span> <span class="t-fn">useDeferredValue</span>(query);</code><span class="note">Lags behind while the user types fast</span></div><div class="ln" data-l="68"><code><span class="t-kw">const</span> [state, formAction, pending] <span class="t-kw">=</span> <span class="t-fn">useActionState</span>(saveName, <span class="t-c">null</span>);</code><span class="note">An action's latest result and pending flag</span></div><div class="ln" data-l="79"><code><span class="t-kw">const</span> [shown, addOptimistic] <span class="t-kw">=</span> <span class="t-fn">useOptimistic</span>(todos, (list, t) <span class="t-kw">=&gt;</span> [<span class="t-kw">...</span>list, t]);</code><span class="note">Show a change before the server confirms it</span></div><div class="ln" data-l="45"><code><span class="t-kw">const</span> { pending: sending } <span class="t-kw">=</span> <span class="t-fn">useFormStatus</span>();</code><span class="note">In a component inside a form: is it submitting? (from react-dom)</span></div><div class="ln" data-l="42"><code>&lt;<span class="t-tag">ViewTransition</span>&gt;&lt;<span class="t-tag">Panel</span> /&gt;&lt;/<span class="t-tag">ViewTransition</span>&gt;</code><span class="note">React 19.3: animate when a transition adds, removes or changes it</span></div></div></section>
+<section class="card" id="pitfalls" aria-labelledby="pitfalls-h"><h2 id="pitfalls-h">Rules &amp; pitfalls</h2><p class="about">Hooks must run in the same order on every render, and state changes only show up when you pass React a new value. Most React bugs come from breaking one of these.</p><div class="code"><div class="ln" data-l="22"><code><span class="t-kw">if</span> (open) <span class="t-fn">useState</span>(<span class="t-c">0</span>);</code><span class="note">✗ Hooks can't go in conditions, loops or after an early return</span></div><div class="ln" data-l="30"><code><span class="t-kw">const</span> [a, setA] <span class="t-kw">=</span> <span class="t-fn">useState</span>(<span class="t-c">0</span>);</code><span class="note">✓ Call hooks at the top level of a component or hook</span></div><div class="ln" data-l="34"><code>items.<span class="t-fn">push</span>(item); <span class="t-fn">setItems</span>(items);</code><span class="note">✗ Same array: React sees no change</span></div><div class="ln" data-l="27"><code><span class="t-fn">setItems</span>([<span class="t-kw">...</span>items, item]);</code><span class="note">✓ Pass a new array</span></div><div class="ln" data-l="38"><code>&lt;<span class="t-tag">button</span> <span class="t-c">onClick</span><span class="t-kw">=</span><span class="t-kw">{</span><span class="t-fn">save</span>()<span class="t-kw">}</span>&gt;Save&lt;/<span class="t-tag">button</span>&gt;</code><span class="note">✗ Calls save while rendering</span></div><div class="ln" data-l="44"><code>&lt;<span class="t-tag">button</span> <span class="t-c">onClick</span><span class="t-kw">=</span><span class="t-kw">{</span>() <span class="t-kw">=&gt;</span> <span class="t-fn">save</span>()<span class="t-kw">}</span>&gt;Save&lt;/<span class="t-tag">button</span>&gt;</code><span class="note">✓ Passes a function to call on click</span></div><div class="ln" data-l="20"><code>{count <span class="t-kw">&amp;&amp;</span> &lt;<span class="t-tag">Badge</span> /&gt;}</code><span class="note">✗ Renders 0 when count is 0</span></div><div class="ln" data-l="24"><code>{count <span class="t-kw">&gt;</span> <span class="t-c">0</span> <span class="t-kw">&amp;&amp;</span> &lt;<span class="t-tag">Badge</span> /&gt;}</code><span class="note">✓ Keep the left side a boolean</span></div><div class="ln" data-l="22"><code>&lt;<span class="t-tag">li</span> <span class="t-c">key</span><span class="t-kw">=</span><span class="t-kw">{</span>index<span class="t-kw">}</span>&gt;…&lt;/<span class="t-tag">li</span>&gt;</code><span class="note">✗ Index keys mix up state when items move</span></div><div class="ln" data-l="24"><code>&lt;<span class="t-tag">li</span> <span class="t-c">key</span><span class="t-kw">=</span><span class="t-kw">{</span>item.id<span class="t-kw">}</span>&gt;…&lt;/<span class="t-tag">li</span>&gt;</code><span class="note">✓ Use a stable id</span></div></div></section>
+<section class="card" id="typescript" aria-labelledby="typescript-h"><h2 id="typescript-h">With TypeScript</h2><p class="about">React works well with TypeScript: type a component's props like a function's parameters, and most hooks infer their types from the initial value.</p><div class="code"><div class="ln bare"><code><span class="t-kw">import</span> <span class="t-kw">type</span> { <span class="t-cls">ReactNode</span>, <span class="t-cls">ChangeEvent</span>, <span class="t-cls">ComponentProps</span> } <span class="t-kw">from</span> <span class="t-str">"react"</span>;</code></div><div class="ln" data-l="59"><code><span class="t-kw">type</span> <span class="t-cls">ButtonProps</span> <span class="t-kw">=</span> { label: <span class="t-c">string</span>; onClick<span class="t-kw">?</span>: () <span class="t-kw">=&gt;</span> <span class="t-kw">void</span> };</code><span class="note">Describe the props</span></div><div class="ln bare"><code><span class="t-kw">function</span> <span class="t-fn">Button</span>({ label, onClick }: <span class="t-cls">ButtonProps</span>) { … }</code></div><div class="ln" data-l="60"><code><span class="t-kw">function</span> <span class="t-fn">Layout</span>({ children }: { children: <span class="t-cls">ReactNode</span> }) { … }</code><span class="note">Anything React can render</span></div><div class="ln" data-l="52"><code><span class="t-kw">const</span> [user, setUser] <span class="t-kw">=</span> useState&lt;<span class="t-cls">User</span> <span class="t-kw">|</span> <span class="t-c">null</span>&gt;(<span class="t-c">null</span>);</code><span class="note">Give the type when the initial value can't show it</span></div><div class="ln bare"><code><span class="t-kw">const</span> inputRef <span class="t-kw">=</span> useRef&lt;<span class="t-cls">HTMLInputElement</span>&gt;(<span class="t-c">null</span>);</code></div><div class="ln" data-l="57"><code><span class="t-kw">function</span> <span class="t-fn">onChange</span>(e: <span class="t-cls">ChangeEvent</span>&lt;<span class="t-cls">HTMLInputElement</span>&gt;) { … }</code><span class="note">Typed event</span></div><div class="ln" data-l="42"><code><span class="t-kw">type</span> <span class="t-cls">InputProps</span> <span class="t-kw">=</span> <span class="t-cls">ComponentProps</span>&lt;<span class="t-str">"input"</span>&gt;;</code><span class="note">Every prop a built-in element accepts</span></div></div></section>
+<section class="card" id="setup" aria-labelledby="setup-h"><h2 id="setup-h">Setup</h2><p class="about">Most new apps start with a build tool like Vite or a framework like Next.js. Either way, a root component is mounted into one HTML element and React manages everything inside it.</p><div class="code"><div class="ln" data-l="49"><code><span class="t-fn">npm</span> create vite@latest my-app <span class="t-c">--</span> <span class="t-c">--template</span> react</code><span class="note">New app with Vite (react-ts for TypeScript)</span></div><div class="ln" data-l="26"><code><span class="t-fn">npx</span> create-next-app@latest</code><span class="note">Full-stack app with Next.js</span></div><div class="ln" data-l="27"><code><span class="t-fn">npm</span> install react react-dom</code><span class="note">Add React to an existing project</span></div></div><div class="code"><div class="ln bare"><code><span class="t-kw">import</span> { <span class="t-cls">StrictMode</span> } <span class="t-kw">from</span> <span class="t-str">"react"</span>;</code></div><div class="ln bare"><code><span class="t-kw">import</span> { createRoot } <span class="t-kw">from</span> <span class="t-str">"react-dom/client"</span>;</code></div><div class="ln" data-l="51"><code><span class="t-fn">createRoot</span>(<span class="t-c">document</span>.<span class="t-fn">getElementById</span>(<span class="t-str">"root"</span>)).<span class="t-fn">render</span>(</code><span class="note">Mount the app into an HTML element</span></div><div class="ln" data-l="34"><code>  &lt;<span class="t-tag">StrictMode</span>&gt;&lt;<span class="t-tag">App</span> /&gt;&lt;/<span class="t-tag">StrictMode</span>&gt;</code><span class="note">Extra checks in development only</span></div><div class="ln bare"><code>);</code></div></div></section>
+  </main>
+  <p class="empty" id="empty" hidden>No card mentions “<span id="empty-q"></span>”.<button type="button" id="clear">Clear filter</button></p>
+</div>
+
+<script>
+(() => {
+  const grid = document.getElementById("grid");
+  const cards = Array.from(grid.querySelectorAll(".card"));
+  const texts = cards.map(c => c.textContent.toLowerCase());
+  const input = document.getElementById("filter");
+  const count = document.getElementById("count");
+  const empty = document.getElementById("empty");
+  const emptyQ = document.getElementById("empty-q");
+  const total = cards.length;
+  let lastW = -1, raf = 0;
+
+  // Masonry: as many columns as fit at --min width; each card goes to the shortest column, in reading order.
+  function layout() {
+    const cs = getComputedStyle(grid);
+    const gap = parseFloat(cs.getPropertyValue("--gap")) || 16;
+    const min = parseFloat(cs.getPropertyValue("--min")) || 420;
+    const n = Math.max(1, Math.floor((grid.clientWidth + gap) / (min + gap)));
+    const cols = Array.from({ length: n }, () => {
+      const d = document.createElement("div");
+      d.className = "col";
+      return d;
+    });
+    grid.replaceChildren(...cols);
+    fitNotes((grid.clientWidth - (n - 1) * gap) / n);
+    const heights = new Array(n).fill(0);
+    for (const card of cards) {
+      if (card.hidden) continue;
+      let k = 0;
+      for (let i = 1; i < n; i++) if (heights[i] < heights[k] - 1) k = i;
+      cols[k].appendChild(card);
+      heights[k] += card.offsetHeight + gap;
+    }
+  }
+  // Explanations line up in one column per card when there's room; lines too long for that
+  // get their explanation on the next line instead.
+  const NOTE_MIN = 20; // characters reserved for an explanation beside the code
+  const probe = document.createElement("span");
+  probe.className = "code probe";
+  probe.setAttribute("aria-hidden", "true");
+  probe.textContent = "0".repeat(20);
+  document.body.appendChild(probe);
+  const blocks = cards.map(c => Array.from(c.querySelectorAll(".code")));
+  const cardStyle = getComputedStyle(cards[0]);
+  const chrome = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"]
+    .reduce((s, k) => s + (parseFloat(cardStyle[k]) || 0), 0) || 36;
+  function fitNotes(colWidth) {
+    const ch = probe.getBoundingClientRect().width / 20 || 7.5;
+    const avail = Math.floor((colWidth - chrome) / ch);
+    const maxCw = Math.min(avail - 1 - NOTE_MIN, 42); // keep one outlier from squeezing every note
+    for (const list of blocks) for (const block of list) {
+      let cw = 0;
+      block.querySelectorAll(".ln[data-l]").forEach(ln => {
+        const len = +ln.dataset.l;
+        const long = len > maxCw;
+        ln.classList.toggle("long", long);
+        if (!long && len > cw) cw = len;
+      });
+      block.style.setProperty("--cw", cw);
+    }
+  }
+  function schedule() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(layout);
+  }
+  new ResizeObserver(entries => {
+    const w = entries[0].contentRect.width;
+    if (Math.abs(w - lastW) > 0.5) { lastW = w; schedule(); }
+  }).observe(grid);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+
+  // Filter: hide cards that don't mention the text, highlight the lines that do.
+  function applyFilter() {
+    const raw = input.value.trim();
+    const q = raw.toLowerCase();
+    let shown = 0;
+    cards.forEach((card, i) => {
+      const match = !q || texts[i].includes(q);
+      card.hidden = !match;
+      if (match) shown++;
+      card.querySelectorAll(".ln, tbody tr").forEach(el => {
+        el.classList.toggle("hit", !!q && el.textContent.toLowerCase().includes(q));
+      });
+    });
+    count.textContent = q ? `${shown} of ${total} cards` : `${total} cards`;
+    emptyQ.textContent = raw;
+    empty.hidden = shown > 0;
+    layout();
+  }
+  input.addEventListener("input", applyFilter);
+  document.getElementById("clear").addEventListener("click", () => {
+    input.value = "";
+    applyFilter();
+    input.focus();
+  });
+  document.addEventListener("keydown", e => {
+    const typing = e.target.closest && e.target.closest("input, textarea, [contenteditable]");
+    if (e.key === "/" && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      input.focus();
+    } else if (e.key === "Escape" && e.target === input && input.value) {
+      input.value = "";
+      applyFilter();
+    }
+  });
+
+  layout();
+})();
+</script>
+</body>
+</html>

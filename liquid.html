@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Shopify Liquid cheat sheet (compact)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,100..900&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --page: #1C1C1C;
+  --card: #262626;
+  --ink: #E3E3E3;
+  --border: #3C3C3C;
+  --note: #9A9A9A;
+  --rule: #353535;
+  --chip: #313131;
+  --code-fg: #E6EDF3;   /* GitHub Dark Default */
+  --comment: #8B949E;
+  --about: #B4B4B4;
+  --kw: #FF7B72;
+  --str: #A5D6FF;
+  --const: #79C0FF;
+  --fn: #D2A8FF;
+  --cls: #FFA657;
+  --tag: #7EE787;
+  --hit: #3A3A3A;
+  --gap: 16px;
+  --bar-h: 42px;
+  --min: 420px;
+  --sans: "Inter", "Helvetica Neue", Arial, system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: dark;
+}
+:root {
+  box-sizing: border-box;
+  padding-top: env(safe-area-inset-top, 0px);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  background: var(--page);
+}
+html { scroll-padding-top: env(safe-area-inset-top, 0px); }
+*, *::before, *::after { box-sizing: inherit; }
+body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+}
+.wrap { padding: 20px clamp(14px, 2.4vw, 32px) 40px; }
+
+/* Header */
+header { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; margin-bottom: 16px; }
+.sheet-title {
+  margin: 0; flex: none;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.02em;
+  line-height: var(--bar-h);    /* same height as the filter box */
+  color: var(--ink);
+}
+.tools { display: flex; align-items: center; gap: 12px; flex: 0 1 380px; }
+.field { position: relative; flex: 1 1 auto; }
+.field input {
+  width: 100%; font: inherit; font-size: 15px; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  height: var(--bar-h); padding: 0 38px 0 12px;
+}
+.field input::placeholder { color: var(--note); }
+.field kbd {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  font-family: var(--mono); font-size: 12px; line-height: 1; color: var(--note);
+  border: 1.5px solid var(--rule); border-radius: 4px; padding: 3px 6px; pointer-events: none;
+}
+.field input:focus + kbd { visibility: hidden; }
+.count { font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.field input:focus-visible { outline-offset: 1px; }
+
+/* Masonry */
+.grid { display: flex; align-items: flex-start; gap: var(--gap); }
+.col { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; gap: var(--gap); }
+.card {
+  background: var(--card);
+  padding: 16px 18px 18px;
+}
+.card[hidden] { display: none; }
+.card h2 {
+  margin: 0 0 10px;
+  font-size: 19px; font-weight: 800;
+  line-height: 1.15; letter-spacing: -0.01em;
+}
+.card p { margin: 12px 0 8px; font-size: 14px; }
+.card .about { margin: -2px 0 12px; font-size: 13.5px; line-height: 1.5; color: var(--about); }
+.card .about code.i { font-size: 12px; }
+
+/* Code lines: code on the left, explanation on the right (wraps below when the card is narrow) */
+.code { font-family: var(--mono); font-size: 12.5px; line-height: 1.6; color: var(--code-fg); }
+.ln { display: flex; flex-wrap: wrap; align-items: baseline; border-radius: 3px; }
+.ln > code {
+  font: inherit; white-space: pre-wrap; overflow-wrap: anywhere;
+  flex: 0 0 auto; width: min(calc((var(--cw, 0) + 1) * 1ch), 100%);
+}
+.ln.long > code, .ln.bare > code { width: auto; max-width: 100%; }
+.ln .note {
+  flex: 1 1 18ch; min-width: 0; padding-left: 2ch;
+  font-family: var(--sans); font-size: 13px; line-height: 1.45; color: var(--comment);
+}
+.ln.long .note { flex-basis: 100%; padding-left: 2ch; }
+.probe { position: absolute; visibility: hidden; white-space: pre; pointer-events: none; }
+.ln.gap { height: 0.75em; }
+.code + .code { margin-top: 14px; }
+.ln.file { margin: 2px 0 1px; }
+.ln.file span {
+  font-weight: 600; font-size: 11.5px; line-height: 1.7;
+  background: var(--chip); border-radius: 4px; padding: 0 6px;
+}
+.t-kw { color: var(--kw); }
+.t-str { color: var(--str); }
+.t-c { color: var(--const); }
+.t-fn { color: var(--fn); }
+.t-cls { color: var(--cls); }
+.t-tag { color: var(--tag); }
+.t-cm { color: var(--comment); }
+code.i {
+  font-family: var(--mono); font-size: 12.5px; white-space: pre; color: var(--code-fg);
+  background: var(--chip); border-radius: 4px; padding: 1px 5px;
+  display: inline-block; margin: 1px 0; line-height: 1.5;
+}
+
+/* Tables */
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+thead th {
+  text-align: left; font-weight: 650; font-size: 12.5px; color: var(--note);
+  padding: 0 10px 5px 0;
+}
+tbody th, tbody td { text-align: left; vertical-align: top; padding: 6px 10px 6px 0; border-top: 1px solid var(--rule); }
+tbody tr > :last-child { padding-right: 0; }
+.types tbody th { font-weight: 650; white-space: nowrap; width: 1%; padding-top: 8px; }
+.aside { color: var(--note); font-size: 13px; }
+.ops td.op { width: 36%; }
+.ops td.op code { font-family: var(--mono); font-size: 13px; word-spacing: 0.2em; color: var(--code-fg); }
+.kind { display: block; font-weight: 650; }
+.desc { display: block; color: var(--note); font-size: 13px; }
+
+/* Filter matches */
+.ln.hit, tbody tr.hit > * { background: var(--hit); }
+.ln.hit { box-shadow: 0 0 0 3px var(--hit); }
+
+.empty { margin: 8px 0 0; font-size: 16px; }
+.empty button {
+  font: inherit; font-size: 15px; font-weight: 650; color: var(--ink);
+  background: var(--card); border: 2px solid var(--border); border-radius: 8px;
+  padding: 6px 12px; margin-left: 8px; cursor: pointer;
+}
+
+@media (hover: none) { .field kbd { display: none; } .field input { padding-right: 12px; } }
+@media (max-width: 640px) {
+  .tools { flex-basis: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1 class="sheet-title">Shopify Liquid</h1>
+    <div class="tools">
+      <div class="field">
+        <label class="sr" for="filter">Filter cards</label>
+        <input id="filter" type="search" placeholder="Filter: render, money, schema…" autocomplete="off" spellcheck="false" aria-keyshortcuts="/">
+        <kbd aria-hidden="true">/</kbd>
+      </div>
+      <span class="count" id="count" aria-live="polite">15 cards</span>
+    </div>
+  </header>
+
+  <main class="grid" id="grid">
+<section class="card" id="basics" aria-labelledby="basics-h"><h2 id="basics-h">Liquid basics</h2><p class="about">Liquid is Shopify's template language: it runs on Shopify's servers and outputs the HTML each page sends. Double braces print a value, and brace-percent tags run logic.</p><div class="code"><div class="ln" data-l="19"><code><span class="t-kw">{{</span> product.title <span class="t-kw">}}</span></code><span class="note">Output: print a value</span></div><div class="ln" data-l="28"><code><span class="t-kw">{{</span> product.title <span class="t-kw">|</span> <span class="t-fn">upcase</span> <span class="t-kw">}}</span></code><span class="note">Filter: change a value before it's printed</span></div><div class="ln" data-l="45"><code><span class="t-kw">{%</span> <span class="t-kw">if</span> product.available <span class="t-kw">%}</span>In stock<span class="t-kw">{%</span> <span class="t-kw">endif</span> <span class="t-kw">%}</span></code><span class="note">Tag: logic and control flow</span></div><div class="ln" data-l="20"><code><span class="t-kw">{%-</span> <span class="t-kw">assign</span> x <span class="t-kw">=</span> <span class="t-c">1</span> <span class="t-kw">-%}</span></code><span class="note">Hyphens strip the whitespace around the tag</span></div><div class="ln bare"><code><span class="t-cm">{% # an inline comment %}</span></code></div><div class="ln bare"><code><span class="t-cm">{% comment %}</span><span class="t-cm">A longer comment</span><span class="t-cm">{% endcomment %}</span></code></div><div class="ln" data-l="34"><code><span class="t-kw">{%</span> <span class="t-kw">raw</span> <span class="t-kw">%}</span>{{ not run }}<span class="t-kw">{%</span> <span class="t-kw">endraw</span> <span class="t-kw">%}</span></code><span class="note">Print Liquid syntax without running it</span></div><div class="ln" data-l="9"><code><span class="t-kw">{%</span><span class="t-kw"> liquid</span></code><span class="note">Several tags in one block, one per line</span></div><div class="ln bare"><code>  <span class="t-kw">assign</span> sale <span class="t-kw">=</span> product.compare_at_price</code></div><div class="ln bare"><code>  <span class="t-kw">if</span> sale</code></div><div class="ln bare"><code>    <span class="t-kw">echo</span> <span class="t-str">'On sale'</span></code></div><div class="ln bare"><code>  <span class="t-kw">endif</span></code></div><div class="ln bare"><code><span class="t-kw">%}</span></code></div></div></section>
+<section class="card" id="variables" aria-labelledby="variables-h"><h2 id="variables-h">Variables &amp; types</h2><p class="about">Variables hold strings, numbers, booleans, nil, arrays and objects. Every value counts as true in a condition except nil and false, so an empty string is still true.</p><div class="code"><div class="ln" data-l="25"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> name <span class="t-kw">=</span> <span class="t-str">'Ana'</span> <span class="t-kw">%}</span></code><span class="note">Create or replace a variable</span></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> count <span class="t-kw">=</span> <span class="t-c">3</span> <span class="t-kw">%}</span></code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> on_sale <span class="t-kw">=</span> <span class="t-c">true</span> <span class="t-kw">%}</span></code></div><div class="ln" data-l="45"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> colors <span class="t-kw">=</span> <span class="t-str">'red,blue'</span> <span class="t-kw">|</span> <span class="t-fn">split</span>: <span class="t-str">','</span> <span class="t-kw">%}</span></code><span class="note">Arrays come from objects or split</span></div><div class="ln" data-l="53"><code><span class="t-kw">{%</span> <span class="t-kw">capture</span> greeting <span class="t-kw">%}</span>Hi, <span class="t-kw">{{</span> name <span class="t-kw">}}</span>!<span class="t-kw">{%</span> <span class="t-kw">endcapture</span> <span class="t-kw">%}</span></code><span class="note">Save rendered output as a string</span></div><div class="ln" data-l="42"><code><span class="t-kw">{{</span> product.title <span class="t-kw">}}</span> <span class="t-kw">{{</span> product[<span class="t-str">'title'</span>] <span class="t-kw">}}</span></code><span class="note">Dot or bracket access</span></div><div class="ln" data-l="50"><code><span class="t-kw">{{</span> product.images[<span class="t-c">0</span>] <span class="t-kw">}}</span> <span class="t-kw">{{</span> product.images.first <span class="t-kw">}}</span></code><span class="note">By index, or first, last and size</span></div><div class="ln" data-l="49"><code><span class="t-kw">{%</span> <span class="t-kw">if</span> product.description <span class="t-kw">==</span> <span class="t-c">blank</span> <span class="t-kw">%}</span>…<span class="t-kw">{%</span> <span class="t-kw">endif</span> <span class="t-kw">%}</span></code><span class="note">Blank: nil, false or empty</span></div><div class="ln" data-l="40"><code><span class="t-kw">{%</span> <span class="t-kw">if</span> cart.items <span class="t-kw">==</span> <span class="t-c">empty</span> <span class="t-kw">%}</span>…<span class="t-kw">{%</span> <span class="t-kw">endif</span> <span class="t-kw">%}</span></code><span class="note">Empty: an empty string, array or object</span></div></div></section>
+<section class="card" id="conditions" aria-labelledby="conditions-h"><h2 id="conditions-h">Conditions</h2><p class="about">Conditions compare values with ==, !=, &lt;, &gt;, &lt;=, &gt;= and contains, and combine them with and or or. There are no parentheses, and several and/or operators are checked from right to left.</p><div class="code"><div class="ln" data-l="29"><code><span class="t-kw">{%</span> <span class="t-kw">if</span> product.price <span class="t-kw">&gt;</span> <span class="t-c">5000</span> <span class="t-kw">%}</span></code><span class="note">Prices are in cents: 5000 is $50.00</span></div><div class="ln bare"><code>  Free shipping</code></div><div class="ln" data-l="40"><code><span class="t-kw">{%</span> <span class="t-kw">elsif</span> product.tags <span class="t-kw">contains</span> <span class="t-str">'sale'</span> <span class="t-kw">%}</span></code><span class="note">Contains: part of a string, or an item in an array</span></div><div class="ln bare"><code>  On sale</code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">else</span> <span class="t-kw">%}</span></code></div><div class="ln bare"><code>  Regular price</code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">endif</span> <span class="t-kw">%}</span></code></div><div class="ln" data-l="53"><code><span class="t-kw">{%</span> <span class="t-kw">unless</span> product.available <span class="t-kw">%}</span>Sold out<span class="t-kw">{%</span> <span class="t-kw">endunless</span> <span class="t-kw">%}</span></code><span class="note">The opposite of if</span></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">case</span> product.type <span class="t-kw">%}</span></code></div><div class="ln" data-l="31"><code>  <span class="t-kw">{%</span> <span class="t-kw">when</span> <span class="t-str">'Shirt'</span>, <span class="t-str">'Tee'</span> <span class="t-kw">%}</span>Tops</code><span class="note">Several values in one when</span></div><div class="ln bare"><code>  <span class="t-kw">{%</span> <span class="t-kw">else</span> <span class="t-kw">%}</span>Other</code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">endcase</span> <span class="t-kw">%}</span></code></div><div class="ln" data-l="33"><code><span class="t-kw">{%</span> <span class="t-kw">if</span> a <span class="t-kw">and</span> b <span class="t-kw">or</span> c <span class="t-kw">%}</span>…<span class="t-kw">{%</span> <span class="t-kw">endif</span> <span class="t-kw">%}</span></code><span class="note">Read as a and (b or c)</span></div></div></section>
+<section class="card" id="loops" aria-labelledby="loops-h"><h2 id="loops-h">Loops</h2><p class="about">for repeats over an array or a range. Inside a loop, the forloop object tells you where you are, which helps with separators, first and last items, and numbering.</p><div class="code"><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">for</span> product <span class="t-kw">in</span> collection.products <span class="t-kw">%}</span></code></div><div class="ln" data-l="42"><code>  <span class="t-kw">{{</span> forloop.index <span class="t-kw">}}</span>. <span class="t-kw">{{</span> product.title <span class="t-kw">}}</span></code><span class="note">Index starts at 1; index0 starts at 0</span></div><div class="ln" data-l="40"><code>  <span class="t-kw">{%</span> <span class="t-kw">if</span> forloop.last <span class="t-kw">%}</span>(last)<span class="t-kw">{%</span> <span class="t-kw">endif</span> <span class="t-kw">%}</span></code><span class="note">Also first, length and rindex</span></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">else</span> <span class="t-kw">%}</span></code></div><div class="ln" data-l="17"><code>  No products yet</code><span class="note">Runs when the array is empty</span></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">endfor</span> <span class="t-kw">%}</span></code></div><div class="ln" data-l="40"><code><span class="t-kw">{%</span> <span class="t-kw">for</span> i <span class="t-kw">in</span> (<span class="t-c">1</span><span class="t-kw">..</span><span class="t-c">5</span>) <span class="t-kw">%}</span><span class="t-kw">{{</span> i <span class="t-kw">}}</span><span class="t-kw">{%</span> <span class="t-kw">endfor</span> <span class="t-kw">%}</span></code><span class="note">A range of numbers</span></div><div class="ln" data-l="60"><code><span class="t-kw">{%</span> <span class="t-kw">for</span> item <span class="t-kw">in</span> cart.items <span class="t-c">limit</span>: <span class="t-c">3</span> <span class="t-c">offset</span>: <span class="t-c">1</span> <span class="t-kw">%}</span>…<span class="t-kw">{%</span> <span class="t-kw">endfor</span> <span class="t-kw">%}</span></code><span class="note">Take 3, skipping the first</span></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">for</span> tag <span class="t-kw">in</span> product.tags <span class="t-kw">reversed</span> <span class="t-kw">%}</span>…<span class="t-kw">{%</span> <span class="t-kw">endfor</span> <span class="t-kw">%}</span></code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">for</span> variant <span class="t-kw">in</span> product.variants <span class="t-kw">%}</span></code></div><div class="ln" data-l="61"><code>  <span class="t-kw">{%</span> <span class="t-kw">unless</span> variant.available <span class="t-kw">%}</span><span class="t-kw">{%</span> <span class="t-kw">continue</span> <span class="t-kw">%}</span><span class="t-kw">{%</span> <span class="t-kw">endunless</span> <span class="t-kw">%}</span></code><span class="note">Skip to the next item ({% break %} stops the loop)</span></div><div class="ln" data-l="64"><code>  &lt;<span class="t-tag">li</span> <span class="t-c">class</span>=<span class="t-str">"</span><span class="t-kw">{%</span> <span class="t-kw">cycle</span> <span class="t-str">'odd'</span>, <span class="t-str">'even'</span> <span class="t-kw">%}</span><span class="t-str">"</span>&gt;<span class="t-kw">{{</span> variant.title <span class="t-kw">}}</span>&lt;/<span class="t-tag">li</span>&gt;</code><span class="note">Cycle alternates values on each pass</span></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">endfor</span> <span class="t-kw">%}</span></code></div></div></section>
+<section class="card" id="strings" aria-labelledby="strings-h"><h2 id="strings-h">String filters</h2><p class="about">Filters run left to right, each one taking the result of the one before. Arguments follow a colon and are separated by commas.</p><div class="code"><div class="ln" data-l="32"><code><span class="t-kw">{{</span> <span class="t-str">'hello world'</span> <span class="t-kw">|</span> <span class="t-fn">capitalize</span> <span class="t-kw">}}</span></code><span class="note">→ Hello world</span></div><div class="ln" data-l="22"><code><span class="t-kw">{{</span> <span class="t-str">'Hello'</span> <span class="t-kw">|</span> <span class="t-fn">upcase</span> <span class="t-kw">}}</span></code><span class="note">→ HELLO (also downcase)</span></div><div class="ln" data-l="29"><code><span class="t-kw">{{</span> <span class="t-str">'shop'</span> <span class="t-kw">|</span> <span class="t-fn">append</span>: <span class="t-str">'.com'</span> <span class="t-kw">}}</span></code><span class="note">→ shop.com (also prepend)</span></div><div class="ln" data-l="33"><code><span class="t-kw">{{</span> <span class="t-str">'a-b-c'</span> <span class="t-kw">|</span> <span class="t-fn">replace</span>: <span class="t-str">'-'</span>, <span class="t-str">' '</span> <span class="t-kw">}}</span></code><span class="note">→ a b c (also replace_first, remove, remove_first)</span></div><div class="ln" data-l="22"><code><span class="t-kw">{{</span> <span class="t-str">'  hi  '</span> <span class="t-kw">|</span> <span class="t-fn">strip</span> <span class="t-kw">}}</span></code><span class="note">→ hi (also lstrip and rstrip)</span></div><div class="ln" data-l="34"><code><span class="t-kw">{{</span> <span class="t-str">'A long title'</span> <span class="t-kw">|</span> <span class="t-fn">truncate</span>: <span class="t-c">9</span> <span class="t-kw">}}</span></code><span class="note">→ A long... (the ... counts toward the 9)</span></div><div class="ln" data-l="40"><code><span class="t-kw">{{</span> <span class="t-str">'One two three'</span> <span class="t-kw">|</span> <span class="t-fn">truncatewords</span>: <span class="t-c">2</span> <span class="t-kw">}}</span></code><span class="note">→ One two...</span></div><div class="ln" data-l="32"><code><span class="t-kw">{{</span> <span class="t-str">'Summer Sale!'</span> <span class="t-kw">|</span> <span class="t-fn">handleize</span> <span class="t-kw">}}</span></code><span class="note">→ summer-sale</span></div><div class="ln" data-l="30"><code><span class="t-kw">{{</span> <span class="t-str">'&lt;p&gt;Hi&lt;/p&gt;'</span> <span class="t-kw">|</span> <span class="t-fn">strip_html</span> <span class="t-kw">}}</span></code><span class="note">→ Hi</span></div><div class="ln" data-l="20"><code><span class="t-kw">{{</span> <span class="t-str">'&lt;b&gt;'</span> <span class="t-kw">|</span> <span class="t-fn">escape</span> <span class="t-kw">}}</span></code><span class="note">→ &amp;lt;b&amp;gt;</span></div><div class="ln" data-l="28"><code><span class="t-kw">{{</span> <span class="t-str">'Liquid'</span> <span class="t-kw">|</span> <span class="t-fn">slice</span>: <span class="t-c">0</span>, <span class="t-c">3</span> <span class="t-kw">}}</span></code><span class="note">→ Liq</span></div><div class="ln" data-l="20"><code><span class="t-kw">{{</span> <span class="t-str">'Hello'</span> <span class="t-kw">|</span> <span class="t-fn">size</span> <span class="t-kw">}}</span></code><span class="note">→ 5</span></div><div class="ln" data-l="41"><code><span class="t-kw">{{</span> product.description <span class="t-kw">|</span> <span class="t-fn">newline_to_br</span> <span class="t-kw">}}</span></code><span class="note">Line breaks become br tags</span></div></div></section>
+<section class="card" id="arrays" aria-labelledby="arrays-h"><h2 id="arrays-h">Number &amp; array filters</h2><p class="about">Math happens through filters rather than operators. Array filters can pull out, filter and sort collections of products, variants or cart items.</p><div class="code"><div class="ln" data-l="18"><code><span class="t-kw">{{</span> <span class="t-c">10</span> <span class="t-kw">|</span> <span class="t-fn">plus</span>: <span class="t-c">5</span> <span class="t-kw">}}</span></code><span class="note">→ 15 (also minus and times)</span></div><div class="ln" data-l="24"><code><span class="t-kw">{{</span> <span class="t-c">10</span> <span class="t-kw">|</span> <span class="t-fn">divided_by</span>: <span class="t-c">4</span> <span class="t-kw">}}</span></code><span class="note">→ 2: whole numbers when both are integers</span></div><div class="ln" data-l="26"><code><span class="t-kw">{{</span> <span class="t-c">10</span> <span class="t-kw">|</span> <span class="t-fn">divided_by</span>: <span class="t-c">4.0</span> <span class="t-kw">}}</span></code><span class="note">→ 2.5</span></div><div class="ln" data-l="20"><code><span class="t-kw">{{</span> <span class="t-c">10</span> <span class="t-kw">|</span> <span class="t-fn">modulo</span>: <span class="t-c">3</span> <span class="t-kw">}}</span></code><span class="note">→ 1</span></div><div class="ln" data-l="52"><code><span class="t-kw">{{</span> <span class="t-c">4.6</span> <span class="t-kw">|</span> <span class="t-fn">round</span> <span class="t-kw">}}</span> <span class="t-kw">{{</span> <span class="t-c">4.2</span> <span class="t-kw">|</span> <span class="t-fn">ceil</span> <span class="t-kw">}}</span> <span class="t-kw">{{</span> <span class="t-c">4.8</span> <span class="t-kw">|</span> <span class="t-fn">floor</span> <span class="t-kw">}}</span></code><span class="note">→ 5 5 4</span></div><div class="ln" data-l="21"><code><span class="t-kw">{{</span> <span class="t-c">3</span> <span class="t-kw">|</span> <span class="t-fn">at_least</span>: <span class="t-c">5</span> <span class="t-kw">}}</span></code><span class="note">→ 5 (at_most sets an upper limit)</span></div><div class="ln" data-l="31"><code><span class="t-kw">{{</span> product.tags <span class="t-kw">|</span> <span class="t-fn">join</span>: <span class="t-str">', '</span> <span class="t-kw">}}</span></code><span class="note">All items as one string</span></div><div class="ln" data-l="44"><code><span class="t-kw">{{</span> cart.items <span class="t-kw">|</span> <span class="t-fn">map</span>: <span class="t-str">'title'</span> <span class="t-kw">|</span> <span class="t-fn">join</span>: <span class="t-str">', '</span> <span class="t-kw">}}</span></code><span class="note">One property from each item</span></div><div class="ln" data-l="64"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> in_stock <span class="t-kw">=</span> collection.products <span class="t-kw">|</span> <span class="t-fn">where</span>: <span class="t-str">'available'</span> <span class="t-kw">%}</span></code><span class="note">Items where the property is true</span></div><div class="ln" data-l="66"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> shirts <span class="t-kw">=</span> collection.products <span class="t-kw">|</span> <span class="t-fn">where</span>: <span class="t-str">'type'</span>, <span class="t-str">'Shirt'</span> <span class="t-kw">%}</span></code><span class="note">Items where it equals a value</span></div><div class="ln" data-l="59"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> by_price <span class="t-kw">=</span> collection.products <span class="t-kw">|</span> <span class="t-fn">sort</span>: <span class="t-str">'price'</span> <span class="t-kw">%}</span></code><span class="note">Also sort_natural and reverse</span></div><div class="ln" data-l="33"><code><span class="t-kw">{{</span> product.tags <span class="t-kw">|</span> <span class="t-fn">uniq</span> <span class="t-kw">|</span> <span class="t-fn">first</span> <span class="t-kw">}}</span></code><span class="note">Also last, compact and concat</span></div><div class="ln" data-l="49"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> units <span class="t-kw">=</span> cart.items <span class="t-kw">|</span> <span class="t-fn">sum</span>: <span class="t-str">'quantity'</span> <span class="t-kw">%}</span></code><span class="note">Add up a property</span></div><div class="ln" data-l="55"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> acme <span class="t-kw">=</span> cart.items <span class="t-kw">|</span> <span class="t-fn">find</span>: <span class="t-str">'vendor'</span>, <span class="t-str">'Acme'</span> <span class="t-kw">%}</span></code><span class="note">The first matching item</span></div></div></section>
+<section class="card" id="shopify" aria-labelledby="shopify-h"><h2 id="shopify-h">Shopify filters</h2><p class="about">Shopify adds filters for money, images, assets, translations and dates. Prices are stored in cents, so always print them through a money filter.</p><div class="code"><div class="ln" data-l="27"><code><span class="t-kw">{{</span> product.price <span class="t-kw">|</span> <span class="t-fn">money</span> <span class="t-kw">}}</span></code><span class="note">→ $19.99, in the store's money format</span></div><div class="ln" data-l="41"><code><span class="t-kw">{{</span> product.price <span class="t-kw">|</span> <span class="t-fn">money_with_currency</span> <span class="t-kw">}}</span></code><span class="note">→ $19.99 USD</span></div><div class="ln" data-l="64"><code><span class="t-kw">{{</span> product.featured_image <span class="t-kw">|</span> <span class="t-fn">image_url</span>: <span class="t-c">width</span>: <span class="t-c">600</span> <span class="t-kw">|</span> <span class="t-fn">image_tag</span> <span class="t-kw">}}</span></code><span class="note">An img tag with srcset</span></div><div class="ln" data-l="52"><code><span class="t-kw">{{</span> product.featured_image <span class="t-kw">|</span> <span class="t-fn">image_url</span>: <span class="t-c">width</span>: <span class="t-c">600</span> <span class="t-kw">}}</span></code><span class="note">Just the image's CDN URL</span></div><div class="ln" data-l="46"><code><span class="t-kw">{{</span> <span class="t-str">'theme.css'</span> <span class="t-kw">|</span> <span class="t-fn">asset_url</span> <span class="t-kw">|</span> <span class="t-fn">stylesheet_tag</span> <span class="t-kw">}}</span></code><span class="note">Link a file from assets/</span></div><div class="ln bare"><code>&lt;<span class="t-tag">script</span> <span class="t-c">src</span>=<span class="t-str">"</span><span class="t-kw">{{</span> <span class="t-str">'theme.js'</span> <span class="t-kw">|</span> <span class="t-fn">asset_url</span> <span class="t-kw">}}</span><span class="t-str">"</span> <span class="t-c">defer</span>&gt;&lt;/<span class="t-tag">script</span>&gt;</code></div><div class="ln" data-l="40"><code><span class="t-kw">{{</span> <span class="t-str">'products.product.add_to_cart'</span> <span class="t-kw">|</span> <span class="t-fn">t</span> <span class="t-kw">}}</span></code><span class="note">Translated text from locales/</span></div><div class="ln" data-l="47"><code><span class="t-kw">{{</span> article.published_at <span class="t-kw">|</span> <span class="t-fn">date</span>: <span class="t-str">'%B %-d, %Y'</span> <span class="t-kw">}}</span></code><span class="note">→ October 1, 2026</span></div><div class="ln" data-l="66"><code><span class="t-kw">{{</span> product.metafields.custom.subtitle <span class="t-kw">|</span> <span class="t-fn">default</span>: product.vendor <span class="t-kw">}}</span></code><span class="note">Fallback for nil, false or empty</span></div><div class="ln" data-l="51"><code>&lt;<span class="t-tag">script</span>&gt;const data = <span class="t-kw">{{</span> product <span class="t-kw">|</span> <span class="t-fn">json</span> <span class="t-kw">}}</span>;&lt;/<span class="t-tag">script</span>&gt;</code><span class="note">Output as JSON for JavaScript</span></div><div class="ln" data-l="42"><code><span class="t-kw">{{</span> product.title <span class="t-kw">|</span> <span class="t-fn">link_to</span>: product.url <span class="t-kw">}}</span></code><span class="note">An a tag</span></div><div class="ln" data-l="39"><code><span class="t-kw">{{</span> <span class="t-str">'product-1'</span> <span class="t-kw">|</span> <span class="t-fn">placeholder_svg_tag</span> <span class="t-kw">}}</span></code><span class="note">Placeholder art when there's no image</span></div></div></section>
+<section class="card" id="objects" aria-labelledby="objects-h"><h2 id="objects-h">Common objects</h2><p class="about">Objects hold the store's data. Global ones like shop, cart and settings work everywhere; others like product and collection are available on their own page types or when you loop over them.</p><div class="code"><div class="ln bare"><code><span class="t-kw">{{</span> product.title <span class="t-kw">}}</span> <span class="t-kw">{{</span> product.vendor <span class="t-kw">}}</span> <span class="t-kw">{{</span> product.url <span class="t-kw">}}</span></code></div><div class="ln" data-l="27"><code><span class="t-kw">{{</span> product.price <span class="t-kw">|</span> <span class="t-fn">money</span> <span class="t-kw">}}</span></code><span class="note">The lowest variant price</span></div><div class="ln" data-l="38"><code><span class="t-kw">{{</span> product.compare_at_price <span class="t-kw">|</span> <span class="t-fn">money</span> <span class="t-kw">}}</span></code><span class="note">The original price, for sales</span></div><div class="ln" data-l="52"><code><span class="t-kw">{{</span> product.selected_or_first_available_variant.id <span class="t-kw">}}</span></code><span class="note">The variant to show or add to the cart</span></div><div class="ln" data-l="42"><code><span class="t-kw">{{</span> product.metafields.custom.care_guide <span class="t-kw">}}</span></code><span class="note">Custom data: namespace, then key</span></div><div class="ln bare"><code><span class="t-kw">{{</span> collection.title <span class="t-kw">}}</span> <span class="t-kw">{{</span> collection.products_count <span class="t-kw">}}</span></code></div><div class="ln bare"><code><span class="t-kw">{{</span> cart.item_count <span class="t-kw">}}</span> <span class="t-kw">{{</span> cart.total_price <span class="t-kw">|</span> <span class="t-fn">money</span> <span class="t-kw">}}</span></code></div><div class="ln" data-l="57"><code><span class="t-kw">{%</span> <span class="t-kw">if</span> customer <span class="t-kw">%}</span>Hi, <span class="t-kw">{{</span> customer.first_name <span class="t-kw">}}</span><span class="t-kw">{%</span> <span class="t-kw">endif</span> <span class="t-kw">%}</span></code><span class="note">Customer is nil when no one is logged in</span></div><div class="ln bare"><code><span class="t-kw">{{</span> shop.name <span class="t-kw">}}</span> <span class="t-kw">{{</span> request.locale.iso_code <span class="t-kw">}}</span></code></div><div class="ln" data-l="21"><code><span class="t-kw">{{</span> routes.cart_url <span class="t-kw">}}</span></code><span class="note">URLs that respect the current language (also root_url, search_url)</span></div><div class="ln" data-l="25"><code><span class="t-kw">{{</span> settings.logo_width <span class="t-kw">}}</span></code><span class="note">Theme settings from config/settings_schema.json</span></div><div class="ln" data-l="19"><code><span class="t-kw">{{</span> template.name <span class="t-kw">}}</span></code><span class="note">Product, collection, index and so on</span></div></div></section>
+<section class="card" id="structure" aria-labelledby="structure-h"><h2 id="structure-h">Theme structure</h2><p class="about">A theme is a set of folders with fixed names. The layout wraps every page, JSON templates list which sections a page uses, and sections, blocks and snippets hold the reusable Liquid.</p><div class="code"><div class="ln" data-l="19"><code><span class="t-c">layout/</span>theme.liquid</code><span class="note">The page shell around every template</span></div><div class="ln" data-l="22"><code><span class="t-c">templates/</span>product.json</code><span class="note">The sections a page type uses, in order</span></div><div class="ln" data-l="20"><code><span class="t-c">sections/</span>hero.liquid</code><span class="note">Modules merchants add and configure</span></div><div class="ln" data-l="26"><code><span class="t-c">sections/</span>header-group.json</code><span class="note">A section group, like the header area</span></div><div class="ln" data-l="19"><code><span class="t-c">blocks/</span>slide.liquid</code><span class="note">Theme blocks, reusable inside sections</span></div><div class="ln" data-l="21"><code><span class="t-c">snippets/</span>price.liquid</code><span class="note">Reusable Liquid for {% render %}</span></div><div class="ln" data-l="16"><code><span class="t-c">assets/</span>theme.css</code><span class="note">CSS, JavaScript and images</span></div><div class="ln" data-l="27"><code><span class="t-c">config/</span>settings_schema.json</code><span class="note">The theme's global settings</span></div><div class="ln" data-l="23"><code><span class="t-c">locales/</span>en.default.json</code><span class="note">Translations for the t filter</span></div></div><div class="code"><div class="ln bare"><code>&lt;<span class="t-tag">!doctype</span> <span class="t-c">html</span>&gt;</code></div><div class="ln bare"><code>&lt;<span class="t-tag">html</span> <span class="t-c">lang</span>=<span class="t-str">"</span><span class="t-kw">{{</span> request.locale.iso_code <span class="t-kw">}}</span><span class="t-str">"</span>&gt;</code></div><div class="ln bare"><code>&lt;<span class="t-tag">head</span>&gt;</code></div><div class="ln bare"><code>  &lt;<span class="t-tag">title</span>&gt;<span class="t-kw">{{</span> page_title <span class="t-kw">}}</span>&lt;/<span class="t-tag">title</span>&gt;</code></div><div class="ln" data-l="26"><code>  <span class="t-kw">{{</span> content_for_header <span class="t-kw">}}</span></code><span class="note">Required: Shopify's scripts and analytics</span></div><div class="ln bare"><code>&lt;/<span class="t-tag">head</span>&gt;</code></div><div class="ln bare"><code>&lt;<span class="t-tag">body</span>&gt;</code></div><div class="ln" data-l="31"><code>  <span class="t-kw">{%</span> <span class="t-kw">sections</span> <span class="t-str">'header-group'</span> <span class="t-kw">%}</span></code><span class="note">Render a section group</span></div><div class="ln" data-l="39"><code>  &lt;<span class="t-tag">main</span>&gt;<span class="t-kw">{{</span> content_for_layout <span class="t-kw">}}</span>&lt;/<span class="t-tag">main</span>&gt;</code><span class="note">Required: the current template</span></div><div class="ln bare"><code>&lt;/<span class="t-tag">body</span>&gt;</code></div><div class="ln bare"><code>&lt;/<span class="t-tag">html</span>&gt;</code></div></div></section>
+<section class="card" id="sections" aria-labelledby="sections-h"><h2 id="sections-h">Sections &amp; schema</h2><p class="about">A section is a Liquid file with a schema: JSON that tells the theme editor which settings and blocks merchants can change. The Liquid reads those values through section.settings and block.settings.</p><div class="code"><div class="ln bare"><code>&lt;<span class="t-tag">section</span> <span class="t-c">class</span>=<span class="t-str">"</span><span class="t-str">hero</span><span class="t-str">"</span>&gt;</code></div><div class="ln" data-l="41"><code>  &lt;<span class="t-tag">h2</span>&gt;<span class="t-kw">{{</span> section.settings.heading <span class="t-kw">}}</span>&lt;/<span class="t-tag">h2</span>&gt;</code><span class="note">A value the merchant set</span></div><div class="ln bare"><code>  <span class="t-kw">{%</span> <span class="t-kw">for</span> block <span class="t-kw">in</span> section.blocks <span class="t-kw">%}</span></code></div><div class="ln" data-l="67"><code>    &lt;<span class="t-tag">p</span> <span class="t-kw">{{</span> block.shopify_attributes <span class="t-kw">}}</span>&gt;<span class="t-kw">{{</span> block.settings.text <span class="t-kw">}}</span>&lt;/<span class="t-tag">p</span>&gt;</code><span class="note">The shopify_attributes output lets the theme editor select it</span></div><div class="ln bare"><code>  <span class="t-kw">{%</span> <span class="t-kw">endfor</span> <span class="t-kw">%}</span></code></div><div class="ln bare"><code>&lt;/<span class="t-tag">section</span>&gt;</code></div><div class="ln" data-l="16"><code><span class="t-kw">{%</span> <span class="t-kw">stylesheet</span> <span class="t-kw">%}</span></code><span class="note">CSS that ships with the section</span></div><div class="ln bare"><code>  <span class="t-fn">.hero</span> { <span class="t-c">padding</span>: <span class="t-c">2</span><span class="t-kw">rem</span>; }</code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">endstylesheet</span> <span class="t-kw">%}</span></code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">schema</span> <span class="t-kw">%}</span></code></div><div class="ln bare"><code>{</code></div><div class="ln bare"><code>  <span class="t-c">"name"</span>: <span class="t-str">"Hero"</span>,</code></div><div class="ln bare"><code>  <span class="t-c">"settings"</span>: [</code></div><div class="ln bare"><code>    { <span class="t-c">"type"</span>: <span class="t-str">"text"</span>, <span class="t-c">"id"</span>: <span class="t-str">"heading"</span>, <span class="t-c">"label"</span>: <span class="t-str">"Heading"</span>, <span class="t-c">"default"</span>: <span class="t-str">"Welcome"</span> }</code></div><div class="ln bare"><code>  ],</code></div><div class="ln bare"><code>  <span class="t-c">"blocks"</span>: [</code></div><div class="ln bare"><code>    { <span class="t-c">"type"</span>: <span class="t-str">"text"</span>, <span class="t-c">"name"</span>: <span class="t-str">"Text"</span>, <span class="t-c">"settings"</span>: [{ <span class="t-c">"type"</span>: <span class="t-str">"text"</span>, <span class="t-c">"id"</span>: <span class="t-str">"text"</span>, <span class="t-c">"label"</span>: <span class="t-str">"Text"</span> }] }</code></div><div class="ln bare"><code>  ],</code></div><div class="ln" data-l="33"><code>  <span class="t-c">"presets"</span>: [{ <span class="t-c">"name"</span>: <span class="t-str">"Hero"</span> }]</code><span class="note">Lets merchants add it in the theme editor</span></div><div class="ln bare"><code>}</code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">endschema</span> <span class="t-kw">%}</span></code></div></div></section>
+<section class="card" id="blocks" aria-labelledby="blocks-h"><h2 id="blocks-h">Theme blocks</h2><p class="about">Theme blocks live in their own files in blocks/ and can be reused across sections and nested inside each other. A section or block chooses where they render with content_for.</p><div class="code"><div class="ln" data-l="26"><code><span class="t-kw">{%</span> <span class="t-kw">content_for</span> <span class="t-str">'blocks'</span> <span class="t-kw">%}</span></code><span class="note">Render the blocks the merchant added here</span></div><div class="ln" data-l="53"><code><span class="t-kw">{%</span> <span class="t-kw">content_for</span> <span class="t-str">'block'</span>, <span class="t-c">type</span>: <span class="t-str">'price'</span>, <span class="t-c">id</span>: <span class="t-str">'price'</span> <span class="t-kw">%}</span></code><span class="note">A static block that's always there</span></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">schema</span> <span class="t-kw">%}</span></code></div><div class="ln" data-l="80"><code>{ <span class="t-c">"name"</span>: <span class="t-str">"Product info"</span>, <span class="t-c">"blocks"</span>: [{ <span class="t-c">"type"</span>: <span class="t-str">"@theme"</span> }, { <span class="t-c">"type"</span>: <span class="t-str">"@app"</span> }] }</code><span class="note">Accept any theme block, and app blocks</span></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">endschema</span> <span class="t-kw">%}</span></code></div></div></section>
+<section class="card" id="snippets" aria-labelledby="snippets-h"><h2 id="snippets-h">Snippets &amp; render</h2><p class="about">Snippets are reusable pieces rendered with render. A snippet can't see the variables around it, so pass in everything it needs; a doc tag at the top describes those inputs.</p><div class="code"><div class="ln" data-l="38"><code><span class="t-kw">{%</span> <span class="t-kw">render</span> <span class="t-str">'price'</span>, <span class="t-c">product</span>: product <span class="t-kw">%}</span></code><span class="note">Pass variables as name: value</span></div><div class="ln" data-l="51"><code><span class="t-kw">{%</span> <span class="t-kw">render</span> <span class="t-str">'card'</span> <span class="t-kw">for</span> collection.products <span class="t-kw">as</span> item <span class="t-kw">%}</span></code><span class="note">Once per item, with forloop available</span></div><div class="ln" data-l="39"><code><span class="t-kw">{%</span> <span class="t-kw">render</span> <span class="t-str">'icon'</span> <span class="t-kw">with</span> <span class="t-str">'cart'</span> <span class="t-kw">as</span> name <span class="t-kw">%}</span></code><span class="note">Pass one value under a name</span></div><div class="ln" data-l="37"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> alt <span class="t-kw">=</span> image.alt <span class="t-kw">|</span> <span class="t-fn">escape</span> <span class="t-kw">%}</span></code><span class="note">Filters can't go inside render, so assign first</span></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">render</span> <span class="t-str">'image'</span>, <span class="t-c">image</span>: image, <span class="t-c">alt</span>: alt <span class="t-kw">%}</span></code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">doc</span> <span class="t-kw">%}</span></code></div><div class="ln bare"><code><span class="t-cm">  Shows a product's price, with the compare-at price when there is one.</span></code></div><div class="ln bare"><code>  <span class="t-kw">@param</span> {<span class="t-cls">product</span>} product<span class="t-cm"> - The product to show</span></code></div><div class="ln bare"><code>  <span class="t-kw">@param</span> {<span class="t-cls">boolean</span>} [show_compare]<span class="t-cm"> - Optional; false if left out</span></code></div><div class="ln bare"><code>  <span class="t-kw">@example</span></code></div><div class="ln bare"><code><span class="t-cm">  </span><span class="t-kw">{%</span> <span class="t-kw">render</span> <span class="t-str">'price'</span>, <span class="t-c">product</span>: product, <span class="t-c">show_compare</span>: <span class="t-c">true</span> <span class="t-kw">%}</span></code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">enddoc</span> <span class="t-kw">%}</span></code></div></div></section>
+<section class="card" id="forms" aria-labelledby="forms-h"><h2 id="forms-h">Forms &amp; pagination</h2><p class="about">The form tag outputs a form with the right action, method and hidden fields for Shopify features like the cart and customer accounts. paginate splits a long array into pages.</p><div class="code"><div class="ln" data-l="29"><code><span class="t-kw">{%</span> <span class="t-kw">form</span> <span class="t-str">'product'</span>, product <span class="t-kw">%}</span></code><span class="note">Adds the chosen variant to the cart</span></div><div class="ln bare"><code>  &lt;<span class="t-tag">select</span> <span class="t-c">name</span>=<span class="t-str">"</span><span class="t-str">id</span><span class="t-str">"</span>&gt;</code></div><div class="ln bare"><code>    <span class="t-kw">{%</span> <span class="t-kw">for</span> variant <span class="t-kw">in</span> product.variants <span class="t-kw">%}</span></code></div><div class="ln bare"><code>      &lt;<span class="t-tag">option</span> <span class="t-c">value</span>=<span class="t-str">"</span><span class="t-kw">{{</span> variant.id <span class="t-kw">}}</span><span class="t-str">"</span>&gt;<span class="t-kw">{{</span> variant.title <span class="t-kw">}}</span>&lt;/<span class="t-tag">option</span>&gt;</code></div><div class="ln bare"><code>    <span class="t-kw">{%</span> <span class="t-kw">endfor</span> <span class="t-kw">%}</span></code></div><div class="ln bare"><code>  &lt;/<span class="t-tag">select</span>&gt;</code></div><div class="ln bare"><code>  &lt;<span class="t-tag">input</span> <span class="t-c">type</span>=<span class="t-str">"</span><span class="t-str">number</span><span class="t-str">"</span> <span class="t-c">name</span>=<span class="t-str">"</span><span class="t-str">quantity</span><span class="t-str">"</span> <span class="t-c">value</span>=<span class="t-str">"</span><span class="t-str">1</span><span class="t-str">"</span> <span class="t-c">min</span>=<span class="t-str">"</span><span class="t-str">1</span><span class="t-str">"</span>&gt;</code></div><div class="ln bare"><code>  &lt;<span class="t-tag">button</span> <span class="t-c">type</span>=<span class="t-str">"</span><span class="t-str">submit</span><span class="t-str">"</span>&gt;<span class="t-kw">{{</span> <span class="t-str">'products.product.add_to_cart'</span> <span class="t-kw">|</span> <span class="t-fn">t</span> <span class="t-kw">}}</span>&lt;/<span class="t-tag">button</span>&gt;</code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">endform</span> <span class="t-kw">%}</span></code></div><div class="ln" data-l="34"><code><span class="t-kw">{%</span> <span class="t-kw">form</span> <span class="t-str">'contact'</span> <span class="t-kw">%}</span>…<span class="t-kw">{%</span> <span class="t-kw">endform</span> <span class="t-kw">%}</span></code><span class="note">Also customer_login, create_customer and localization</span></div><div class="ln" data-l="40"><code><span class="t-kw">{%</span> <span class="t-kw">paginate</span> collection.products <span class="t-kw">by</span> <span class="t-c">12</span> <span class="t-kw">%}</span></code><span class="note">12 per page (50 at most)</span></div><div class="ln bare"><code>  <span class="t-kw">{%</span> <span class="t-kw">for</span> product <span class="t-kw">in</span> collection.products <span class="t-kw">%}</span>…<span class="t-kw">{%</span> <span class="t-kw">endfor</span> <span class="t-kw">%}</span></code></div><div class="ln" data-l="37"><code>  <span class="t-kw">{{</span> paginate <span class="t-kw">|</span> <span class="t-fn">default_pagination</span> <span class="t-kw">}}</span></code><span class="note">Previous, page numbers and next</span></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">endpaginate</span> <span class="t-kw">%}</span></code></div></div></section>
+<section class="card" id="strict" aria-labelledby="strict-h"><h2 id="strict-h">Strict parsing</h2><p class="about">Since January 2026, Shopify rejects Liquid it used to accept and silently misread. These are the most common patterns that now fail, with the fix for each.</p><div class="code"><div class="ln" data-l="26"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> show <span class="t-kw">=</span> a <span class="t-kw">or</span> b <span class="t-kw">%}</span></code><span class="note">✗ And/or only work in if, elsif and unless</span></div><div class="ln" data-l="27"><code><span class="t-kw">{%</span> <span class="t-kw">if</span> a <span class="t-kw">or</span> b <span class="t-kw">%}</span>…<span class="t-kw">{%</span> <span class="t-kw">endif</span> <span class="t-kw">%}</span></code><span class="note">✓</span></div><div class="ln" data-l="27"><code><span class="t-kw">{%</span> <span class="t-kw">if</span> a &amp;&amp; b <span class="t-kw">%}</span>…<span class="t-kw">{%</span> <span class="t-kw">endif</span> <span class="t-kw">%}</span></code><span class="note">✗ Use and, or</span></div><div class="ln" data-l="35"><code><span class="t-kw">{%</span> <span class="t-kw">if</span> a <span class="t-kw">and</span> (b <span class="t-kw">or</span> c) <span class="t-kw">%}</span>…<span class="t-kw">{%</span> <span class="t-kw">endif</span> <span class="t-kw">%}</span></code><span class="note">✗ Parentheses aren't allowed</span></div><div class="ln" data-l="38"><code><span class="t-kw">{%</span> <span class="t-kw">render</span> <span class="t-str">'card'</span>, <span class="t-c">title</span>: t <span class="t-kw">|</span> <span class="t-fn">escape</span> <span class="t-kw">%}</span></code><span class="note">✗ No filters inside render</span></div><div class="ln" data-l="31"><code><span class="t-kw">{%</span> <span class="t-kw">assign</span> title <span class="t-kw">=</span> t <span class="t-kw">|</span> <span class="t-fn">escape</span> <span class="t-kw">%}</span></code><span class="note">✓ Assign first, then pass title</span></div><div class="ln" data-l="28"><code><span class="t-kw">{%</span> <span class="t-kw">render</span> <span class="t-str">'card'</span>, product <span class="t-kw">%}</span></code><span class="note">✗ Arguments need name: value</span></div><div class="ln" data-l="11"><code><span class="t-kw">{{</span> [key] <span class="t-kw">}}</span></code><span class="note">✗ Bare brackets are reserved for arrays</span></div><div class="ln" data-l="15"><code><span class="t-kw">{{</span> <span class="t-c">self</span>[key] <span class="t-kw">}}</span></code><span class="note">✓ Look up a variable by name</span></div><div class="ln" data-l="20"><code><span class="t-kw">{%</span> <span class="t-kw">include</span> <span class="t-str">'card'</span> <span class="t-kw">%}</span></code><span class="note">✗ Deprecated: use render</span></div></div></section>
+<section class="card" id="preview" aria-labelledby="preview-h"><h2 id="preview-h">Developer preview (July &rsquo;26)</h2><p class="about">Two new tags let a Liquid template build a whole page without JSON templates. They're a developer preview: they only work on development stores with the Liquid July '26 preview turned on, only in templates and layouts, and the syntax is still changing. This follows Theme Check 3.30.</p><div class="code"><div class="ln" data-l="44"><code><span class="t-kw">{%</span> <span class="t-kw">block</span> <span class="t-str">'container'</span>, <span class="t-c">class</span>: <span class="t-str">'collection'</span> <span class="t-kw">%}</span></code><span class="note">Renders blocks/container.liquid with this body</span></div><div class="ln" data-l="30"><code>  <span class="t-kw">{%</span> <span class="t-kw">partial</span> <span class="t-str">'product-grid'</span> <span class="t-kw">%}</span></code><span class="note">A region JavaScript can re-fetch and replace</span></div><div class="ln bare"><code>    <span class="t-kw">{%</span> <span class="t-kw">for</span> product <span class="t-kw">in</span> collection.products <span class="t-kw">%}</span></code></div><div class="ln" data-l="64"><code>      <span class="t-kw">{%</span> <span class="t-kw">block</span> <span class="t-str">'product-card'</span>, <span class="t-c">product</span>: product <span class="t-kw">%}</span><span class="t-kw">{%</span> <span class="t-kw">endblock</span> <span class="t-kw">%}</span></code><span class="note">Fills the block's product setting</span></div><div class="ln bare"><code>    <span class="t-kw">{%</span> <span class="t-kw">endfor</span> <span class="t-kw">%}</span></code></div><div class="ln bare"><code>  <span class="t-kw">{%</span> <span class="t-kw">endpartial</span> <span class="t-kw">%}</span></code></div><div class="ln bare"><code><span class="t-kw">{%</span> <span class="t-kw">endblock</span> <span class="t-kw">%}</span></code></div><div class="ln" data-l="13"><code><span class="t-kw">{{</span> content <span class="t-kw">}}</span></code><span class="note">In the block file: print the body passed to it</span></div></div></section>
+  </main>
+  <p class="empty" id="empty" hidden>No card mentions “<span id="empty-q"></span>”.<button type="button" id="clear">Clear filter</button></p>
+</div>
+
+<script>
+(() => {
+  const grid = document.getElementById("grid");
+  const cards = Array.from(grid.querySelectorAll(".card"));
+  const texts = cards.map(c => c.textContent.toLowerCase());
+  const input = document.getElementById("filter");
+  const count = document.getElementById("count");
+  const empty = document.getElementById("empty");
+  const emptyQ = document.getElementById("empty-q");
+  const total = cards.length;
+  let lastW = -1, raf = 0;
+
+  // Masonry: as many columns as fit at --min width; each card goes to the shortest column, in reading order.
+  function layout() {
+    const cs = getComputedStyle(grid);
+    const gap = parseFloat(cs.getPropertyValue("--gap")) || 16;
+    const min = parseFloat(cs.getPropertyValue("--min")) || 420;
+    const n = Math.max(1, Math.floor((grid.clientWidth + gap) / (min + gap)));
+    const cols = Array.from({ length: n }, () => {
+      const d = document.createElement("div");
+      d.className = "col";
+      return d;
+    });
+    grid.replaceChildren(...cols);
+    fitNotes((grid.clientWidth - (n - 1) * gap) / n);
+    const heights = new Array(n).fill(0);
+    for (const card of cards) {
+      if (card.hidden) continue;
+      let k = 0;
+      for (let i = 1; i < n; i++) if (heights[i] < heights[k] - 1) k = i;
+      cols[k].appendChild(card);
+      heights[k] += card.offsetHeight + gap;
+    }
+  }
+  // Explanations line up in one column per card when there's room; lines too long for that
+  // get their explanation on the next line instead.
+  const NOTE_MIN = 20; // characters reserved for an explanation beside the code
+  const probe = document.createElement("span");
+  probe.className = "code probe";
+  probe.setAttribute("aria-hidden", "true");
+  probe.textContent = "0".repeat(20);
+  document.body.appendChild(probe);
+  const blocks = cards.map(c => Array.from(c.querySelectorAll(".code")));
+  const cardStyle = getComputedStyle(cards[0]);
+  const chrome = ["paddingLeft", "paddingRight", "borderLeftWidth", "borderRightWidth"]
+    .reduce((s, k) => s + (parseFloat(cardStyle[k]) || 0), 0) || 36;
+  function fitNotes(colWidth) {
+    const ch = probe.getBoundingClientRect().width / 20 || 7.5;
+    const avail = Math.floor((colWidth - chrome) / ch);
+    const maxCw = Math.min(avail - 1 - NOTE_MIN, 42); // keep one outlier from squeezing every note
+    for (const list of blocks) for (const block of list) {
+      let cw = 0;
+      block.querySelectorAll(".ln[data-l]").forEach(ln => {
+        const len = +ln.dataset.l;
+        const long = len > maxCw;
+        ln.classList.toggle("long", long);
+        if (!long && len > cw) cw = len;
+      });
+      block.style.setProperty("--cw", cw);
+    }
+  }
+  function schedule() {
+    cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(layout);
+  }
+  new ResizeObserver(entries => {
+    const w = entries[0].contentRect.width;
+    if (Math.abs(w - lastW) > 0.5) { lastW = w; schedule(); }
+  }).observe(grid);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(schedule);
+
+  // Filter: hide cards that don't mention the text, highlight the lines that do.
+  function applyFilter() {
+    const raw = input.value.trim();
+    const q = raw.toLowerCase();
+    let shown = 0;
+    cards.forEach((card, i) => {
+      const match = !q || texts[i].includes(q);
+      card.hidden = !match;
+      if (match) shown++;
+      card.querySelectorAll(".ln, tbody tr").forEach(el => {
+        el.classList.toggle("hit", !!q && el.textContent.toLowerCase().includes(q));
+      });
+    });
+    count.textContent = q ? `${shown} of ${total} cards` : `${total} cards`;
+    emptyQ.textContent = raw;
+    empty.hidden = shown > 0;
+    layout();
+  }
+  input.addEventListener("input", applyFilter);
+  document.getElementById("clear").addEventListener("click", () => {
+    input.value = "";
+    applyFilter();
+    input.focus();
+  });
+  document.addEventListener("keydown", e => {
+    const typing = e.target.closest && e.target.closest("input, textarea, [contenteditable]");
+    if (e.key === "/" && !typing && !e.metaKey && !e.ctrlKey && !e.altKey) {
+      e.preventDefault();
+      input.focus();
+    } else if (e.key === "Escape" && e.target === input && input.value) {
+      input.value = "";
+      applyFilter();
+    }
+  });
+
+  layout();
+})();
+</script>
+</body>
+</html>
